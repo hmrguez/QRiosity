@@ -1,17 +1,33 @@
-import {FC} from 'react';
-import {Dialog} from 'primereact/dialog';
+// src/frontend/src/components/DailyChallenge.tsx
+import React from 'react';
+import {gql, useQuery} from '@apollo/client';
 
-interface DailyChallengeModalProps {
-	visible: boolean;
-	onHide: () => void;
-}
+const GET_DAILY_CHALLENGE = gql`
+    query {
+        dailyChallenge(category: "javascript") {
+            id
+            question
+            categories
+            type
+        }
+    }
+`;
 
-const DailyChallengeModal: FC<DailyChallengeModalProps> = ({visible, onHide}) => {
+const DailyChallenge: React.FC = () => {
+	const {loading, error, data} = useQuery(GET_DAILY_CHALLENGE);
+
+	if (loading) return <div>Loading...</div>;
+	if (error) return <div>Error: {error.message}</div>;
+
+	const {dailyChallenge} = data;
+
 	return (
-		<Dialog header="Daily Challenge" visible={visible} style={{width: '50vw'}} onHide={onHide}>
-			<p>Here is your daily challenge!</p>
-		</Dialog>
+		<div>
+			<h1>{dailyChallenge.question}</h1>
+			<p>Categories: {dailyChallenge.categories.join(', ')}</p>
+			<p>Type: {dailyChallenge.type}</p>
+		</div>
 	);
 };
 
-export default DailyChallengeModal;
+export default DailyChallenge;
