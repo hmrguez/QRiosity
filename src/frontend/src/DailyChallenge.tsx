@@ -1,27 +1,17 @@
-// src/components/DailyChallenge.js
-import { useState } from 'react';
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
+import {FC} from 'react';
+import {Dialog} from 'primereact/dialog';
 
-const DailyChallenge = () => {
-  const [visible, setVisible] = useState(false);
+interface DailyChallengeModalProps {
+	visible: boolean;
+	onHide: () => void;
+}
 
-  const openModal = () => {
-    setVisible(true);
-  };
-
-  const closeModal = () => {
-    setVisible(false);
-  };
-
-  return (
-    <div>
-      <Button label="Daily Challenge" icon="pi pi-check" onClick={openModal} />
-      <Dialog header="Daily Challenge" visible={visible} style={{ width: '50vw' }} onHide={closeModal}>
-        <p>Here is your daily challenge!</p>
-      </Dialog>
-    </div>
-  );
+const DailyChallengeModal: FC<DailyChallengeModalProps> = ({visible, onHide}) => {
+	return (
+		<Dialog header="Daily Challenge" visible={visible} style={{width: '50vw'}} onHide={onHide}>
+			<p>Here is your daily challenge!</p>
+		</Dialog>
+	);
 };
 
-export default DailyChallenge;
+export default DailyChallengeModal;
