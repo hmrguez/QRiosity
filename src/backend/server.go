@@ -18,8 +18,12 @@ func main() {
 	}
 
 	var userRepo UserRepository = NewInMemoryUserRepository()
+	var problemRepo ProblemRepository = NewInMemoryProblemRepository()
 
-	srv := handler.NewDefaultServer(NewExecutableSchema(Config{Resolvers: &Resolver{userRepo: userRepo}}))
+	srv := handler.NewDefaultServer(NewExecutableSchema(Config{Resolvers: &Resolver{
+		userRepo:    userRepo,
+		problemRepo: problemRepo,
+	}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

@@ -6,7 +6,8 @@ import (
 )
 
 type Resolver struct {
-	userRepo UserRepository
+	userRepo    UserRepository
+	problemRepo ProblemRepository
 }
 
 func (r *Resolver) Mutation() MutationResolver {
@@ -19,6 +20,16 @@ func (r *Resolver) Query() QueryResolver {
 
 type mutationResolver struct{ *Resolver }
 
+func (r *mutationResolver) UpsertProblem(ctx context.Context, input ProblemInput) (*Problem, error) {
+	problem := Problem{
+		Question:   input.Question,
+		Categories: input.Categories,
+		Type:       input.Type,
+	}
+	upsertedProblem := r.problemRepo.UpsertProblem(problem)
+	return &upsertedProblem, nil
+}
+
 func (r *mutationResolver) UpsertUser(ctx context.Context, input UserInput) (*User, error) {
 	user := User{
 		Name:  input.Name,
@@ -29,6 +40,11 @@ func (r *mutationResolver) UpsertUser(ctx context.Context, input UserInput) (*Us
 }
 
 type queryResolver struct{ *Resolver }
+
+func (r *queryResolver) GetProblems(ctx context.Context) ([]*Problem, error) {
+	problems := r.problemRepo.GetProblems()
+	return problems, nil
+}
 
 func (r *queryResolver) GetUsers(ctx context.Context) ([]*User, error) {
 	users := r.userRepo.GetUsers()

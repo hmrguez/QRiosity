@@ -9,10 +9,25 @@ input UserInput {
     email: String!
 }
 
+type Problem {
+    id: ID!
+    question: String!
+    categories: [String!]!
+    type: String!
+}
+
+input ProblemInput {
+    question: String!
+    categories: [String!]!
+    type: String!
+}
+
 type Query {
     getUsers: [User!]!
+    getProblems: [Problem!]!
 }
 
 type Mutation {
     upsertUser(input: UserInput!): User!
+    upsertProblem(input: ProblemInput!): Problem!
 }

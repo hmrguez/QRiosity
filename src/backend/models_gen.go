@@ -5,6 +5,19 @@ package main
 type Mutation struct {
 }
 
+type Problem struct {
+	ID         string   `json:"id"`
+	Question   string   `json:"question"`
+	Categories []string `json:"categories"`
+	Type       string   `json:"type"`
+}
+
+type ProblemInput struct {
+	Question   string   `json:"question"`
+	Categories []string `json:"categories"`
+	Type       string   `json:"type"`
+}
+
 type Query struct {
 }
 
