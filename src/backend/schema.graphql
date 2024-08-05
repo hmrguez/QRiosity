@@ -22,12 +22,22 @@ input ProblemInput {
     type: String!
 }
 
+type ChallengeResponse {
+    userId: ID!
+    question: String!
+    answer: String!
+    rating: String!
+    insight: String!
+}
+
 type Query {
     getUsers: [User!]!
     getProblems: [Problem!]!
+    dailyChallenge(category: String!): Problem
 }
 
 type Mutation {
     upsertUser(input: UserInput!): User!
     upsertProblem(input: ProblemInput!): Problem!
+    dailyChallenge(userId: ID!, question: String!, answer: String!): ChallengeResponse!
 }

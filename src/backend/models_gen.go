@@ -2,6 +2,14 @@
 
 package main
 
+type ChallengeResponse struct {
+	UserID   string `json:"userId"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+	Rating   string `json:"rating"`
+	Insight  string `json:"insight"`
+}
+
 type Mutation struct {
 }
 

@@ -20,6 +20,14 @@ func (r *Resolver) Query() QueryResolver {
 
 type mutationResolver struct{ *Resolver }
 
+func (r *mutationResolver) DailyChallenge(ctx context.Context, userID string, question string, answer string) (*ChallengeResponse, error) {
+	response, err := r.problemRepo.SubmitChallengeResponse(userID, question, answer)
+	if err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
 func (r *mutationResolver) UpsertProblem(ctx context.Context, input ProblemInput) (*Problem, error) {
 	problem := Problem{
 		Question:   input.Question,
@@ -40,6 +48,15 @@ func (r *mutationResolver) UpsertUser(ctx context.Context, input UserInput) (*Us
 }
 
 type queryResolver struct{ *Resolver }
+
+func (r *queryResolver) DailyChallenge(ctx context.Context, category string) (*Problem, error) {
+	problem, err := r.problemRepo.GetDailyChallenge(category)
+	if err != nil {
+		return nil, err
+	}
+	return problem, nil
+
+}
 
 func (r *queryResolver) GetProblems(ctx context.Context) ([]*Problem, error) {
 	problems := r.problemRepo.GetProblems()
