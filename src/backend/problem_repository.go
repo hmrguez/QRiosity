@@ -12,6 +12,7 @@ type ProblemRepository interface {
 
 // InMemoryProblemRepository implementation
 type InMemoryProblemRepository struct {
+	LLMService
 	problems []Problem
 }
 
@@ -29,7 +30,8 @@ func NewInMemoryProblemRepository() *InMemoryProblemRepository {
 	}
 
 	return &InMemoryProblemRepository{
-		problems: problems,
+		problems:   problems,
+		LLMService: NewLDefaultMStudioService(),
 	}
 
 }
@@ -60,12 +62,7 @@ func (r *InMemoryProblemRepository) GetDailyChallenge(category string) (*Problem
 }
 
 func (r *InMemoryProblemRepository) SubmitChallengeResponse(userId, question, answer string) (ChallengeResponse, error) {
-	return ChallengeResponse{
-		Question: question,
-		Answer:   answer,
-		Rating:   "Good answer",
-		Insight:  "Nothing to improve",
-	}, nil
+	return r.LLMService.RateQuestion(question, answer)
 }
 
 func generatePID(count int) string {
