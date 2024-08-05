@@ -1,33 +1,27 @@
-// src/components/Navbar.tsx
-import { useState } from 'react';
-import { Menubar } from 'primereact/menubar';
-import DailyChallengeModal from './DailyChallenge';
+// src/frontend/src/components/Navbar.tsx
+import React, {useState} from 'react';
+import {Menubar} from 'primereact/menubar';
+import {Badge} from 'primereact/badge';
+import DailyChallengeModal from './DailyChallengeModal.tsx';
 
-const Navbar = () => {
-  const [visible, setVisible] = useState<boolean>(false);
 
-  const openModal = () => {
-    setVisible(true);
-  };
+const Navbar: React.FC = () => {
+	const [showModal, setShowModal] = useState(false);
 
-  const closeModal = () => {
-    setVisible(false);
-  };
+	const items = [
+		{
+			label: 'Daily',
+			icon: 'pi pi-calendar',
+			command: () => setShowModal(true)
+		}
+	];
 
-  const items = [
-    {
-      label: 'Daily Challenge',
-      icon: 'pi pi-fw pi-check',
-      command: openModal
-    }
-  ];
-
-  return (
-    <div>
-      <Menubar model={items} />
-      <DailyChallengeModal visible={visible} onHide={closeModal} />
-    </div>
-  );
+	return (
+		<>
+			<Menubar model={items} end={<Badge value=" " severity="danger"/>}/>
+			<DailyChallengeModal visible={showModal} onHide={() => setShowModal(false)}/>
+		</>
+	);
 };
 
 export default Navbar;

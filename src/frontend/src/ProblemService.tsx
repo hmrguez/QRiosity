@@ -23,21 +23,6 @@ class ProblemService {
     const response = await this.client.query({ query });
     return response.data.dailyChallenge;
   }
-
-  // async rateDailyChallenge(challengeId: string, rating: number): Promise<any> {
-  //   const mutation = gql`
-  //     mutation($challengeId: ID!, $rating: Int!) {
-  //       dailyChallenge(userId: $challengeId, rating: $rating) {
-  //         success
-  //         message
-  //       }
-  //     }
-  //   `;
-  //
-  //   const variables = { challengeId, rating };
-  //   const response = await this.client.mutate({ mutation, variables });
-  //   return response.data.rateDailyChallenge;
-  // }
 }
 
 export default ProblemService;
