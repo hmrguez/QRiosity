@@ -1,7 +1,6 @@
 package main
 
 import (
-	"backend/graph"
 	"log"
 	"net/http"
 	"os"
@@ -18,7 +17,9 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	var userRepo UserRepository = NewInMemoryUserRepository()
+
+	srv := handler.NewDefaultServer(NewExecutableSchema(Config{Resolvers: &Resolver{userRepo: userRepo}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
