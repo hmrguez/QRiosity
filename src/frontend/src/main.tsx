@@ -8,11 +8,26 @@ import 'primeicons/primeicons.css'; // icons
 import 'primeflex/primeflex.css';
 import {ApolloProvider} from '@apollo/client';
 import client from "./apolloClient.ts";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import Settings from "./Settings.tsx";
+
+const router = createBrowserRouter([
+	{
+		path: "/",
+		element: <App/>,
+		children: [
+			{
+				path: "setting",
+				element: <Settings/>
+			}
+		]
+	},
+]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<ApolloProvider client={client}>
-			<App/>
+			<RouterProvider router={router}/>
 		</ApolloProvider>
 	</React.StrictMode>,
 );

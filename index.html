@@ -7,36 +7,32 @@
     <title>Navbar Example</title>
 </head>
 <body>
-<nav class="navbar">
-    <div class="profile-info">
-        <img src="profile-pic.jpg" alt="Profile Picture" class="profile-pic">
-        <span class="username">Jennifer Clomin</span>
-        <span class="email">jennifer.clom@email.com</span>
+<nav class="sidebar">
+    <div class="user-info">
+        <img src="user-avatar.jpg" alt="User Avatar" class="avatar">
+        <span class="user-name">Wildan</span>
+        <span class="user-role">Content Director</span>
     </div>
-    <ul class="nav-links">
-        <li><a href="#" class="nav-link">Add Account</a></li>
-        <li><a href="#" class="nav-link">Edit Profile</a></li>
-        <li><a href="#" class="nav-link">Change Password</a></li>
-        <li><a href="#" class="nav-link">Share Profile Info</a></li>
-        <li>
-            <div class="nav-link toggle">
-                <span>Notifications</span>
-                <label class="switch">
-                    <input type="checkbox" checked>
-                    <span class="slider round"></span>
-                </label>
-            </div>
-        </li>
-        <li>
-            <div class="nav-link toggle">
-                <span>Dark Mode</span>
-                <label class="switch">
-                    <input type="checkbox">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-        </li>
-        <li><a href="#" class="nav-link logout">Logout Account</a></li>
+    <div class="search-bar">
+        <input type="text" placeholder="Search">
+    </div>
+    <ul class="nav-menu">
+        <li class="active"><a href="#"><i class="icon-dashboard"></i> Dashboard</a></li>
+        <li><a href="#"><i class="icon-analytics"></i> Analytics</a></li>
+    </ul>
+    <h3 class="menu-header">ACCOUNT</h3>
+    <ul class="nav-menu">
+        <li><a href="#"><i class="icon-account"></i> Account</a></li>
+        <li><a href="#"><i class="icon-publishing"></i> My Publishing</a></li>
+        <li><a href="#"><i class="icon-products"></i> Products</a></li>
+        <li><a href="#"><i class="icon-orders"></i> Orders</a></li>
+        <li><a href="#"><i class="icon-more"></i> More</a></li>
+    </ul>
+    <h3 class="menu-header">OTHER MENU</h3>
+    <ul class="nav-menu">
+        <li><a href="#"><i class="icon-setting"></i> Setting</a></li>
+        <li><a href="#"><i class="icon-help"></i> Help</a></li>
+        <li><a href="#"><i class="icon-subscriptions"></i> Subscriptions</a></li>
     </ul>
 </nav>
 </body>
