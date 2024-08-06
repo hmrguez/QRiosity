@@ -5,6 +5,7 @@ type User {
 }
 
 input UserInput {
+    _id: String!
     name: String!
     email: String!
 }
@@ -33,6 +34,7 @@ type ChallengeResponse {
 type Query {
     getUsers: [User!]!
     getProblems: [Problem!]!
+    getUser(id: ID!): User
     dailyChallenge(category: String!): Problem
 }
 

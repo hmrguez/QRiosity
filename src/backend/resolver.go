@@ -40,6 +40,7 @@ func (r *mutationResolver) UpsertProblem(ctx context.Context, input ProblemInput
 
 func (r *mutationResolver) UpsertUser(ctx context.Context, input UserInput) (*User, error) {
 	user := User{
+		ID:    input.ID,
 		Name:  input.Name,
 		Email: input.Email,
 	}
@@ -48,6 +49,10 @@ func (r *mutationResolver) UpsertUser(ctx context.Context, input UserInput) (*Us
 }
 
 type queryResolver struct{ *Resolver }
+
+func (r *queryResolver) GetUser(ctx context.Context, id string) (*User, error) {
+	return r.userRepo.GetUserByID(id)
+}
 
 func (r *queryResolver) DailyChallenge(ctx context.Context, category string) (*Problem, error) {
 	problem, err := r.problemRepo.GetDailyChallenge(category)

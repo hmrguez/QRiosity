@@ -11,8 +11,14 @@ import (
 const defaultPort = "8080"
 
 func main() {
+
+	userRepo, err := NewMongoDBUserRepository("mongodb://localhost:27017", "saas", "users")
+	if err != nil {
+		panic("Couldn't connnect to mongodb: " + err.Error())
+	}
+
 	srv := handler.NewDefaultServer(NewExecutableSchema(Config{Resolvers: &Resolver{
-		userRepo:    NewInMemoryUserRepository(),
+		userRepo:    userRepo,
 		problemRepo: NewInMemoryProblemRepository(),
 	}}))
 
