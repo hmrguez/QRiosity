@@ -58,7 +58,8 @@ func (r *InMemoryProblemRepository) GetProblems() []*Problem {
 }
 
 func (r *InMemoryProblemRepository) GetDailyChallenge(category string) (*Problem, error) {
-	return &r.problems[0], nil
+	problem, err := r.GetQuestion(category)
+	return &problem, err
 }
 
 func (r *InMemoryProblemRepository) SubmitChallengeResponse(userId, question, answer string) (ChallengeResponse, error) {

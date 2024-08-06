@@ -57,6 +57,30 @@ func (s *LMStudioService) RateQuestion(question, answer string) (ChallengeRespon
 	}, nil
 }
 
+func (s *LMStudioService) GetQuestion(category string) (Problem, error) {
+	// Define the request payload
+	payload := map[string]interface{}{
+		"messages": []map[string]string{
+			{"role": "user", "content": fmt.Sprintf("Give me a question for the following category: %s", category)},
+		},
+		"temperature": 0.7,
+		"max_tokens":  -1,
+		"stream":      true,
+	}
+
+	question, err := AskLMStudio(payload, s.endpoint)
+	if err != nil {
+		return Problem{}, err
+	}
+
+	return Problem{
+		ID:         "",
+		Question:   question,
+		Categories: append(make([]string, 0), category),
+		Type:       "LLM Asking",
+	}, nil
+}
+
 func AskLMStudio(payload map[string]interface{}, endpoint string) (string, error) {
 	// Convert payload to JSON
 	jsonData, err := json.Marshal(payload)
