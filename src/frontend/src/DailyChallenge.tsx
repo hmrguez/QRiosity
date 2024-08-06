@@ -4,6 +4,13 @@ import {gql, useMutation, useQuery} from '@apollo/client';
 import {Button} from 'primereact/button';
 import {InputText} from 'primereact/inputtext';
 
+interface DailyChallengeResult {
+	userId: string;
+	question: string;
+	answer: string;
+	rating: number;
+	insight: string;
+}
 
 const GET_DAILY_CHALLENGE = gql`
     query {
@@ -36,7 +43,7 @@ interface DailyChallengeProps {
 const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer}) => {
 	const {loading, error, data} = useQuery(GET_DAILY_CHALLENGE);
 	const [submitDailyChallenge] = useMutation(SUBMIT_DAILY_CHALLENGE);
-	const [result, setResult] = useState(null);
+	const [result, setResult] = useState<DailyChallengeResult | null>(null);
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error.message}</div>;

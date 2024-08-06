@@ -12,6 +12,7 @@ import (
 )
 
 type LLMService interface {
+	GetQuestion(category string) (Problem, error)
 	RateQuestion(question, answer string) (ChallengeResponse, error)
 }
 
@@ -36,62 +37,10 @@ func (s *LMStudioService) RateQuestion(question, answer string) (ChallengeRespon
 		"stream":      true,
 	}
 
-	// Convert payload to JSON
-	jsonData, err := json.Marshal(payload)
+	insight, err := AskLMStudio(payload, s.endpoint)
 	if err != nil {
 		return ChallengeResponse{}, err
 	}
-
-	// Make the HTTP request
-	resp, err := http.Post(s.endpoint, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return ChallengeResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	// Read and print the response body for debugging
-	//body, err := io.ReadAll(resp.Body)
-	//if err != nil {
-	//	return ChallengeResponse{}, err
-	//}
-	//fmt.Println("Response Body:", string(body))
-
-	// Read the streaming response
-	var insightBuilder strings.Builder
-	reader := bufio.NewReader(resp.Body)
-	for {
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			if err == io.EOF || err.Error() == "unexpected end of JSON input" {
-				break
-			}
-
-			//return ChallengeResponse{}, err
-		}
-
-		line = strings.TrimPrefix(line, "data: ")
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-
-		// Parse the JSON line
-		var result map[string]interface{}
-		if err := json.Unmarshal([]byte(line), &result); err != nil {
-			return ChallengeResponse{}, err
-		}
-
-		// Extract the content
-		if choices, ok := result["choices"].([]interface{}); ok && len(choices) > 0 {
-			if delta, ok := choices[0].(map[string]interface{})["delta"].(map[string]interface{}); ok {
-				if content, ok := delta["content"].(string); ok {
-					insightBuilder.WriteString(content)
-				}
-			}
-		}
-	}
-
-	insight := insightBuilder.String()
 
 	// Extract the first number found in the insight as the rating
 	re := regexp.MustCompile(`\d+`)
@@ -106,4 +55,54 @@ func (s *LMStudioService) RateQuestion(question, answer string) (ChallengeRespon
 		Rating:   rating,
 		Insight:  insight,
 	}, nil
+}
+
+func AskLMStudio(payload map[string]interface{}, endpoint string) (string, error) {
+	// Convert payload to JSON
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return "", err
+	}
+
+	// Make the HTTP request
+	resp, err := http.Post(endpoint, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	// Read the streaming response
+	var builder strings.Builder
+	reader := bufio.NewReader(resp.Body)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			if err == io.EOF || err.Error() == "unexpected end of JSON input" {
+				break
+			}
+		}
+
+		line = strings.TrimPrefix(line, "data: ")
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		// Parse the JSON line
+		var result map[string]interface{}
+		if err := json.Unmarshal([]byte(line), &result); err != nil {
+			return "", err
+		}
+
+		// Extract the content
+		if choices, ok := result["choices"].([]interface{}); ok && len(choices) > 0 {
+			if delta, ok := choices[0].(map[string]interface{})["delta"].(map[string]interface{}); ok {
+				if content, ok := delta["content"].(string); ok {
+					builder.WriteString(content)
+				}
+			}
+		}
+	}
+
+	return builder.String(), err
 }
