@@ -2,6 +2,11 @@
 
 package main
 
+type AuthPayload struct {
+	Token string `json:"token"`
+	User  *User  `json:"user"`
+}
+
 type ChallengeResponse struct {
 	UserID   string `json:"userId"`
 	Question string `json:"question"`
@@ -30,13 +35,15 @@ type Query struct {
 }
 
 type User struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type UserInput struct {
-	ID    string `json:"_id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID       string `json:"_id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

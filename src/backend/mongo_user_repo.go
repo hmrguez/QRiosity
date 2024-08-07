@@ -101,3 +101,20 @@ func (r *MongoDBUserRepository) GetUserByID(id string) (*User, error) {
 
 	return &user, nil
 }
+
+func (r *MongoDBUserRepository) GetUserByName(name string) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user User
+
+	fmt.Println("Name:", name)
+
+	err := r.collection.FindOne(ctx, bson.M{"name": name}).Decode(&user)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

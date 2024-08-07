@@ -2,12 +2,20 @@ type User {
     id: ID!
     name: String!
     email: String!
+    password: String!
 }
 
 input UserInput {
     _id: String!
     name: String!
     email: String!
+    password: String!
+}
+
+
+type AuthPayload {
+    token: String!
+    user: User!
 }
 
 type Problem {
@@ -36,6 +44,7 @@ type Query {
     getProblems: [Problem!]!
     getUser(id: ID!): User
     dailyChallenge(category: String!): Problem
+    login(username: String!, password: String!): AuthPayload!
 }
 
 type Mutation {

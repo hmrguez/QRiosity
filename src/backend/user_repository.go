@@ -6,6 +6,7 @@ type UserRepository interface {
 	UpsertUser(user User) User
 	GetUsers() []*User
 	GetUserByID(id string) (*User, error)
+	GetUserByName(name string) (*User, error)
 }
 
 type InMemoryUserRepository struct {
