@@ -11,6 +11,7 @@ import client from "./apolloClient.ts";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Settings from "./Settings.tsx";
 import Login from "./Login.tsx";
+import Register from "./Register.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
 				path: "login",
 				element: <Login/>
 			},
+			{
+				path: "register",
+				element: <Register/>
+			}
 		]
 	},
 ]);
