@@ -30,7 +30,7 @@ func NewMongoDBUserRepository(uri, dbName, collectionName string) (*MongoDBUserR
 	}, nil
 }
 
-func (r *MongoDBUserRepository) UpsertUser(user User) User {
+func (r *MongoDBUserRepository) UpsertUser(user User) (User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -38,7 +38,7 @@ func (r *MongoDBUserRepository) UpsertUser(user User) User {
 		// Insert new user
 		result, err := r.collection.InsertOne(ctx, user)
 		if err != nil {
-			fmt.Println("Error inserting user:", err)
+			return User{}, err
 		} else {
 			user.ID = result.InsertedID.(primitive.ObjectID).Hex()
 		}
@@ -52,11 +52,11 @@ func (r *MongoDBUserRepository) UpsertUser(user User) User {
 
 		_, err := r.collection.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
-			fmt.Println("Error upserting user:", err)
+			return User{}, err
 		}
 	}
 
-	return user
+	return user, nil
 }
 
 func (r *MongoDBUserRepository) GetUsers() []*User {

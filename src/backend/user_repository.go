@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 type UserRepository interface {
-	UpsertUser(user User) User
+	UpsertUser(user User) (User, error)
 	GetUsers() []*User
 	GetUserByID(id string) (*User, error)
 	GetUserByName(name string) (*User, error)

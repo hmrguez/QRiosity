@@ -24,6 +24,43 @@ func (r *Resolver) Query() QueryResolver {
 
 type mutationResolver struct{ *Resolver }
 
+func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string) (*AuthPayload, error) {
+
+	// First search for the user
+	_, err := r.userRepo.GetUserByName(username)
+	if err == nil {
+		return nil, errors.New("User already exists")
+	}
+
+	// If the user does not exist, create a new user
+	user := User{
+		Name:     username,
+		Password: password,
+		Email:    email,
+	}
+
+	user, err = r.userRepo.UpsertUser(user)
+	if err != nil {
+		return nil, err
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"userId": user.ID,
+		"exp":    time.Now().Add(time.Hour * 72).Unix(),
+	})
+
+	tokenString, err := token.SignedString(jwtSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	return &AuthPayload{
+		Token: tokenString,
+		User:  &user,
+	}, nil
+
+}
+
 func (r *mutationResolver) DailyChallenge(ctx context.Context, userID string, question string, answer string) (*ChallengeResponse, error) {
 	response, err := r.problemRepo.SubmitChallengeResponse(userID, question, answer)
 	if err != nil {
@@ -49,7 +86,10 @@ func (r *mutationResolver) UpsertUser(ctx context.Context, input UserInput) (*Us
 		Email:    input.Email,
 		Password: input.Password,
 	}
-	upsertedUser := r.userRepo.UpsertUser(user)
+	upsertedUser, err := r.userRepo.UpsertUser(user)
+	if err != nil {
+		return nil, err
+	}
 	return &upsertedUser, nil
 }
 
