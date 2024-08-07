@@ -57,6 +57,16 @@ const Navbar = () => {
 						<Link to="/setting"><i className="icon-setting"></i> Setting</Link>
 					</li>
 				</ul>
+				<ul className="nav-menu">
+					<li className={activeItem === 'Login' ? 'active' : ''} onClick={() => handleItemClick('Login')}>
+						<Link to="/login"><i className="icon-setting"></i> Login</Link>
+					</li>
+				</ul>
+				<ul className="nav-menu">
+					<li className={activeItem === 'Register' ? 'active' : ''} onClick={() => handleItemClick('Register')}>
+						<Link to="/register"><i className="icon-setting"></i> Register</Link>
+					</li>
+				</ul>
 			</nav>
 			<DailyChallengeModal visible={showModal} onHide={closeModal}/>
 		</div>
