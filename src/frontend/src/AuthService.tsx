@@ -13,8 +13,8 @@ const LOGIN_QUERY = gql`
 `;
 
 const REGISTER_MUTATION = gql`
-    mutation Register($username: String!, $password: String!, $email: String!) {
-        register(username: $username, password: $password, email: $email) {
+    mutation Register($username: String!, $password: String!, $email: String!, $topics: [String!]!) {
+        register(username: $username, password: $password, email: $email, topics: $topics) {
             token
             user {
                 id
@@ -40,10 +40,10 @@ class AuthService {
         return data.login;
     }
 
-    async register(username: string, password: string, email: string) {
+    async register(username: string, password: string, email: string, topics: string[]) {
         const {data} = await this.client.mutate({
             mutation: REGISTER_MUTATION,
-            variables: {username, password, email},
+            variables: {username, password, email, topics},
         });
         localStorage.setItem('token', data.register.token);
         return data.register;

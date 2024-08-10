@@ -62,7 +62,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		AddTopics      func(childComplexity int, names []string) int
 		DailyChallenge func(childComplexity int, userID string, question string, answer string) int
-		Register       func(childComplexity int, username string, password string, email string) int
+		Register       func(childComplexity int, username string, password string, email string, topics []string) int
 		UpsertProblem  func(childComplexity int, input ProblemInput) int
 		UpsertUser     func(childComplexity int, input UserInput) int
 	}
@@ -92,6 +92,7 @@ type ComplexityRoot struct {
 		ID       func(childComplexity int) int
 		Name     func(childComplexity int) int
 		Password func(childComplexity int) int
+		Topics   func(childComplexity int) int
 	}
 }
 
@@ -99,7 +100,7 @@ type MutationResolver interface {
 	UpsertUser(ctx context.Context, input UserInput) (*User, error)
 	UpsertProblem(ctx context.Context, input ProblemInput) (*Problem, error)
 	DailyChallenge(ctx context.Context, userID string, question string, answer string) (*ChallengeResponse, error)
-	Register(ctx context.Context, username string, password string, email string) (*AuthPayload, error)
+	Register(ctx context.Context, username string, password string, email string, topics []string) (*AuthPayload, error)
 	AddTopics(ctx context.Context, names []string) ([]*Topic, error)
 }
 type QueryResolver interface {
@@ -213,7 +214,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.Register(childComplexity, args["username"].(string), args["password"].(string), args["email"].(string)), true
+		return e.complexity.Mutation.Register(childComplexity, args["username"].(string), args["password"].(string), args["email"].(string), args["topics"].([]string)), true
 
 	case "Mutation.upsertProblem":
 		if e.complexity.Mutation.UpsertProblem == nil {
@@ -358,6 +359,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Password(childComplexity), true
+
+	case "User.topics":
+		if e.complexity.User.Topics == nil {
+			break
+		}
+
+		return e.complexity.User.Topics(childComplexity), true
 
 	}
 	return 0, false
@@ -563,6 +571,15 @@ func (ec *executionContext) field_Mutation_register_args(ctx context.Context, ra
 		}
 	}
 	args["email"] = arg2
+	var arg3 []string
+	if tmp, ok := rawArgs["topics"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("topics"))
+		arg3, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["topics"] = arg3
 	return args, nil
 }
 
@@ -794,6 +811,8 @@ func (ec *executionContext) fieldContext_AuthPayload_user(_ context.Context, fie
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
+			case "topics":
+				return ec.fieldContext_User_topics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -1068,6 +1087,8 @@ func (ec *executionContext) fieldContext_Mutation_upsertUser(ctx context.Context
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
+			case "topics":
+				return ec.fieldContext_User_topics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -1232,7 +1253,7 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Register(rctx, fc.Args["username"].(string), fc.Args["password"].(string), fc.Args["email"].(string))
+		return ec.resolvers.Mutation().Register(rctx, fc.Args["username"].(string), fc.Args["password"].(string), fc.Args["email"].(string), fc.Args["topics"].([]string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1561,6 +1582,8 @@ func (ec *executionContext) fieldContext_Query_getUsers(_ context.Context, field
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
+			case "topics":
+				return ec.fieldContext_User_topics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -1666,6 +1689,8 @@ func (ec *executionContext) fieldContext_Query_getUser(ctx context.Context, fiel
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
+			case "topics":
+				return ec.fieldContext_User_topics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -2192,6 +2217,47 @@ func (ec *executionContext) _User_password(ctx context.Context, field graphql.Co
 }
 
 func (ec *executionContext) fieldContext_User_password(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_topics(ctx context.Context, field graphql.CollectedField, obj *User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_topics(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Topics, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_topics(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
@@ -4554,6 +4620,8 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "topics":
+			out.Values[i] = ec._User_topics(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5472,6 +5540,44 @@ func (ec *executionContext) marshalOProblem2ᚖbackendᚐProblem(ctx context.Con
 		return graphql.Null
 	}
 	return ec._Problem(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

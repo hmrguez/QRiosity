@@ -36,7 +36,7 @@ func (r *mutationResolver) AddTopics(ctx context.Context, names []string) ([]*To
 	return topics, nil
 }
 
-func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string) (*AuthPayload, error) {
+func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string, topics []string) (*AuthPayload, error) {
 
 	// First search for the user
 	_, err := r.userRepo.GetUserByName(username)
@@ -49,6 +49,7 @@ func (r *mutationResolver) Register(ctx context.Context, username string, passwo
 		Name:     username,
 		Password: password,
 		Email:    email,
+		Topics:   topics,
 	}
 
 	user, err = r.userRepo.UpsertUser(user)
