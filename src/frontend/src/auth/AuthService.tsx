@@ -1,5 +1,4 @@
 import {ApolloClient, gql} from '@apollo/client';
-import {useAuth} from "./AuthContext.tsx";
 
 const LOGIN_QUERY = gql`
     query Login($username: String!, $password: String!) {

@@ -1,8 +1,8 @@
 import {SetStateAction, useState} from 'react';
 import {Link} from 'react-router-dom';
 import './Navbar.css';
-import DailyChallengeModal from "./DailyChallengeModal.tsx";
-import {useAuth} from "./AuthContext.tsx";
+import DailyChallengeModal from "../learning/DailyChallengeModal.tsx";
+import {useAuth} from "../auth/AuthContext.tsx";
 
 const Navbar = () => {
 	const [activeItem, setActiveItem] = useState('Dashboard');

@@ -1,6 +1,6 @@
 import {createContext, ReactNode, useContext, useState} from 'react';
 import AuthService from './AuthService';
-import client from './apolloClient';
+import client from '../apolloClient';
 
 interface AuthContextType {
 	isAuthenticated: boolean;

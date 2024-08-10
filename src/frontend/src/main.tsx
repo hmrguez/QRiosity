@@ -9,11 +9,11 @@ import 'primeflex/primeflex.css';
 import {ApolloProvider} from '@apollo/client';
 import client from "./apolloClient.ts";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import Settings from "./Settings.tsx";
-import Login from "./Login.tsx";
-import Register from "./Register.tsx";
-import {AuthProvider} from './AuthContext';
-import PrivateRoute from './PrivateRoute';
+import Settings from "./settings/Settings.tsx";
+import Login from "./auth/Login.tsx";
+import Register from "./auth/Register.tsx";
+import {AuthProvider} from './auth/AuthContext';
+import PrivateRoute from './auth/PrivateRoute';
 
 const router = createBrowserRouter([
 	{
