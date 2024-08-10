@@ -2,10 +2,14 @@ import {SetStateAction, useState} from 'react';
 import {Link} from 'react-router-dom';
 import './Navbar.css';
 import DailyChallengeModal from "./DailyChallengeModal.tsx";
+import {useAuth} from "./AuthContext.tsx";
 
 const Navbar = () => {
 	const [activeItem, setActiveItem] = useState('Dashboard');
 	const [showModal, setShowModal] = useState(false);
+
+	const { isAuthenticated, logout } = useAuth();
+
 
 	const handleItemClick = (item: SetStateAction<string>) => {
 		if (item == 'Daily Challenge') {
@@ -58,13 +62,8 @@ const Navbar = () => {
 					</li>
 				</ul>
 				<ul className="nav-menu">
-					<li className={activeItem === 'Login' ? 'active' : ''} onClick={() => handleItemClick('Login')}>
-						<Link to="/login"><i className="icon-setting"></i> Login</Link>
-					</li>
-				</ul>
-				<ul className="nav-menu">
-					<li className={activeItem === 'Register' ? 'active' : ''} onClick={() => handleItemClick('Register')}>
-						<Link to="/register"><i className="icon-setting"></i> Register</Link>
+					<li className={activeItem === 'Logout' ? 'active' : ''} onClick={() => handleItemClick('Login')}>
+						<a onClick={logout}><i className="icon-setting"></i>Logout</a>
 					</li>
 				</ul>
 			</nav>

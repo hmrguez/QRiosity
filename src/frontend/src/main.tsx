@@ -1,7 +1,7 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
 import 'primereact/resources/themes/saga-blue/theme.css'; // theme
 import 'primereact/resources/primereact.min.css'; // core css
 import 'primeicons/primeicons.css'; // icons
@@ -12,17 +12,22 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Settings from "./Settings.tsx";
 import Login from "./Login.tsx";
 import Register from "./Register.tsx";
+import {AuthProvider} from './AuthContext';
+import PrivateRoute from './PrivateRoute';
 
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <App/>,
+		element: (
+			<PrivateRoute>
+				<App/>
+			</PrivateRoute>
+		),
 		children: [
 			{
 				path: "setting",
 				element: <Settings/>
 			},
-
 		]
 	},
 	{
@@ -38,7 +43,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<React.StrictMode>
 		<ApolloProvider client={client}>
-			<RouterProvider router={router}/>
+			<AuthProvider>
+				<RouterProvider router={router}/>
+			</AuthProvider>
 		</ApolloProvider>
 	</React.StrictMode>,
 );
