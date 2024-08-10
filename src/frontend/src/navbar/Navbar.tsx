@@ -39,11 +39,10 @@ const Navbar = () => {
 	}, []);
 
 	return (
-		<div>
-
-			<nav className="sidebar mr-3">
-				<div className="user-info">
-					<span className="user-name">{username}</span>
+		<div className="sidebar">
+			<nav className="mr-3">
+				<div className="user-info flex flex-column mt-2">
+					<span className="user-name text-center">{username}</span>
 				</div>
 				<ul className="nav-menu">
 					<li className={activeItem === 'My Learning' ? 'active' : ''}

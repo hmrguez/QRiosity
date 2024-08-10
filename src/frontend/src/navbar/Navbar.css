@@ -1,67 +1,91 @@
 .sidebar {
     width: 250px;
-    height: 100vh;
-    background-color: #f8f9fa;
+    height: 100vh; /* Full viewport height */
+    background-color: #ffffff; /* White background */
     padding: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    border-radius: 20px; /* Rounded corners for the sidebar */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.13); /* Soft shadow for a floating effect */
+    font-family: 'Inter', sans-serif; /* Clean and modern font */
 }
 
-.user-info {
+.sidebar .user-info {
+    margin-bottom: 30px;
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
-    flex-direction: column;
 }
 
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-}
-
-.user-name {
-    font-weight: bold;
-}
-
-.user-role {
-    font-size: 0.8em;
-    color: #666;
-}
-
-.search-bar input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.sidebar .user-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
 }
 
 .nav-menu {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .nav-menu li {
     margin-bottom: 10px;
+    border-radius: 12px; /* Rounded corners for individual items */
+    overflow: hidden; /* Ensure content stays within rounded corners */
+    transition: background-color 0.3s ease;
 }
 
-.nav-menu a {
-    text-decoration: none;
-    color: #333;
+.nav-menu li a {
     display: flex;
     align-items: center;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #5f6368; /* Subtle text color */
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 12px; /* Match the list item rounding */
+    transition: background-color 0.3s ease;
 }
 
-.nav-menu .active a {
-    color: #5d5fef;
-    font-weight: bold;
+.nav-menu li a i {
+    margin-right: 10px; /* Space between icons and text */
+}
+
+.nav-menu li a:hover {
+    background-color: #f1f3f4; /* Light grey on hover */
+}
+
+.nav-menu li.active a {
+    background-color: #e8eaed; /* Light grey for active items */
+    color: #202124; /* Darker text color for active items */
+    font-weight: 600;
 }
 
 .menu-header {
-    font-size: 0.8em;
-    color: #666;
-    margin-top: 20px;
+    font-size: 0.85rem;
+    margin-top: 32px;
     margin-bottom: 10px;
+    color: #5f6368; /* Subtle grey for headers */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
 }
 
-/* You would need to add specific styles for the icons */
+.sidebar .toggle-theme {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar .toggle-theme button {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    border-radius: 10px;
+    background-color: #f1f3f4;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar .toggle-theme button:hover {
+    background-color: #e8eaed;
+}

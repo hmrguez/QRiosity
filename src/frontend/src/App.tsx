@@ -4,7 +4,7 @@ import Navbar from "./navbar/Navbar.tsx";
 
 function App() {
 	return (
-		<div className="flex">
+		<div className="flex gap-3">
 			<Navbar/>
 			<Outlet/>
 		</div>
