@@ -9,11 +9,12 @@ import 'primeflex/primeflex.css';
 import {ApolloProvider} from '@apollo/client';
 import client from "./apolloClient.ts";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import Settings from "./settings/Settings.tsx";
 import Login from "./auth/Login.tsx";
 import Register from "./auth/Register.tsx";
 import {AuthProvider} from './auth/AuthContext';
 import PrivateRoute from './auth/PrivateRoute';
+import LearningPaths from "./learning/LearningPaths.tsx";
+import MyLearning from "./learning/MyLearning.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -25,8 +26,12 @@ const router = createBrowserRouter([
 		),
 		children: [
 			{
-				path: "setting",
-				element: <Settings/>
+				path: "my-learning",
+				element: <MyLearning/>
+			},
+			{
+				path: "learning-paths",
+				element: <LearningPaths/>
 			},
 		]
 	},

@@ -1,15 +1,21 @@
-import {SetStateAction, useState} from 'react';
+import {SetStateAction, useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import './Navbar.css';
 import DailyChallengeModal from "../learning/DailyChallengeModal.tsx";
 import {useAuth} from "../auth/AuthContext.tsx";
+import {useApolloClient} from "@apollo/client";
+import AuthService from "../auth/AuthService.tsx";
 
 const Navbar = () => {
 	const [activeItem, setActiveItem] = useState('Dashboard');
 	const [showModal, setShowModal] = useState(false);
+	const [username, setUsername] = useState('');
 
-	const { logout } = useAuth();
+	const client = useApolloClient();
+	const authService = new AuthService(client);
 
+
+	const {logout} = useAuth();
 
 	const handleItemClick = (item: SetStateAction<string>) => {
 		if (item == 'Daily Challenge') {
@@ -22,26 +28,27 @@ const Navbar = () => {
 		setShowModal(false);
 	};
 
+	useEffect(() => {
+		const token = authService.getUsername();
+
+		if (token) {
+			setUsername(token);
+		} else {
+			console.error('No token found');
+		}
+	}, []);
+
 	return (
 		<div>
 
 			<nav className="sidebar mr-3">
 				<div className="user-info">
-					<img src="assets/images.jpeg" alt="User Avatar" className="avatar"/>
-					<span className="user-name">Wildan</span>
-					<span className="user-role">Content Director</span>
-				</div>
-				<div className="search-bar">
-					<input type="text" placeholder="Search"/>
+					<span className="user-name">{username}</span>
 				</div>
 				<ul className="nav-menu">
-					<li className={activeItem === 'Dashboard' ? 'active' : ''}
-						onClick={() => handleItemClick('Dashboard')}>
-						<Link to="/dashboard"><i className="icon-dashboard"></i> Dashboard</Link>
-					</li>
-					<li className={activeItem === 'Analytics' ? 'active' : ''}
-						onClick={() => handleItemClick('Analytics')}>
-						<Link to="/analytics"><i className="icon-analytics"></i> Analytics</Link>
+					<li className={activeItem === 'My Learning' ? 'active' : ''}
+						onClick={() => handleItemClick('My Learning')}>
+						<Link to="/my-learning"><i className="icon-dashboard"></i> My Learning</Link>
 					</li>
 				</ul>
 				<h3 className="menu-header">LEARNING</h3>
@@ -56,11 +63,6 @@ const Navbar = () => {
 					</li>
 				</ul>
 				<h3 className="menu-header">OTHER MENU</h3>
-				<ul className="nav-menu">
-					<li className={activeItem === 'Setting' ? 'active' : ''} onClick={() => handleItemClick('Setting')}>
-						<Link to="/setting"><i className="icon-setting"></i> Setting</Link>
-					</li>
-				</ul>
 				<ul className="nav-menu">
 					<li className={activeItem === 'Logout' ? 'active' : ''} onClick={() => handleItemClick('Login')}>
 						<a onClick={logout}><i className="icon-setting"></i>Logout</a>

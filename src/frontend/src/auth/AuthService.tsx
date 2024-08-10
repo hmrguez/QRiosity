@@ -1,4 +1,5 @@
 import {ApolloClient, gql} from '@apollo/client';
+import {jwtDecode} from "jwt-decode";
 
 const LOGIN_QUERY = gql`
     query Login($username: String!, $password: String!) {
@@ -52,6 +53,17 @@ class AuthService {
 
 	isLoggedIn() {
 		return !!localStorage.getItem('token');
+	}
+
+	getUsername() {
+		const token = localStorage.getItem('token');
+		if (!token) {
+			return null;
+		}
+
+		const decoded: { username: string, userId: string, exp: Date } = jwtDecode(token);
+
+		return decoded.username;
 	}
 
 	logout() {

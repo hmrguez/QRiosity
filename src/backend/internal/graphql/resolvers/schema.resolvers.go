@@ -122,8 +122,9 @@ func (r *queryResolver) Login(ctx context.Context, username string, password str
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId": user.ID,
-		"exp":    time.Now().Add(time.Hour * 72).Unix(),
+		"userId":   user.ID,
+		"username": user.Name,
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
 	})
 
 	tokenString, err := token.SignedString(jwtSecret)
