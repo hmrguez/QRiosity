@@ -8,6 +8,7 @@ import {Password} from 'primereact/password';
 import {Button} from 'primereact/button';
 import {Steps} from 'primereact/steps';
 import {Toast} from 'primereact/toast';
+import {useAuth} from "./AuthContext.tsx";
 
 const GET_ALL_TOPICS = gql`
     query GetAllTopics {
@@ -38,6 +39,8 @@ const Register = () => {
 	const authService = new AuthService(client);
 	const navigate = useNavigate();
 	const toast = useRef<Toast>(null);
+	const { login } = useAuth();
+
 
 	useEffect(() => {
 		const fetchTopics = async () => {
@@ -77,7 +80,10 @@ const Register = () => {
 		}
 
 		await authService.register(username, password, email, topics)
-			.then(() => navigate('/'))
+			.then(() => {
+				login()
+				navigate('/')
+			})
 			.catch((error) => {
 				toast.current?.show({severity: 'error', summary: 'Error', detail: error.message});
 			})

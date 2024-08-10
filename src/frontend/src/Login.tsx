@@ -4,6 +4,7 @@ import {useApolloClient} from '@apollo/client';
 import AuthService from './AuthService';
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
+import {useAuth} from "./AuthContext.tsx";
 
 const Login = () => {
 	const [username, setUsername] = useState('');
@@ -11,10 +12,12 @@ const Login = () => {
 	const client = useApolloClient();
 	const authService = new AuthService(client);
 	const navigate = useNavigate();
+	const { login } = useAuth();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		await authService.login(username, password);
+		login();
 		navigate('/');
 	};
 

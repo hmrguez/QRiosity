@@ -8,7 +8,7 @@ const Navbar = () => {
 	const [activeItem, setActiveItem] = useState('Dashboard');
 	const [showModal, setShowModal] = useState(false);
 
-	const { isAuthenticated, logout } = useAuth();
+	const { logout } = useAuth();
 
 
 	const handleItemClick = (item: SetStateAction<string>) => {
