@@ -12,6 +12,7 @@ import (
 type Resolver struct {
 	userRepo    UserRepository
 	problemRepo ProblemRepository
+	topicRepo   TopicRepository
 }
 
 func (r *Resolver) Mutation() MutationResolver {
@@ -23,6 +24,17 @@ func (r *Resolver) Query() QueryResolver {
 }
 
 type mutationResolver struct{ *Resolver }
+
+func (r *mutationResolver) AddTopics(ctx context.Context, names []string) ([]*Topic, error) {
+	var topics []*Topic
+	for _, name := range names {
+		topics = append(topics, &Topic{Name: name})
+	}
+	if err := r.topicRepo.Insert(ctx, topics); err != nil {
+		return nil, err
+	}
+	return topics, nil
+}
 
 func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string) (*AuthPayload, error) {
 
@@ -94,6 +106,10 @@ func (r *mutationResolver) UpsertUser(ctx context.Context, input UserInput) (*Us
 }
 
 type queryResolver struct{ *Resolver }
+
+func (r *queryResolver) GetAllTopics(ctx context.Context) ([]*Topic, error) {
+	return r.topicRepo.GetAll(ctx)
+}
 
 func (r *queryResolver) Login(ctx context.Context, username string, password string) (*AuthPayload, error) {
 	user, err := r.userRepo.GetUserByName(username)

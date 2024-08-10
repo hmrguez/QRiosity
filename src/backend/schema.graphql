@@ -5,6 +5,11 @@ type User {
     password: String!
 }
 
+type Topic {
+    name: String!
+}
+
+
 input UserInput {
     _id: String!
     name: String!
@@ -45,6 +50,7 @@ type Query {
     getUser(id: ID!): User
     dailyChallenge(category: String!): Problem
     login(username: String!, password: String!): AuthPayload!
+    getAllTopics: [Topic!]!
 }
 
 type Mutation {
@@ -52,4 +58,5 @@ type Mutation {
     upsertProblem(input: ProblemInput!): Problem!
     dailyChallenge(userId: ID!, question: String!, answer: String!): ChallengeResponse!
     register(username: String!, password: String!, email: String!): AuthPayload!
+    addTopics(names: [String!]!): [Topic!]!
 }
