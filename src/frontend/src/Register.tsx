@@ -2,10 +2,14 @@ import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useApolloClient} from '@apollo/client';
 import AuthService from './AuthService';
+import {InputText} from "primereact/inputtext";
+import {Checkbox} from "primereact/checkbox";
+import {Button} from "primereact/button";
 
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [checked, setChecked] = useState(false);
     const [email, setEmail] = useState('');
     const client = useApolloClient();
     const authService = new AuthService(client);
@@ -18,6 +22,8 @@ const Register = () => {
     };
 
     return (
+
+
         <form onSubmit={handleSubmit}>
             <div>
                 <label>Username</label>
