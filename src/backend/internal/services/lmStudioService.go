@@ -1,6 +1,7 @@
-package main
+package services
 
 import (
+	"backend/internal/graphql/models"
 	"bufio"
 	"bytes"
 	"encoding/json"
@@ -11,21 +12,16 @@ import (
 	"strings"
 )
 
-type LLMService interface {
-	GetQuestion(category string) (Problem, error)
-	RateQuestion(question, answer string) (ChallengeResponse, error)
-}
-
 // LMStudioService implementation
 type LMStudioService struct {
 	endpoint string
 }
 
-func NewLDefaultMStudioService() *LMStudioService {
+func NewLDefaultLMStudioService() *LMStudioService {
 	return &LMStudioService{endpoint: "http://localhost:1234/v1/chat/completions"}
 }
 
-func (s *LMStudioService) RateQuestion(question, answer string) (ChallengeResponse, error) {
+func (s *LMStudioService) RateQuestion(question, answer string) (models.ChallengeResponse, error) {
 	// Define the request payload
 	payload := map[string]interface{}{
 		"messages": []map[string]string{
@@ -39,7 +35,7 @@ func (s *LMStudioService) RateQuestion(question, answer string) (ChallengeRespon
 
 	insight, err := AskLMStudio(payload, s.endpoint)
 	if err != nil {
-		return ChallengeResponse{}, err
+		return models.ChallengeResponse{}, err
 	}
 
 	// Extract the first number found in the insight as the rating
@@ -49,7 +45,7 @@ func (s *LMStudioService) RateQuestion(question, answer string) (ChallengeRespon
 		rating = match
 	}
 
-	return ChallengeResponse{
+	return models.ChallengeResponse{
 		Question: question,
 		Answer:   answer,
 		Rating:   rating,
@@ -57,7 +53,7 @@ func (s *LMStudioService) RateQuestion(question, answer string) (ChallengeRespon
 	}, nil
 }
 
-func (s *LMStudioService) GetQuestion(category string) (Problem, error) {
+func (s *LMStudioService) GetQuestion(category string) (models.Problem, error) {
 	// Define the request payload
 	payload := map[string]interface{}{
 		"messages": []map[string]string{
@@ -70,10 +66,10 @@ func (s *LMStudioService) GetQuestion(category string) (Problem, error) {
 
 	question, err := AskLMStudio(payload, s.endpoint)
 	if err != nil {
-		return Problem{}, err
+		return models.Problem{}, err
 	}
 
-	return Problem{
+	return models.Problem{
 		ID:         "",
 		Question:   question,
 		Categories: append(make([]string, 0), category),

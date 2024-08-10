@@ -1,12 +1,15 @@
 schema:
-  - schema.graphql
+  - internal/graphql/schema/schema.graphql
+
 exec:
-  filename: generated.go
-  package: main
+  filename: internal/graphql/generated/generated.go
+  package: generated
+
 model:
-  filename: models_gen.go
-  package: main
+  filename: internal/graphql/models/models_gen.go
+  package: models
+
 resolver:
-  filename: resolver.go
-  package: main
-  type: Resolver
+  layout: follow-schema
+  dir: internal/graphql/resolvers
+  package: resolvers

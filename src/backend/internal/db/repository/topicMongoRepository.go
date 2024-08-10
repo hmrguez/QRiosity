@@ -1,16 +1,12 @@
-package main
+package repository
 
 import (
+	"backend/internal/graphql/models"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-type TopicRepository interface {
-	GetAll(ctx context.Context) ([]*Topic, error)
-	Insert(ctx context.Context, topics []*Topic) error
-}
 
 type TopicMongoDBRepository struct {
 	client     *mongo.Client
@@ -31,15 +27,15 @@ func NewMongoDBTopicRepository(uri, dbName, collectionName string) (*TopicMongoD
 	}, nil
 }
 
-func (r *TopicMongoDBRepository) GetAll(ctx context.Context) ([]*Topic, error) {
-	var topics []*Topic
+func (r *TopicMongoDBRepository) GetAllTopics(ctx context.Context) ([]*models.Topic, error) {
+	var topics []*models.Topic
 	cursor, err := r.collection.Find(ctx, bson.D{}, options.Find())
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 	for cursor.Next(ctx) {
-		var topic Topic
+		var topic models.Topic
 		if err := cursor.Decode(&topic); err != nil {
 			return nil, err
 		}
@@ -48,7 +44,7 @@ func (r *TopicMongoDBRepository) GetAll(ctx context.Context) ([]*Topic, error) {
 	return topics, nil
 }
 
-func (r *TopicMongoDBRepository) Insert(ctx context.Context, topics []*Topic) error {
+func (r *TopicMongoDBRepository) Insert(ctx context.Context, topics []*models.Topic) error {
 	var documents []interface{}
 	for _, topic := range topics {
 		documents = append(documents, topic)
