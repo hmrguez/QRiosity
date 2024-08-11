@@ -1,8 +1,9 @@
 // src/frontend/src/components/DailyChallenge.tsx
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {gql, useMutation, useQuery} from '@apollo/client';
 import {Button} from 'primereact/button';
-import {InputText} from 'primereact/inputtext';
+import {InputTextarea} from "primereact/inputtextarea";
+import './DailyChallenge.css';
 
 interface DailyChallengeResult {
 	userId: string;
@@ -38,19 +39,49 @@ const SUBMIT_DAILY_CHALLENGE = gql`
 interface DailyChallengeProps {
 	answer: string;
 	setAnswer: (answer: string) => void;
+	onHide: () => void;
 }
 
-const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer}) => {
+const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHide}) => {
 	const {loading, error, data} = useQuery(GET_DAILY_CHALLENGE);
 	const [submitDailyChallenge] = useMutation(SUBMIT_DAILY_CHALLENGE);
 	const [result, setResult] = useState<DailyChallengeResult | null>(null);
+
+	const [buttonClass, setButtonClass] = useState('p-button-contrast');
+	const [resultLoading, setResultLoading] = useState(false);
+	const [buttonIcon, setButtonIcon] = useState('pi pi-check');
+	const [buttonLabel, setButtonLabel] = useState('Submit');
+
+
+	useEffect(() => {
+		if (result) {
+			setResultLoading(false);
+			if (result.rating >= 6) {
+				setButtonClass('p-button-success');
+				setButtonIcon('pi pi-thumbs-up');
+				setButtonLabel('Success');
+			} else {
+				setButtonClass('p-button-danger');
+				setButtonIcon('pi pi-thumbs-down');
+				setButtonLabel('Failed');
+			}
+		}
+	}, [result]);
+
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error.message}</div>;
 
 	const {dailyChallenge} = data;
 
+	const handleExit = () => {
+		setAnswer('');
+		onHide();
+	};
+
 	const handleSubmit = async () => {
+		setResultLoading(true);
+
 		try {
 			const {data} = await submitDailyChallenge({
 				variables: {
@@ -66,17 +97,38 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer}) => {
 	};
 
 	return (
-		<div>
-			<h1>{dailyChallenge.question}</h1>
-			<p>Categories: {dailyChallenge.categories.join(', ')}</p>
-			<p>Type: {dailyChallenge.type}</p>
-			<div className="p-field">
-				<label htmlFor="answer">Your Answer</label>
-				<InputText id="answer" value={answer} onChange={(e) => setAnswer(e.target.value)}/>
+		<div className="challenge-content">
+			<h2 className="question-title">{dailyChallenge.question}</h2>
+			<InputTextarea
+				value={answer}
+				onChange={(e) => setAnswer(e.target.value)}
+				rows={5}
+				cols={30}
+				className="textarea"
+				autoResize
+				placeholder="Type your answer here..."
+			/>
+			<div className="button-group">
+				<Button
+					label="Exit"
+					icon="pi pi-times"
+					className="p-button-secondary exit-button"
+					onClick={handleExit}
+				/>
+				<Button
+					disabled={!!result}
+					label={buttonLabel}
+					icon={buttonIcon}
+					className={buttonClass + " submit-button"}
+					onClick={handleSubmit}
+					loading={resultLoading}
+				/>
 			</div>
-			<Button label="Submit" onClick={handleSubmit}/>
-			{result && <h2>Rating: {result.rating}</h2>}
-			{result && <h2>Insight: {result.insight}</h2>}
+			{result && (
+				<div className="insight-content">
+					<p className="insight-text">{result.insight}</p>
+				</div>
+			)}
 		</div>
 	);
 };
