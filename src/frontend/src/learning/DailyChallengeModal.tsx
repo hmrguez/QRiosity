@@ -7,14 +7,15 @@ import "./DailyChallenge.css"
 interface DailyChallengeModalProps {
     visible: boolean;
     onHide: () => void;
+    onCorrectSubmit: () => void;
 }
 
-const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ visible, onHide }) => {
+const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({ visible, onHide, onCorrectSubmit }) => {
     const [answer, setAnswer] = useState('');
 
     return (
         <Dialog visible={visible} style={{ width: '50vw' }} onHide={onHide}>
-            <DailyChallenge answer={answer} setAnswer={setAnswer} onHide={onHide} />
+            <DailyChallenge answer={answer} setAnswer={setAnswer} onHide={onHide} onCorrectSubmit={onCorrectSubmit} />
         </Dialog>
     );
 };

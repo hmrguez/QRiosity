@@ -61,7 +61,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AddTopics      func(childComplexity int, names []string) int
-		DailyChallenge func(childComplexity int, userID string, question string, answer string) int
+		DailyChallenge func(childComplexity int, username string, question string, answer string) int
 		Register       func(childComplexity int, username string, password string, email string, topics []string) int
 		UpsertProblem  func(childComplexity int, input models.ProblemInput) int
 		UpsertUser     func(childComplexity int, input models.UserInput) int
@@ -79,6 +79,7 @@ type ComplexityRoot struct {
 		GetAllTopics   func(childComplexity int) int
 		GetProblems    func(childComplexity int) int
 		GetUser        func(childComplexity int, id string) int
+		GetUserByName  func(childComplexity int, name string) int
 		GetUsers       func(childComplexity int) int
 		Login          func(childComplexity int, username string, password string) int
 	}
@@ -88,23 +89,25 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		Email    func(childComplexity int) int
-		ID       func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Password func(childComplexity int) int
-		Topics   func(childComplexity int) int
+		DailyChallengeAvailable func(childComplexity int) int
+		Email                   func(childComplexity int) int
+		ID                      func(childComplexity int) int
+		Name                    func(childComplexity int) int
+		Password                func(childComplexity int) int
+		Topics                  func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
 	UpsertUser(ctx context.Context, input models.UserInput) (*models.User, error)
 	UpsertProblem(ctx context.Context, input models.ProblemInput) (*models.Problem, error)
-	DailyChallenge(ctx context.Context, userID string, question string, answer string) (*models.ChallengeResponse, error)
+	DailyChallenge(ctx context.Context, username string, question string, answer string) (*models.ChallengeResponse, error)
 	Register(ctx context.Context, username string, password string, email string, topics []string) (*models.AuthPayload, error)
 	AddTopics(ctx context.Context, names []string) ([]*models.Topic, error)
 }
 type QueryResolver interface {
 	GetUsers(ctx context.Context) ([]*models.User, error)
+	GetUserByName(ctx context.Context, name string) (*models.User, error)
 	GetProblems(ctx context.Context) ([]*models.Problem, error)
 	GetUser(ctx context.Context, id string) (*models.User, error)
 	DailyChallenge(ctx context.Context, category string) (*models.Problem, error)
@@ -202,7 +205,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DailyChallenge(childComplexity, args["userId"].(string), args["question"].(string), args["answer"].(string)), true
+		return e.complexity.Mutation.DailyChallenge(childComplexity, args["username"].(string), args["question"].(string), args["answer"].(string)), true
 
 	case "Mutation.register":
 		if e.complexity.Mutation.Register == nil {
@@ -306,6 +309,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetUser(childComplexity, args["id"].(string)), true
 
+	case "Query.getUserByName":
+		if e.complexity.Query.GetUserByName == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getUserByName_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetUserByName(childComplexity, args["name"].(string)), true
+
 	case "Query.getUsers":
 		if e.complexity.Query.GetUsers == nil {
 			break
@@ -331,6 +346,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Topic.Name(childComplexity), true
+
+	case "User.dailyChallengeAvailable":
+		if e.complexity.User.DailyChallengeAvailable == nil {
+			break
+		}
+
+		return e.complexity.User.DailyChallengeAvailable(childComplexity), true
 
 	case "User.email":
 		if e.complexity.User.Email == nil {
@@ -480,6 +502,7 @@ var sources = []*ast.Source{
     email: String!
     password: String!
     topics: [String!]
+    dailyChallengeAvailable: Boolean!
 }
 
 type Topic {
@@ -523,6 +546,7 @@ type ChallengeResponse {
 
 type Query {
     getUsers: [User!]!
+    getUserByName(name: String!): User!
     getProblems: [Problem!]!
     getUser(id: ID!): User
     dailyChallenge(category: String!): Problem
@@ -533,7 +557,7 @@ type Query {
 type Mutation {
     upsertUser(input: UserInput!): User!
     upsertProblem(input: ProblemInput!): Problem!
-    dailyChallenge(userId: ID!, question: String!, answer: String!): ChallengeResponse!
+    dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
     register(username: String!, password: String!, email: String!, topics: [String!]): AuthPayload!
     addTopics(names: [String!]!): [Topic!]!
 }`, BuiltIn: false},
@@ -563,14 +587,14 @@ func (ec *executionContext) field_Mutation_dailyChallenge_args(ctx context.Conte
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["userId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+	if tmp, ok := rawArgs["username"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["userId"] = arg0
+	args["username"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["question"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("question"))
@@ -691,6 +715,21 @@ func (ec *executionContext) field_Query_dailyChallenge_args(ctx context.Context,
 		}
 	}
 	args["category"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getUserByName_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["name"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["name"] = arg0
 	return args, nil
 }
 
@@ -864,6 +903,8 @@ func (ec *executionContext) fieldContext_AuthPayload_user(_ context.Context, fie
 				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
+			case "dailyChallengeAvailable":
+				return ec.fieldContext_User_dailyChallengeAvailable(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -1140,6 +1181,8 @@ func (ec *executionContext) fieldContext_Mutation_upsertUser(ctx context.Context
 				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
+			case "dailyChallengeAvailable":
+				return ec.fieldContext_User_dailyChallengeAvailable(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -1237,7 +1280,7 @@ func (ec *executionContext) _Mutation_dailyChallenge(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DailyChallenge(rctx, fc.Args["userId"].(string), fc.Args["question"].(string), fc.Args["answer"].(string))
+		return ec.resolvers.Mutation().DailyChallenge(rctx, fc.Args["username"].(string), fc.Args["question"].(string), fc.Args["answer"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1635,9 +1678,80 @@ func (ec *executionContext) fieldContext_Query_getUsers(_ context.Context, field
 				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
+			case "dailyChallengeAvailable":
+				return ec.fieldContext_User_dailyChallengeAvailable(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getUserByName(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getUserByName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetUserByName(rctx, fc.Args["name"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖbackendᚋinternalᚋgraphqlᚋmodelsᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getUserByName(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "name":
+				return ec.fieldContext_User_name(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "topics":
+				return ec.fieldContext_User_topics(ctx, field)
+			case "dailyChallengeAvailable":
+				return ec.fieldContext_User_dailyChallengeAvailable(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getUserByName_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -1742,6 +1856,8 @@ func (ec *executionContext) fieldContext_Query_getUser(ctx context.Context, fiel
 				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
+			case "dailyChallengeAvailable":
+				return ec.fieldContext_User_dailyChallengeAvailable(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -2316,6 +2432,50 @@ func (ec *executionContext) fieldContext_User_topics(_ context.Context, field gr
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_dailyChallengeAvailable(ctx context.Context, field graphql.CollectedField, obj *models.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_dailyChallengeAvailable(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DailyChallengeAvailable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_dailyChallengeAvailable(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4466,6 +4626,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getUserByName":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getUserByName(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "getProblems":
 			field := field
 
@@ -4673,6 +4855,11 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "topics":
 			out.Values[i] = ec._User_topics(ctx, field, obj)
+		case "dailyChallengeAvailable":
+			out.Values[i] = ec._User_dailyChallengeAvailable(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

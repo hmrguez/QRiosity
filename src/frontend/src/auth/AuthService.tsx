@@ -55,6 +55,19 @@ class AuthService {
 		return !!localStorage.getItem('token');
 	}
 
+
+	// TODO: UserId is not being sent correctly in the token
+	getUserId() {
+		const token = localStorage.getItem('token');
+		if (!token) {
+			return null;
+		}
+
+		const decoded: { username: string, userId: string, exp: Date } = jwtDecode(token);
+
+		return decoded.userId;
+	}
+
 	getUsername() {
 		const token = localStorage.getItem('token');
 		if (!token) {

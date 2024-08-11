@@ -39,11 +39,12 @@ type Topic struct {
 }
 
 type User struct {
-	ID       string   `json:"id"`
-	Name     string   `json:"name"`
-	Email    string   `json:"email"`
-	Password string   `json:"password"`
-	Topics   []string `json:"topics,omitempty"`
+	ID                      string   `json:"id"`
+	Name                    string   `json:"name"`
+	Email                   string   `json:"email"`
+	Password                string   `json:"password"`
+	Topics                  []string `json:"topics,omitempty"`
+	DailyChallengeAvailable bool     `json:"dailyChallengeAvailable"`
 }
 
 type UserInput struct {

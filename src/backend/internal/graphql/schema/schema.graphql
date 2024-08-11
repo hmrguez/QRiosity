@@ -4,6 +4,7 @@ type User {
     email: String!
     password: String!
     topics: [String!]
+    dailyChallengeAvailable: Boolean!
 }
 
 type Topic {
@@ -47,6 +48,7 @@ type ChallengeResponse {
 
 type Query {
     getUsers: [User!]!
+    getUserByName(name: String!): User!
     getProblems: [Problem!]!
     getUser(id: ID!): User
     dailyChallenge(category: String!): Problem
@@ -57,7 +59,7 @@ type Query {
 type Mutation {
     upsertUser(input: UserInput!): User!
     upsertProblem(input: ProblemInput!): Problem!
-    dailyChallenge(userId: ID!, question: String!, answer: String!): ChallengeResponse!
+    dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
     register(username: String!, password: String!, email: String!, topics: [String!]): AuthPayload!
     addTopics(names: [String!]!): [Topic!]!
 }

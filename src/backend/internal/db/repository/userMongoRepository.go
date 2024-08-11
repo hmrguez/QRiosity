@@ -34,7 +34,7 @@ func (r *MongoDBUserRepository) UpsertUser(user models.User) (models.User, error
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if user.ID == "" {
+	if user.Name == "" {
 		// Insert new user
 		result, err := r.collection.InsertOne(ctx, user)
 		if err != nil {
@@ -44,7 +44,7 @@ func (r *MongoDBUserRepository) UpsertUser(user models.User) (models.User, error
 		}
 	} else {
 		// Update existing user
-		filter := bson.M{"_id": user.ID}
+		filter := bson.M{"name": user.Name}
 		update := bson.M{
 			"$set": user,
 		}

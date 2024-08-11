@@ -1,9 +1,10 @@
 // src/frontend/src/components/DailyChallenge.tsx
 import React, {useEffect, useState} from 'react';
-import {gql, useMutation, useQuery} from '@apollo/client';
+import {gql, useApolloClient, useMutation, useQuery} from '@apollo/client';
 import {Button} from 'primereact/button';
 import {InputTextarea} from "primereact/inputtextarea";
 import './DailyChallenge.css';
+import AuthService from "../auth/AuthService.tsx";
 
 interface DailyChallengeResult {
 	userId: string;
@@ -25,8 +26,8 @@ const GET_DAILY_CHALLENGE = gql`
 `;
 
 const SUBMIT_DAILY_CHALLENGE = gql`
-    mutation SubmitDailyChallenge($userId: ID!, $question: String!, $answer: String!) {
-        dailyChallenge(userId: $userId, question: $question, answer: $answer) {
+    mutation SubmitDailyChallenge($username: String!, $question: String!, $answer: String!) {
+        dailyChallenge(username: $username, question: $question, answer: $answer) {
             userId
             question
             answer
@@ -40,9 +41,10 @@ interface DailyChallengeProps {
 	answer: string;
 	setAnswer: (answer: string) => void;
 	onHide: () => void;
+	onCorrectSubmit: () => void;
 }
 
-const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHide}) => {
+const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHide, onCorrectSubmit}) => {
 	const {loading, error, data} = useQuery(GET_DAILY_CHALLENGE);
 	const [submitDailyChallenge] = useMutation(SUBMIT_DAILY_CHALLENGE);
 	const [result, setResult] = useState<DailyChallengeResult | null>(null);
@@ -52,6 +54,8 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 	const [buttonIcon, setButtonIcon] = useState('pi pi-check');
 	const [buttonLabel, setButtonLabel] = useState('Submit');
 
+	const client = useApolloClient();
+	const authService = new AuthService(client);
 
 	useEffect(() => {
 		if (result) {
@@ -85,11 +89,12 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 		try {
 			const {data} = await submitDailyChallenge({
 				variables: {
-					userId: '1', // Placeholder userId
+					username: authService.getUsername(),
 					question: dailyChallenge.question,
 					answer: answer
 				}
 			});
+			onCorrectSubmit();
 			setResult(data.dailyChallenge);
 		} catch (error) {
 			console.error('Error submitting challenge:', error);
