@@ -24,12 +24,41 @@
     align-items: center;
 }
 
+.landing .nav-links {
+    display: flex;
+    align-items: center;
+}
+
 .landing .logo {
     font-size: 24px;
     font-weight: bold;
 }
 
-.landing .nav-links a {
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+    margin-left: 20px;
+}
+
+.auth-button {
+    background-color: #fff;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s;
+    text-decoration: none;
+    font-size: .9rem
+}
+
+.auth-button:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+.landing .nav-links .nav-link {
     color: #fff;
     text-decoration: none;
     margin-left: 20px;

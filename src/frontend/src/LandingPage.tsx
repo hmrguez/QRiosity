@@ -1,5 +1,6 @@
 import './LandingPage.css';
 import image from './assets/image.jpeg'
+import {Link} from "react-router-dom";
 
 const LandingPage = () => {
 	return (
@@ -9,9 +10,14 @@ const LandingPage = () => {
 					<nav>
 						<div className="logo">QRIOSITY</div>
 						<div className="nav-links">
-							<a href="#about">About</a>
-							<a href="#features">Features</a>
-							<a href="#contact">Contact</a>
+							<a className="nav-link" href="#about">About</a>
+							<a className="nav-link" href="#features">Features</a>
+							<a className="nav-link" href="#contact">Contact</a>
+
+							<div className="auth-buttons">
+								<Link to="/login" className="auth-button">Login</Link>
+								<Link to="/register" className="auth-button">Signup</Link>
+							</div>
 						</div>
 					</nav>
 				</div>
@@ -21,7 +27,7 @@ const LandingPage = () => {
 					<div className="hero-content">
 						<h1>Empower Your Learning Journey with Qriosity</h1>
 						<p>Unlock personalized learning experiences with AI-driven insights and custom paths.</p>
-						<a href="#" className="cta-button">Start Your Journey</a>
+						<Link to="/register" className="cta-button">Start Your Journey</Link>
 					</div>
 					<div className="hero-image">
 						<img src={image} alt="AI-powered learning illustration" />
