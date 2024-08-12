@@ -14,12 +14,15 @@ func main() {
 		log.Fatalf("Error loading .env file", err)
 	}
 
-	// Access the environment variables
+	var appConfig *config.Config
+
 	env := os.Getenv("ENV")
-	llm := os.Getenv("LLM")
 
-	log.Printf("Running in %s environment with LLM: %s", env, llm)
+	if env == "prod" {
+		appConfig = config.NewProdConfig()
+	} else {
+		appConfig = config.NewLocalConfig()
+	}
 
-	localConfig := config.NewLocalConfig()
-	server.StartServer(*localConfig)
+	server.StartServer(*appConfig)
 }
