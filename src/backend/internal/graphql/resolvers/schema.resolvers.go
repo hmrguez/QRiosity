@@ -113,6 +113,16 @@ func (r *mutationResolver) AddTopics(ctx context.Context, names []string) ([]*mo
 	return topics, nil
 }
 
+// UpsertCourse is the resolver for the upsertCourse field.
+func (r *mutationResolver) UpsertCourse(ctx context.Context, input models.CourseInput) (*models.Course, error) {
+	panic(fmt.Errorf("not implemented: UpsertCourse - upsertCourse"))
+}
+
+// UpsertRoadmap is the resolver for the upsertRoadmap field.
+func (r *mutationResolver) UpsertRoadmap(ctx context.Context, input models.RoadmapInput) (*models.Roadmap, error) {
+	panic(fmt.Errorf("not implemented: UpsertRoadmap - upsertRoadmap"))
+}
+
 // GetUsers is the resolver for the getUsers field.
 func (r *queryResolver) GetUsers(ctx context.Context) ([]*models.User, error) {
 	users := r.UserRepo.GetUsers()
@@ -179,6 +189,26 @@ func (r *queryResolver) Login(ctx context.Context, username string, password str
 // GetAllTopics is the resolver for the getAllTopics field.
 func (r *queryResolver) GetAllTopics(ctx context.Context) ([]*models.Topic, error) {
 	return r.TopicRepo.GetAllTopics(ctx)
+}
+
+// GetQuizes is the resolver for the getQuizes field.
+func (r *queryResolver) GetQuizes(ctx context.Context) ([]*models.Quiz, error) {
+	panic(fmt.Errorf("not implemented: GetQuizes - getQuizes"))
+}
+
+// GetLessons is the resolver for the getLessons field.
+func (r *queryResolver) GetLessons(ctx context.Context) ([]*models.Lesson, error) {
+	panic(fmt.Errorf("not implemented: GetLessons - getLessons"))
+}
+
+// GetCourses is the resolver for the getCourses field.
+func (r *queryResolver) GetCourses(ctx context.Context) ([]*models.Course, error) {
+	panic(fmt.Errorf("not implemented: GetCourses - getCourses"))
+}
+
+// GetRoadmaps is the resolver for the getRoadmaps field.
+func (r *queryResolver) GetRoadmaps(ctx context.Context) ([]*models.Roadmap, error) {
+	panic(fmt.Errorf("not implemented: GetRoadmaps - getRoadmaps"))
 }
 
 // Mutation returns generated.MutationResolver implementation.

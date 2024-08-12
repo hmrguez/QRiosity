@@ -11,6 +11,35 @@ type Topic {
     name: String!
 }
 
+type Quiz {
+    id: ID!
+    name: String!
+    question: String!
+    answer: String!
+}
+
+type Lesson {
+    id: ID!
+    name: String!
+    url: String!
+    author: String!
+}
+
+union Content = Quiz | Lesson
+
+type Course {
+    id: ID!
+    name: String!
+    author: String!
+    content: [Content!]!
+}
+
+type Roadmap {
+    id: ID!
+    name: String!
+    author: String!
+    courses: [Course!]!
+}
 
 input UserInput {
     _id: String!
@@ -54,6 +83,11 @@ type Query {
     dailyChallenge(category: String!): Problem
     login(username: String!, password: String!): AuthPayload!
     getAllTopics: [Topic!]!
+
+    getQuizes: [Quiz!]!
+    getLessons: [Lesson!]!
+    getCourses: [Course!]!
+    getRoadmaps: [Roadmap!]!
 }
 
 type Mutation {
@@ -62,4 +96,41 @@ type Mutation {
     dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
     register(username: String!, password: String!, email: String!, topics: [String!]): AuthPayload!
     addTopics(names: [String!]!): [Topic!]!
+
+    upsertCourse(input: CourseInput!): Course!
+    upsertRoadmap(input: RoadmapInput!): Roadmap!
+}
+
+input QuizInput {
+    id: ID!
+    name: String!
+    question: String!
+    answer: String!
+}
+
+input LessonInput {
+    id: ID!
+    name: String!
+    url: String!
+    author: String!
+}
+
+
+input ContentInput {
+    quiz: QuizInput
+    lesson: LessonInput
+}
+
+input CourseInput {
+    id: ID!
+    name: String!
+    author: String!
+    content: [ContentInput!]!
+}
+
+input RoadmapInput {
+    id: ID!
+    name: String!
+    author: String!
+    courses: [CourseInput!]!
 }

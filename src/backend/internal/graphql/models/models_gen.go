@@ -2,6 +2,10 @@
 
 package models
 
+type Content interface {
+	IsContent()
+}
+
 type AuthPayload struct {
 	Token string `json:"token"`
 	User  *User  `json:"user"`
@@ -13,6 +17,41 @@ type ChallengeResponse struct {
 	Answer   string `json:"answer"`
 	Rating   string `json:"rating"`
 	Insight  string `json:"insight"`
+}
+
+type ContentInput struct {
+	Quiz   *QuizInput   `json:"quiz,omitempty"`
+	Lesson *LessonInput `json:"lesson,omitempty"`
+}
+
+type Course struct {
+	ID      string    `json:"id"`
+	Name    string    `json:"name"`
+	Author  string    `json:"author"`
+	Content []Content `json:"content"`
+}
+
+type CourseInput struct {
+	ID      string          `json:"id"`
+	Name    string          `json:"name"`
+	Author  string          `json:"author"`
+	Content []*ContentInput `json:"content"`
+}
+
+type Lesson struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	URL    string `json:"url"`
+	Author string `json:"author"`
+}
+
+func (Lesson) IsContent() {}
+
+type LessonInput struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	URL    string `json:"url"`
+	Author string `json:"author"`
 }
 
 type Mutation struct {
@@ -32,6 +71,36 @@ type ProblemInput struct {
 }
 
 type Query struct {
+}
+
+type Quiz struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+}
+
+func (Quiz) IsContent() {}
+
+type QuizInput struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+}
+
+type Roadmap struct {
+	ID      string    `json:"id"`
+	Name    string    `json:"name"`
+	Author  string    `json:"author"`
+	Courses []*Course `json:"courses"`
+}
+
+type RoadmapInput struct {
+	ID      string         `json:"id"`
+	Name    string         `json:"name"`
+	Author  string         `json:"author"`
+	Courses []*CourseInput `json:"courses"`
 }
 
 type Topic struct {
