@@ -15,6 +15,7 @@ import {AuthProvider} from './auth/AuthContext';
 import PrivateRoute from './auth/PrivateRoute';
 import LearningPaths from "./learning/LearningPaths.tsx";
 import MyLearning from "./learning/MyLearning.tsx";
+import LandingPage from "./LandingPage.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
 				element: <LearningPaths/>
 			},
 		]
+	},
+	{
+		path: "/welcome",
+		element: <LandingPage/>
 	},
 	{
 		path: "login",
