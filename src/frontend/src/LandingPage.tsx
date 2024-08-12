@@ -1,8 +1,29 @@
 import './LandingPage.css';
 import image from './assets/image.jpeg'
 import {Link} from "react-router-dom";
+import {useApolloClient} from "@apollo/client";
+import AuthService from "./auth/AuthService.tsx";
+import {useEffect, useState} from "react";
 
 const LandingPage = () => {
+
+	const apolloClient = useApolloClient();
+	const authService = new AuthService(apolloClient);
+
+	const [loggedIn, setLoggedIn] = useState(false);
+	const [username, setUsername] = useState("");
+
+	useEffect(() => {
+		const checkLoginStatus = async () => {
+			const isLoggedIn = await authService.isLoggedIn();
+			setLoggedIn(isLoggedIn);
+			if (isLoggedIn) {
+				setUsername(authService.getUsername() as string)
+			}
+		};
+		checkLoginStatus();
+	}, [authService]);
+
 	return (
 		<div className="landing">
 			<header>
@@ -15,8 +36,14 @@ const LandingPage = () => {
 							<a className="nav-link" href="#contact">Contact</a>
 
 							<div className="auth-buttons">
-								<Link to="/login" className="auth-button">Login</Link>
-								<Link to="/register" className="auth-button">Signup</Link>
+								{loggedIn ? (
+									<span className="auth-button disabled"><i className="pi pi-user mr-2"></i>{username}</span>
+								) : (
+									<>
+										<Link to="/login" className="auth-button">Login</Link>
+										<Link to="/register" className="auth-button">Signup</Link>
+									</>
+								)}
 							</div>
 						</div>
 					</nav>
@@ -27,8 +54,9 @@ const LandingPage = () => {
 					<div className="hero-content">
 						<h1>Empower Your Learning Journey with Qriosity</h1>
 						<p>Unlock personalized learning experiences with AI-driven insights and custom paths.</p>
-						<Link to="/register" className="cta-button">Start Your Journey</Link>
-					</div>
+						<Link to={loggedIn ? "/" : "/register"} className="cta-button">
+							{loggedIn ? "Go to Dashboard" : "Start Your Journey"}
+						</Link>					</div>
 					<div className="hero-image">
 						<img src={image} alt="AI-powered learning illustration" />
 					</div>
