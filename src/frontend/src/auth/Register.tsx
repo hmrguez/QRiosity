@@ -4,6 +4,7 @@ import { useApolloClient } from '@apollo/client';
 import AuthService from './AuthService';
 import image from '../assets/icons8-google.svg';
 import './Login.css';
+import {useAuth} from "./AuthContext.tsx";
 
 const RegisterForm = () => {
     const [username, setUsername] = useState('');
@@ -16,6 +17,9 @@ const RegisterForm = () => {
     const authService = new AuthService(client);
     const navigate = useNavigate();
 
+    const { login } = useAuth();
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (password !== confirmPassword) {
@@ -24,11 +28,11 @@ const RegisterForm = () => {
         }
         try {
             await authService.register(username, password, email, []);
-
-            navigate('/login');
+            login();
+            navigate('/confirm-email' + "?email=" + email);
         } catch (err) {
             console.error(err);
-            setError('Registration failed. Please try again.');
+            setError(err.message);
         }
     };
 

@@ -136,7 +136,7 @@ type MutationResolver interface {
 	UpsertUser(ctx context.Context, input models.UserInput) (*models.User, error)
 	UpsertProblem(ctx context.Context, input models.ProblemInput) (*models.Problem, error)
 	DailyChallenge(ctx context.Context, username string, question string, answer string) (*models.ChallengeResponse, error)
-	Register(ctx context.Context, username string, password string, email string, topics []string) (*models.AuthPayload, error)
+	Register(ctx context.Context, username string, password string, email string, topics []string) (string, error)
 	AddTopics(ctx context.Context, names []string) ([]*models.Topic, error)
 	ConfirmEmail(ctx context.Context, email string, token string) (bool, error)
 	UpsertCourse(ctx context.Context, input models.CourseInput) (*models.Course, error)
@@ -813,7 +813,7 @@ type Mutation {
     upsertUser(input: UserInput!): User!
     upsertProblem(input: ProblemInput!): Problem!
     dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
-    register(username: String!, password: String!, email: String!, topics: [String!]): AuthPayload!
+    register(username: String!, password: String!, email: String!, topics: [String!]): String!
     addTopics(names: [String!]!): [Topic!]!
 
     confirmEmail(email: String!, token: String!): Boolean!
@@ -2014,9 +2014,9 @@ func (ec *executionContext) _Mutation_register(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*models.AuthPayload)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNAuthPayload2ᚖbackendᚋinternalᚋgraphqlᚋmodelsᚐAuthPayload(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_register(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2026,11 +2026,7 @@ func (ec *executionContext) fieldContext_Mutation_register(ctx context.Context, 
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "token":
-				return ec.fieldContext_AuthPayload_token(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type AuthPayload", field.Name)
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	defer func() {

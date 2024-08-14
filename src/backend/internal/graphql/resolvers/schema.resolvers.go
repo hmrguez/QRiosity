@@ -10,9 +10,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
-
-	jwt "github.com/dgrijalva/jwt-go"
 )
 
 // UpsertUser is the resolver for the upsertUser field.
@@ -63,13 +60,13 @@ func (r *mutationResolver) DailyChallenge(ctx context.Context, username string, 
 }
 
 // Register is the resolver for the register field.
-func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string, topics []string) (*models.AuthPayload, error) {
+func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string, topics []string) (string, error) {
 	// Register the user using CognitoAuthService
 	fmt.Print("Registering user")
 	fmt.Printf(r.AuthService.ClientId)
 	cognitoResponse, err := r.AuthService.SignUp(email, username, password)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	// Extract the username from the Cognito response
@@ -86,23 +83,10 @@ func (r *mutationResolver) Register(ctx context.Context, username string, passwo
 	// Insert the user into the repository
 	user, err = r.UserRepo.UpsertUser(user)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	// Generate a JWT token for the user
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId": user.ID,
-		"exp":    time.Now().Add(time.Hour * 72).Unix(),
-	})
-
-	tokenString, err := token.SignedString(jwtSecret)
-	if err != nil {
-		return nil, err
-	}
-
-	return &models.AuthPayload{
-		Token: tokenString,
-	}, nil
+	return *registeredUsername, nil
 }
 
 // AddTopics is the resolver for the addTopics field.

@@ -16,6 +16,7 @@ import PrivateRoute from './auth/PrivateRoute';
 import LearningPaths from "./learning/LearningPaths.tsx";
 import MyLearning from "./learning/MyLearning.tsx";
 import LandingPage from "./LandingPage.tsx";
+import ConfirmEmail from "./auth/ConfirmEmail.tsx";
 
 
 const router = createBrowserRouter([
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
 	{
 		path: "register",
 		element: <Register/>
+	},
+	{
+		path: "confirm-email",
+		element: <ConfirmEmail/>
 	}
 ]);
 

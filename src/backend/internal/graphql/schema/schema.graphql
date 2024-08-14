@@ -94,7 +94,7 @@ type Mutation {
     upsertUser(input: UserInput!): User!
     upsertProblem(input: ProblemInput!): Problem!
     dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
-    register(username: String!, password: String!, email: String!, topics: [String!]): AuthPayload!
+    register(username: String!, password: String!, email: String!, topics: [String!]): String!
     addTopics(names: [String!]!): [Topic!]!
 
     confirmEmail(email: String!, token: String!): Boolean!
