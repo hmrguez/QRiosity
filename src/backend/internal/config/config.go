@@ -2,6 +2,7 @@ package config
 
 import (
 	"backend/internal/db/repository"
+	"backend/internal/services"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"log"
@@ -13,6 +14,7 @@ type Config struct {
 	UserRepo    repository.UserRepository
 	ProblemRepo repository.ProblemRepository
 	TopicRepo   repository.TopicRepository
+	AuthService services.CognitoAuthService
 }
 
 func NewLocalConfig() *Config {
@@ -27,9 +29,16 @@ func NewLocalConfig() *Config {
 		panic("Couldn't connnect to mongodb: " + err.Error())
 	}
 
+	authService := *services.NewCognitoAuthService(
+		os.Getenv("COGNITO_APP_CLIENT_ID"),
+		os.Getenv("COGNITO_USER_POOL_ID"),
+		os.Getenv("COGNITO_USER_POOL_REGION"),
+	)
+
 	return &Config{
 		Port:        ":9000",
 		UserRepo:    userRepo,
+		AuthService: authService,
 		ProblemRepo: repository.NewMongoDBProblemRepository(),
 		TopicRepo:   topicRepo,
 	}
@@ -49,10 +58,17 @@ func NewProdConfig() *Config {
 		panic("Couldn't connnect to mongodb: " + err.Error())
 	}
 
+	authService := *services.NewCognitoAuthService(
+		os.Getenv("COGNITO_APP_CLIENT_ID"),
+		os.Getenv("COGNITO_USER_POOL_ID"),
+		os.Getenv("COGNITO_USER_POOL_REGION"),
+	)
+
 	return &Config{
 		Port:        ":9000",
 		UserRepo:    userRepo,
 		ProblemRepo: repository.NewMongoDBProblemRepository(),
 		TopicRepo:   repository.NewDynamoDBTopicRepository(sess, "Qriosity-Topics"),
+		AuthService: authService,
 	}
 }

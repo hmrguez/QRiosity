@@ -2,7 +2,6 @@ type User {
     id: ID!
     name: String!
     email: String!
-    password: String!
     topics: [String!]
     dailyChallengeAvailable: Boolean!
 }
@@ -84,6 +83,8 @@ type Query {
     login(username: String!, password: String!): AuthPayload!
     getAllTopics: [Topic!]!
 
+    resendConfirmationEmail(email: String!): Boolean!
+
     getQuizes: [Quiz!]!
     getLessons: [Lesson!]!
     getCourses: [Course!]!
@@ -96,6 +97,8 @@ type Mutation {
     dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
     register(username: String!, password: String!, email: String!, topics: [String!]): AuthPayload!
     addTopics(names: [String!]!): [Topic!]!
+
+    confirmEmail(email: String!, token: String!): Boolean!
 
     upsertCourse(input: CourseInput!): Course!
     upsertRoadmap(input: RoadmapInput!): Roadmap!

@@ -75,6 +75,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AddTopics      func(childComplexity int, names []string) int
+		ConfirmEmail   func(childComplexity int, email string, token string) int
 		DailyChallenge func(childComplexity int, username string, question string, answer string) int
 		Register       func(childComplexity int, username string, password string, email string, topics []string) int
 		UpsertCourse   func(childComplexity int, input models.CourseInput) int
@@ -91,17 +92,18 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		DailyChallenge func(childComplexity int, category string) int
-		GetAllTopics   func(childComplexity int) int
-		GetCourses     func(childComplexity int) int
-		GetLessons     func(childComplexity int) int
-		GetProblems    func(childComplexity int) int
-		GetQuizes      func(childComplexity int) int
-		GetRoadmaps    func(childComplexity int) int
-		GetUser        func(childComplexity int, id string) int
-		GetUserByName  func(childComplexity int, name string) int
-		GetUsers       func(childComplexity int) int
-		Login          func(childComplexity int, username string, password string) int
+		DailyChallenge          func(childComplexity int, category string) int
+		GetAllTopics            func(childComplexity int) int
+		GetCourses              func(childComplexity int) int
+		GetLessons              func(childComplexity int) int
+		GetProblems             func(childComplexity int) int
+		GetQuizes               func(childComplexity int) int
+		GetRoadmaps             func(childComplexity int) int
+		GetUser                 func(childComplexity int, id string) int
+		GetUserByName           func(childComplexity int, name string) int
+		GetUsers                func(childComplexity int) int
+		Login                   func(childComplexity int, username string, password string) int
+		ResendConfirmationEmail func(childComplexity int, email string) int
 	}
 
 	Quiz struct {
@@ -127,7 +129,6 @@ type ComplexityRoot struct {
 		Email                   func(childComplexity int) int
 		ID                      func(childComplexity int) int
 		Name                    func(childComplexity int) int
-		Password                func(childComplexity int) int
 		Topics                  func(childComplexity int) int
 	}
 }
@@ -138,6 +139,7 @@ type MutationResolver interface {
 	DailyChallenge(ctx context.Context, username string, question string, answer string) (*models.ChallengeResponse, error)
 	Register(ctx context.Context, username string, password string, email string, topics []string) (*models.AuthPayload, error)
 	AddTopics(ctx context.Context, names []string) ([]*models.Topic, error)
+	ConfirmEmail(ctx context.Context, email string, token string) (bool, error)
 	UpsertCourse(ctx context.Context, input models.CourseInput) (*models.Course, error)
 	UpsertRoadmap(ctx context.Context, input models.RoadmapInput) (*models.Roadmap, error)
 }
@@ -149,6 +151,7 @@ type QueryResolver interface {
 	DailyChallenge(ctx context.Context, category string) (*models.Problem, error)
 	Login(ctx context.Context, username string, password string) (*models.AuthPayload, error)
 	GetAllTopics(ctx context.Context) ([]*models.Topic, error)
+	ResendConfirmationEmail(ctx context.Context, email string) (bool, error)
 	GetQuizes(ctx context.Context) ([]*models.Quiz, error)
 	GetLessons(ctx context.Context) ([]*models.Lesson, error)
 	GetCourses(ctx context.Context) ([]*models.Course, error)
@@ -290,6 +293,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.AddTopics(childComplexity, args["names"].([]string)), true
+
+	case "Mutation.confirmEmail":
+		if e.complexity.Mutation.ConfirmEmail == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_confirmEmail_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ConfirmEmail(childComplexity, args["email"].(string), args["token"].(string)), true
 
 	case "Mutation.dailyChallenge":
 		if e.complexity.Mutation.DailyChallenge == nil {
@@ -488,6 +503,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Login(childComplexity, args["username"].(string), args["password"].(string)), true
 
+	case "Query.resendConfirmationEmail":
+		if e.complexity.Query.ResendConfirmationEmail == nil {
+			break
+		}
+
+		args, err := ec.field_Query_resendConfirmationEmail_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ResendConfirmationEmail(childComplexity, args["email"].(string)), true
+
 	case "Quiz.answer":
 		if e.complexity.Quiz.Answer == nil {
 			break
@@ -578,13 +605,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Name(childComplexity), true
-
-	case "User.password":
-		if e.complexity.User.Password == nil {
-			break
-		}
-
-		return e.complexity.User.Password(childComplexity), true
 
 	case "User.topics":
 		if e.complexity.User.Topics == nil {
@@ -709,7 +729,6 @@ var sources = []*ast.Source{
     id: ID!
     name: String!
     email: String!
-    password: String!
     topics: [String!]
     dailyChallengeAvailable: Boolean!
 }
@@ -791,6 +810,8 @@ type Query {
     login(username: String!, password: String!): AuthPayload!
     getAllTopics: [Topic!]!
 
+    resendConfirmationEmail(email: String!): Boolean!
+
     getQuizes: [Quiz!]!
     getLessons: [Lesson!]!
     getCourses: [Course!]!
@@ -803,6 +824,8 @@ type Mutation {
     dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
     register(username: String!, password: String!, email: String!, topics: [String!]): AuthPayload!
     addTopics(names: [String!]!): [Topic!]!
+
+    confirmEmail(email: String!, token: String!): Boolean!
 
     upsertCourse(input: CourseInput!): Course!
     upsertRoadmap(input: RoadmapInput!): Roadmap!
@@ -860,6 +883,30 @@ func (ec *executionContext) field_Mutation_addTopics_args(ctx context.Context, r
 		}
 	}
 	args["names"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_confirmEmail_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["email"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["email"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg1
 	return args, nil
 }
 
@@ -1082,6 +1129,21 @@ func (ec *executionContext) field_Query_login_args(ctx context.Context, rawArgs 
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_resendConfirmationEmail_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["email"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["email"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1209,8 +1271,6 @@ func (ec *executionContext) fieldContext_AuthPayload_user(_ context.Context, fie
 				return ec.fieldContext_User_name(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "password":
-				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
 			case "dailyChallengeAvailable":
@@ -1839,8 +1899,6 @@ func (ec *executionContext) fieldContext_Mutation_upsertUser(ctx context.Context
 				return ec.fieldContext_User_name(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "password":
-				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
 			case "dailyChallengeAvailable":
@@ -2109,6 +2167,61 @@ func (ec *executionContext) fieldContext_Mutation_addTopics(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_addTopics_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_confirmEmail(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_confirmEmail(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ConfirmEmail(rctx, fc.Args["email"].(string), fc.Args["token"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_confirmEmail(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_confirmEmail_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2466,8 +2579,6 @@ func (ec *executionContext) fieldContext_Query_getUsers(_ context.Context, field
 				return ec.fieldContext_User_name(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "password":
-				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
 			case "dailyChallengeAvailable":
@@ -2524,8 +2635,6 @@ func (ec *executionContext) fieldContext_Query_getUserByName(ctx context.Context
 				return ec.fieldContext_User_name(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "password":
-				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
 			case "dailyChallengeAvailable":
@@ -2644,8 +2753,6 @@ func (ec *executionContext) fieldContext_Query_getUser(ctx context.Context, fiel
 				return ec.fieldContext_User_name(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
-			case "password":
-				return ec.fieldContext_User_password(ctx, field)
 			case "topics":
 				return ec.fieldContext_User_topics(ctx, field)
 			case "dailyChallengeAvailable":
@@ -2835,6 +2942,61 @@ func (ec *executionContext) fieldContext_Query_getAllTopics(_ context.Context, f
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Topic", field.Name)
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_resendConfirmationEmail(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_resendConfirmationEmail(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ResendConfirmationEmail(rctx, fc.Args["email"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_resendConfirmationEmail(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_resendConfirmationEmail_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -3710,50 +3872,6 @@ func (ec *executionContext) _User_email(ctx context.Context, field graphql.Colle
 }
 
 func (ec *executionContext) fieldContext_User_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "User",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _User_password(ctx context.Context, field graphql.CollectedField, obj *models.User) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_User_password(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Password, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_User_password(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
@@ -6235,6 +6353,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "confirmEmail":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_confirmEmail(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "upsertCourse":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_upsertCourse(ctx, field)
@@ -6481,6 +6606,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getAllTopics(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "resendConfirmationEmail":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_resendConfirmationEmail(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -6782,11 +6929,6 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "email":
 			out.Values[i] = ec._User_email(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "password":
-			out.Values[i] = ec._User_password(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

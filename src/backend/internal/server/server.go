@@ -16,6 +16,7 @@ func StartServer(config config.Config) {
 		UserRepo:    config.UserRepo,
 		ProblemRepo: config.ProblemRepo,
 		TopicRepo:   config.TopicRepo,
+		AuthService: config.AuthService,
 	}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))

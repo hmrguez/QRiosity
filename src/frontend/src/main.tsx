@@ -17,6 +17,7 @@ import LearningPaths from "./learning/LearningPaths.tsx";
 import MyLearning from "./learning/MyLearning.tsx";
 import LandingPage from "./LandingPage.tsx";
 
+
 const router = createBrowserRouter([
 	{
 		path: "/",

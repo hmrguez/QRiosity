@@ -25,4 +25,30 @@ func main() {
 	}
 
 	server.StartServer(*appConfig)
+
+	//result, err := authService.Login("zealot.algo@gmail.com", "Test@1234")
+	//if err != nil {
+	//	fmt.Println("Login failed:", err)
+	//	return
+	//}
+
+	//result, err := authService.SignUp("zealotZ34L0T@gmail.com", "Nick", "Test@1234")
+	//if err != nil {
+	//	fmt.Println("Sign up failed:", err)
+	//	return
+	//}
+
+	//result, err := authService.ConfirmSignUp("zealot.algo@gmail.com", "842968")
+	//if err != nil {
+	//	fmt.Println("Congirmation failed", err)
+	//	return
+	//}
+
+	//result, err := authService.ResendConfirmationCode("zealotZ34L0T@gmail.com")
+	//if err != nil {
+	//	fmt.Println("Resend confirmation code failed:", err)
+	//	return
+	//}
+	//
+	//fmt.Println("Sign up successful:", result)
 }

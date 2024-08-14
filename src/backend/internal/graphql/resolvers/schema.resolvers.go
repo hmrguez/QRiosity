@@ -18,10 +18,9 @@ import (
 // UpsertUser is the resolver for the upsertUser field.
 func (r *mutationResolver) UpsertUser(ctx context.Context, input models.UserInput) (*models.User, error) {
 	user := models.User{
-		ID:       input.ID,
-		Name:     input.Name,
-		Email:    input.Email,
-		Password: input.Password,
+		ID:    input.ID,
+		Name:  input.Name,
+		Email: input.Email,
 	}
 	upsertedUser, err := r.UserRepo.UpsertUser(user)
 	if err != nil {
@@ -65,26 +64,32 @@ func (r *mutationResolver) DailyChallenge(ctx context.Context, username string, 
 
 // Register is the resolver for the register field.
 func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string, topics []string) (*models.AuthPayload, error) {
-	// First search for the user
-	_, err := r.UserRepo.GetUserByName(username)
-	if err == nil {
-		return nil, errors.New("User already exists")
+	// Register the user using CognitoAuthService
+	fmt.Print("Registering user")
+	fmt.Printf(r.AuthService.ClientId)
+	cognitoResponse, err := r.AuthService.SignUp(email, username, password)
+	if err != nil {
+		return nil, err
 	}
 
-	// If the user does not exist, create a new user
+	// Extract the username from the Cognito response
+	registeredUsername := cognitoResponse.UserSub
+
+	// Create a new user with the registered username
 	user := models.User{
-		Name:                    username,
-		Password:                password,
+		Name:                    *registeredUsername,
 		Email:                   email,
 		Topics:                  topics,
 		DailyChallengeAvailable: true,
 	}
 
+	// Insert the user into the repository
 	user, err = r.UserRepo.UpsertUser(user)
 	if err != nil {
 		return nil, err
 	}
 
+	// Generate a JWT token for the user
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": user.ID,
 		"exp":    time.Now().Add(time.Hour * 72).Unix(),
@@ -111,6 +116,16 @@ func (r *mutationResolver) AddTopics(ctx context.Context, names []string) ([]*mo
 		return nil, err
 	}
 	return topics, nil
+}
+
+// ConfirmEmail is the resolver for the confirmEmail field.
+func (r *mutationResolver) ConfirmEmail(ctx context.Context, email string, token string) (bool, error) {
+	_, err := r.AuthService.ConfirmSignUp(email, token)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // UpsertCourse is the resolver for the upsertCourse field.
@@ -160,35 +175,35 @@ func (r *queryResolver) DailyChallenge(ctx context.Context, category string) (*m
 
 // Login is the resolver for the login field.
 func (r *queryResolver) Login(ctx context.Context, username string, password string) (*models.AuthPayload, error) {
-	user, err := r.UserRepo.GetUserByName(username)
-	if err != nil || user.Password != password {
-		fmt.Println(username)
-		fmt.Printf("Error: %v\n", err)
-		fmt.Printf("User: %v\n", user)
-		fmt.Printf("Password: %v\n", password)
-		return nil, errors.New("invalid username or password")
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId":   user.ID,
-		"username": user.Name,
-		"exp":      time.Now().Add(time.Hour * 72).Unix(),
-	})
-
-	tokenString, err := token.SignedString(jwtSecret)
+	// TODO: Change parameter to email
+	// Authenticate the user using CognitoAuthService
+	cognitoResponse, err := r.AuthService.Login(username, password)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("invalid email or password")
 	}
+
+	// Extract the token from the Cognito response
+	tokenString := cognitoResponse.AuthenticationResult.IdToken
 
 	return &models.AuthPayload{
-		Token: tokenString,
-		User:  user,
+		Token: *tokenString,
+		User:  nil,
 	}, nil
 }
 
 // GetAllTopics is the resolver for the getAllTopics field.
 func (r *queryResolver) GetAllTopics(ctx context.Context) ([]*models.Topic, error) {
 	return r.TopicRepo.GetAllTopics(ctx)
+}
+
+// ResendConfirmationEmail is the resolver for the resendConfirmationEmail field.
+func (r *queryResolver) ResendConfirmationEmail(ctx context.Context, email string) (bool, error) {
+	_, err := r.AuthService.ResendConfirmationCode(email)
+	if err != nil {
+		return false, err
+	} else {
+		return true, nil
+	}
 }
 
 // GetQuizes is the resolver for the getQuizes field.
