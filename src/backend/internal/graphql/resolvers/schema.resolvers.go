@@ -102,7 +102,6 @@ func (r *mutationResolver) Register(ctx context.Context, username string, passwo
 
 	return &models.AuthPayload{
 		Token: tokenString,
-		User:  &user,
 	}, nil
 }
 
@@ -187,7 +186,6 @@ func (r *queryResolver) Login(ctx context.Context, username string, password str
 
 	return &models.AuthPayload{
 		Token: *tokenString,
-		User:  nil,
 	}, nil
 }
 

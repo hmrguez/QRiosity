@@ -20,7 +20,7 @@ class LearningService {
 
 	async getDailyChallengeAvailability(): Promise<boolean> {
 
-		const username = this.authService.getUsername();
+		const username = this.authService.getCognitoUsername();
 
 		const {data} = await this.client.query({
 			query: GET_DAILY_CHALLENGE_AVAILABILITY,

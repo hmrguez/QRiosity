@@ -5,10 +5,6 @@ const LOGIN_QUERY = gql`
     query Login($username: String!, $password: String!) {
         login(username: $username, password: $password) {
             token
-            user {
-                id
-                name
-            }
         }
     }
 `;
@@ -17,10 +13,6 @@ const REGISTER_MUTATION = gql`
     mutation Register($username: String!, $password: String!, $email: String!, $topics: [String!]!) {
         register(username: $username, password: $password, email: $email, topics: $topics) {
             token
-            user {
-                id
-                name
-            }
         }
     }
 `;
@@ -68,15 +60,26 @@ class AuthService {
 		return decoded.userId;
 	}
 
+	getCognitoUsername() {
+		const token = localStorage.getItem('token');
+		if (!token) {
+			return null;
+		}
+
+		const decoded: { sub: String } = jwtDecode(token);
+
+		return decoded.sub;
+	}
+
 	getUsername() {
 		const token = localStorage.getItem('token');
 		if (!token) {
 			return null;
 		}
 
-		const decoded: { username: string, userId: string, exp: Date } = jwtDecode(token);
+		const decoded: { name: String } = jwtDecode(token);
 
-		return decoded.username;
+		return decoded.name;
 	}
 
 	logout() {

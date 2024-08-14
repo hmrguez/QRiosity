@@ -50,7 +50,6 @@ input UserInput {
 
 type AuthPayload {
     token: String!
-    user: User!
 }
 
 type Problem {
