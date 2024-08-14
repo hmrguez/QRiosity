@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client';
 import AuthService from './AuthService';
-import image from '../assets/icons8-google.svg';
 import './Login.css';
 import {useAuth} from "./AuthContext.tsx";
 
@@ -30,7 +29,7 @@ const RegisterForm = () => {
             await authService.register(username, password, email, []);
             login();
             navigate('/confirm-email' + "?email=" + email);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             setError(err.message);
         }
@@ -84,15 +83,16 @@ const RegisterForm = () => {
 
                 <button type="submit" className="login-button">Register</button>
             </form>
-            <div className="divider">
-                <span>or</span>
-            </div>
-            <div className="google-wrapper">
-                <button className="google-login">
-                    <img src={image} alt="Google logo" />
-                    Sign up with Google
-                </button>
-            </div>
+            {/*TODO: Implement Google register*/}
+            {/*<div className="divider">*/}
+            {/*    <span>or</span>*/}
+            {/*</div>*/}
+            {/*<div className="google-wrapper">*/}
+            {/*    <button className="google-login">*/}
+            {/*        <img src={image} alt="Google logo" />*/}
+            {/*        Sign up with Google*/}
+            {/*    </button>*/}
+            {/*</div>*/}
         </div>
     );
 };

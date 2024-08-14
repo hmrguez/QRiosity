@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useApolloClient } from '@apollo/client';
 import AuthService from './AuthService';
 import { useAuth } from './AuthContext.tsx';
-import image from '../assets/icons8-google.svg'
 import './Login.css'
 
 const LoginForm = () => {
@@ -57,15 +56,16 @@ const LoginForm = () => {
 
 				<button type="submit" className="login-button">Log In</button>
 			</form>
-			<div className="divider">
-				<span>or</span>
-			</div>
-			<div className="google-wrapper">
-				<button className="google-login">
-					<img src={image} alt="Google logo"/>
-					Sign in with Google
-				</button>
-			</div>
+			{/*TODO: Implement Google login*/}
+			{/*<div className="divider">*/}
+			{/*	<span>or</span>*/}
+			{/*</div>*/}
+			{/*<div className="google-wrapper">*/}
+			{/*	<button className="google-login">*/}
+			{/*		<img src={image} alt="Google logo"/>*/}
+			{/*		Sign in with Google*/}
+			{/*	</button>*/}
+			{/*</div>*/}
 
 			<div className="signup-link">
 				<Link to="/register">Don't have an account yet? Sign up</Link>
