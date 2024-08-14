@@ -7,7 +7,7 @@
     margin: 10rem auto 10rem;
 }
 
-.logo {
+.login-container .logo {
     font-size: 24px;
     font-weight: bold;
     text-align: center;
@@ -15,17 +15,17 @@
     color: #333;
 }
 
-form {
+.login-container form {
     display: flex;
     flex-direction: column;
 }
 
-label {
+.login-container label {
     margin-bottom: 5px;
     color: #666;
 }
 
-input {
+.login-container input {
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
@@ -33,7 +33,7 @@ input {
     font-size: 16px;
 }
 
-.login-button {
+.login-container .login-button {
     background-color: #333;
     color: #fff;
     padding: 12px;
@@ -45,45 +45,45 @@ input {
     transition: background-color 0.3s;
 }
 
-.login-button:hover {
+.login-container .login-button:hover {
     background-color: #555;
 }
 
-.forgot-password {
+.login-container .forgot-password {
     text-align: center;
     margin-top: 15px;
 }
 
-.forgot-password a {
+.login-container .forgot-password a {
     color: #666;
     text-decoration: none;
 }
 
-.forgot-password a:hover {
+.login-container .forgot-password a:hover {
     text-decoration: underline;
 }
 
-.divider {
+.login-container .divider {
     display: flex;
     align-items: center;
     text-align: center;
     margin: 20px 0;
 }
 
-.divider::before,
-.divider::after {
+.login-container .divider::before,
+.login-container .divider::after {
     content: '';
     flex: 1;
     border-bottom: 1px solid #ddd;
 }
 
-.divider span {
+.login-container .divider span {
     padding: 0 10px;
     color: #666;
     font-size: 14px;
 }
 
-.google-login {
+.login-container .google-login {
     background: none;
     color: #757575;
     border: 1px solid #ddd;
@@ -99,38 +99,63 @@ input {
     transition: background-color 0.3s;
 }
 
-.google-login:hover {
+.login-container .google-login:hover {
     background-color: #f5f5f5;
 }
 
-.google-wrapper {
+.login-container .google-wrapper {
     text-align: center;
     margin-top: 20px;
     display: flex;
     justify-content: center;
 }
 
-.google-login img {
+.login-container .google-login img {
     width: 18px;
     height: 18px;
     margin-right: 10px;
     background: none;
 }
 
-.error-message {
+.login-container .error-message {
     color: red;
     margin-bottom: 15px;
 }
 
-.signup-link {
+.login-container .signup-link {
     text-align: center;
     margin-top: 20px;
 }
-.signup-link a {
+.login-container .signup-link a {
     color: #333;
     text-decoration: none;
     font-weight: bold;
 }
-.signup-link a:hover {
+.login-container .signup-link a:hover {
     text-decoration: underline;
+}
+
+.login-container .button-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.login-container .back-button,
+.login-container .next-button,
+.login-container .register-button {
+    background-color: #333;
+    color: #fff;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.login-container .back-button:hover,
+.login-container .next-button:hover,
+.login-container .register-button:hover {
+    background-color: #555;
 }
