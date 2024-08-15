@@ -91,7 +91,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		DailyChallenge          func(childComplexity int, category string) int
+		DailyChallenge          func(childComplexity int, userID string) int
 		GetAllTopics            func(childComplexity int) int
 		GetCourses              func(childComplexity int) int
 		GetLessons              func(childComplexity int) int
@@ -147,7 +147,7 @@ type QueryResolver interface {
 	GetUserByName(ctx context.Context, name string) (*models.User, error)
 	GetProblems(ctx context.Context) ([]*models.Problem, error)
 	GetUser(ctx context.Context, id string) (*models.User, error)
-	DailyChallenge(ctx context.Context, category string) (*models.Problem, error)
+	DailyChallenge(ctx context.Context, userID string) (*models.Problem, error)
 	Login(ctx context.Context, username string, password string) (*models.AuthPayload, error)
 	GetAllTopics(ctx context.Context) ([]*models.Topic, error)
 	ResendConfirmationEmail(ctx context.Context, email string) (bool, error)
@@ -408,7 +408,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.DailyChallenge(childComplexity, args["category"].(string)), true
+		return e.complexity.Query.DailyChallenge(childComplexity, args["userId"].(string)), true
 
 	case "Query.getAllTopics":
 		if e.complexity.Query.GetAllTopics == nil {
@@ -788,7 +788,7 @@ type ChallengeResponse {
     userId: ID!
     question: String!
     answer: String!
-    rating: String!
+    rating: Int!
     insight: String!
 }
 
@@ -797,7 +797,7 @@ type Query {
     getUserByName(name: String!): User!
     getProblems: [Problem!]!
     getUser(id: ID!): User
-    dailyChallenge(category: String!): Problem
+    dailyChallenge(userId: String!): Problem
     login(username: String!, password: String!): AuthPayload!
     getAllTopics: [Topic!]!
 
@@ -1055,14 +1055,14 @@ func (ec *executionContext) field_Query_dailyChallenge_args(ctx context.Context,
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["category"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+	if tmp, ok := rawArgs["userId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["category"] = arg0
+	args["userId"] = arg0
 	return args, nil
 }
 
@@ -1375,9 +1375,9 @@ func (ec *executionContext) _ChallengeResponse_rating(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(int)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ChallengeResponse_rating(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1387,7 +1387,7 @@ func (ec *executionContext) fieldContext_ChallengeResponse_rating(_ context.Cont
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2718,7 +2718,7 @@ func (ec *executionContext) _Query_dailyChallenge(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().DailyChallenge(rctx, fc.Args["category"].(string))
+		return ec.resolvers.Query().DailyChallenge(rctx, fc.Args["userId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7421,6 +7421,21 @@ func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

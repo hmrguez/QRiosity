@@ -14,17 +14,6 @@ interface DailyChallengeResult {
 	insight: string;
 }
 
-const GET_DAILY_CHALLENGE = gql`
-    query {
-        dailyChallenge(category: "javascript") {
-            id
-            question
-            categories
-            type
-        }
-    }
-`;
-
 const SUBMIT_DAILY_CHALLENGE = gql`
     mutation SubmitDailyChallenge($username: String!, $question: String!, $answer: String!) {
         dailyChallenge(username: $username, question: $question, answer: $answer) {
@@ -45,6 +34,21 @@ interface DailyChallengeProps {
 }
 
 const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHide, onCorrectSubmit}) => {
+	const client = useApolloClient();
+	const authService = new AuthService(client);
+	const username = authService.getCognitoUsername();
+
+    const GET_DAILY_CHALLENGE = gql`
+        query {
+            dailyChallenge(userId: "${username}") {
+                id
+                question
+                categories
+                type
+            }
+        }
+	`;
+
 	const {loading, error, data} = useQuery(GET_DAILY_CHALLENGE);
 	const [submitDailyChallenge] = useMutation(SUBMIT_DAILY_CHALLENGE);
 	const [result, setResult] = useState<DailyChallengeResult | null>(null);
@@ -53,9 +57,6 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 	const [resultLoading, setResultLoading] = useState(false);
 	const [buttonIcon, setButtonIcon] = useState('pi pi-check');
 	const [buttonLabel, setButtonLabel] = useState('Submit');
-
-	const client = useApolloClient();
-	const authService = new AuthService(client);
 
 	useEffect(() => {
 		if (result) {
@@ -71,7 +72,6 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 			}
 		}
 	}, [result]);
-
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error.message}</div>;
@@ -89,7 +89,7 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 		try {
 			const {data} = await submitDailyChallenge({
 				variables: {
-					username: authService.getUsername(),
+					username: authService.getCognitoUsername(),
 					question: dailyChallenge.question,
 					answer: answer
 				}

@@ -10,6 +10,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand"
 )
 
 // UpsertUser is the resolver for the upsertUser field.
@@ -148,8 +149,17 @@ func (r *queryResolver) GetUser(ctx context.Context, id string) (*models.User, e
 }
 
 // DailyChallenge is the resolver for the dailyChallenge field.
-func (r *queryResolver) DailyChallenge(ctx context.Context, category string) (*models.Problem, error) {
-	problem, err := r.ProblemRepo.GetDailyChallenge(category)
+func (r *queryResolver) DailyChallenge(ctx context.Context, userID string) (*models.Problem, error) {
+	// Get the user with userID
+	user, err := r.UserRepo.GetUserByName(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	//Get a random topic from the user
+	i := rand.Int() % len(user.Topics)
+
+	problem, err := r.ProblemRepo.GetDailyChallenge(user.Topics[i])
 	if err != nil {
 		return nil, err
 	}

@@ -53,6 +53,8 @@ func (s *LLMServiceImpl) RateQuestion(question, answer string) (models.Challenge
 		return challengeResponse, err
 	}
 
+	fmt.Println("Url:", url)
+
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		return challengeResponse, err

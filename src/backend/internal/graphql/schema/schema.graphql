@@ -69,7 +69,7 @@ type ChallengeResponse {
     userId: ID!
     question: String!
     answer: String!
-    rating: String!
+    rating: Int!
     insight: String!
 }
 
@@ -78,7 +78,7 @@ type Query {
     getUserByName(name: String!): User!
     getProblems: [Problem!]!
     getUser(id: ID!): User
-    dailyChallenge(category: String!): Problem
+    dailyChallenge(userId: String!): Problem
     login(username: String!, password: String!): AuthPayload!
     getAllTopics: [Topic!]!
 

@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -40,9 +41,9 @@ func (s *LMStudioService) RateQuestion(question, answer string) (models.Challeng
 
 	// Extract the first number found in the insight as the rating
 	re := regexp.MustCompile(`\d+`)
-	rating := "0"
+	rating := 0
 	if match := re.FindString(insight); match != "" {
-		rating = match
+		rating, _ = strconv.Atoi(match)
 	}
 
 	return models.ChallengeResponse{

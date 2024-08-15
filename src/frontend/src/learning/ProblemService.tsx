@@ -8,10 +8,10 @@ class ProblemService {
 		this.client = client;
 	}
 
-	async getDailyChallenge(category: string): Promise<any> {
+	async getDailyChallenge(userId: string): Promise<any> {
         const query = gql`
             query {
-                dailyChallenge(category: "${category}") {
+                dailyChallenge(userId: "${userId}") {
                     id
                     question
                     categories

@@ -14,7 +14,7 @@ type ChallengeResponse struct {
 	UserID   string `json:"userId"`
 	Question string `json:"question"`
 	Answer   string `json:"answer"`
-	Rating   string `json:"rating"`
+	Rating   int    `json:"rating"`
 	Insight  string `json:"insight"`
 }
 
