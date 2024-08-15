@@ -1,4 +1,4 @@
-package main
+package get_user
 
 import (
 	"backend/internal/config"

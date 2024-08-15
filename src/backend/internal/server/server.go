@@ -4,7 +4,7 @@ import (
 	"backend/internal/config"
 	"backend/internal/graphql/generated"
 	"backend/internal/graphql/resolvers"
-	"github.com/99designs/gqlgen/graphql/handler"
+	h "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/handlers"
 	"log"
@@ -12,7 +12,7 @@ import (
 )
 
 func StartServer(config config.Config) {
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers.Resolver{
+	srv := h.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers.Resolver{
 		UserRepo:    config.UserRepo,
 		ProblemRepo: config.ProblemRepo,
 		TopicRepo:   config.TopicRepo,
