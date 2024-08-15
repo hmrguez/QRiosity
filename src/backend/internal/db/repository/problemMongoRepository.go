@@ -9,10 +9,10 @@ type MongoDBProblemRepository struct {
 	services.LLMService
 }
 
-func NewMongoDBProblemRepository() *MongoDBProblemRepository {
+func NewMongoDBProblemRepository(llmService services.LLMService) *MongoDBProblemRepository {
 
 	return &MongoDBProblemRepository{
-		LLMService: services.NewLDefaultLMStudioService(),
+		LLMService: llmService,
 	}
 
 }

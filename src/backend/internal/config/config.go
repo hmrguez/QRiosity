@@ -35,11 +35,13 @@ func NewLocalConfig() *Config {
 		os.Getenv("COGNITO_USER_POOL_REGION"),
 	)
 
+	localLlmService := services.NewLDefaultLMStudioService()
+
 	return &Config{
 		Port:        ":9000",
 		UserRepo:    userRepo,
 		AuthService: authService,
-		ProblemRepo: repository.NewMongoDBProblemRepository(),
+		ProblemRepo: repository.NewMongoDBProblemRepository(localLlmService),
 		TopicRepo:   topicRepo,
 	}
 }
@@ -64,10 +66,12 @@ func NewProdConfig() *Config {
 		os.Getenv("COGNITO_USER_POOL_REGION"),
 	)
 
+	llmService := services.NewLLMService()
+
 	return &Config{
 		Port:        ":9000",
 		UserRepo:    userRepo,
-		ProblemRepo: repository.NewMongoDBProblemRepository(),
+		ProblemRepo: repository.NewMongoDBProblemRepository(llmService),
 		TopicRepo:   repository.NewDynamoDBTopicRepository(sess, "Qriosity-Topics"),
 		AuthService: authService,
 	}
