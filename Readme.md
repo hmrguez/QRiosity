@@ -3,8 +3,8 @@
 ## TODO
 
 - [x] Landing Page
-- [ ] AWS Amplify
-- [ ] Cognito Signin
+- [x] Cognito Signin
+- [ ] Setup LLM with OpenAI and daily challenges from user topics
 - [ ] DynamoDB repository for .env=PROD
 - [ ] AppSync setup
 - [ ] Roadmaps, Courses and Lessons
