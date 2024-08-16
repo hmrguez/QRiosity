@@ -15,13 +15,13 @@ func main() {
 	}
 
 	env := os.Getenv("ENV")
+	var appConfig *config.Config
 
 	if env == "prod" {
-		server.LambdaServer()
-		//appConfig = config.NewProdConfig()
+		appConfig = config.NewProdConfig()
 	} else {
-		var appConfig *config.Config = config.NewLocalConfig()
-		server.StartServer(*appConfig)
+		appConfig = config.NewLocalConfig()
 	}
+	server.StartServer(*appConfig)
 
 }

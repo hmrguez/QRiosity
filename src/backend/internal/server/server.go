@@ -13,10 +13,7 @@ import (
 
 func StartServer(config config.Config) {
 	srv := h.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolvers.Resolver{
-		UserRepo:    config.UserRepo,
-		ProblemRepo: config.ProblemRepo,
-		TopicRepo:   config.TopicRepo,
-		AuthService: config.AuthService,
+		Config: config,
 	}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))

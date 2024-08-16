@@ -16,7 +16,6 @@ import (
 // Register is the resolver for the register field.
 func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string, topics []string) (string, error) {
 	// Register the user using CognitoAuthService
-	fmt.Print("Registering user")
 	fmt.Printf(r.AuthService.ClientId)
 	cognitoResponse, err := r.AuthService.SignUp(email, username, password)
 	if err != nil {
@@ -55,7 +54,7 @@ func (r *mutationResolver) ConfirmEmail(ctx context.Context, email string, token
 
 // DailyChallenge is the resolver for the dailyChallenge field.
 func (r *mutationResolver) DailyChallenge(ctx context.Context, username string, question string, answer string) (*models.ChallengeResponse, error) {
-	response, err := r.ProblemRepo.SubmitChallengeResponse(username, question, answer)
+	response, err := r.DailyChallengeService.RateQuestion(question, answer)
 	if err != nil {
 		return nil, err
 	}
@@ -150,11 +149,11 @@ func (r *queryResolver) DailyChallenge(ctx context.Context, userID string) (*mod
 	//Get a random topic from the user
 	i := rand.Int() % len(user.Topics)
 
-	problem, err := r.ProblemRepo.GetDailyChallenge(user.Topics[i])
+	problem, err := r.DailyChallengeService.GetQuestion(user.Topics[i])
 	if err != nil {
 		return nil, err
 	}
-	return problem, nil
+	return &problem, nil
 }
 
 // GetAllTopics is the resolver for the getAllTopics field.

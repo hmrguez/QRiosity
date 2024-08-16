@@ -62,38 +62,9 @@ func (r *DynamoDBUserRepository) GetUsers() []*models.User {
 	return users
 }
 
-func (r *DynamoDBUserRepository) GetUserByID(id string) (*models.User, error) {
-	input := &dynamodb.GetItemInput{
-		TableName: aws.String(r.tableName),
-		Key: map[string]*dynamodb.AttributeValue{
-			"id": {
-				S: aws.String(id),
-			},
-		},
-	}
-
-	result, err := r.client.GetItem(input)
-	if err != nil {
-		return nil, err
-	}
-
-	if result.Item == nil {
-		return nil, fmt.Errorf("user not found")
-	}
-
-	var user models.User
-	err = dynamodbattribute.UnmarshalMap(result.Item, &user)
-	if err != nil {
-		return nil, err
-	}
-
-	return &user, nil
-}
-
 func (r *DynamoDBUserRepository) GetUserByName(name string) (*models.User, error) {
 	input := &dynamodb.QueryInput{
 		TableName: aws.String(r.tableName),
-		IndexName: aws.String("NameIndex"), // Assuming there is a secondary index on the name attribute
 		KeyConditions: map[string]*dynamodb.Condition{
 			"name": {
 				ComparisonOperator: aws.String("EQ"),

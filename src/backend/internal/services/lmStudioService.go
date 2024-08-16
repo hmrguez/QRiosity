@@ -71,7 +71,6 @@ func (s *LMStudioService) GetQuestion(category string) (models.Problem, error) {
 	}
 
 	return models.Problem{
-		ID:         "",
 		Question:   question,
 		Categories: append(make([]string, 0), category),
 		Type:       "LLM Asking",

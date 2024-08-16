@@ -36,11 +36,11 @@ func (r *MongoDBUserRepository) UpsertUser(user models.User) (models.User, error
 
 	if user.Name == "" {
 		// Insert new user
-		result, err := r.collection.InsertOne(ctx, user)
+		_, err := r.collection.InsertOne(ctx, user)
 		if err != nil {
 			return models.User{}, err
 		} else {
-			user.ID = result.InsertedID.(primitive.ObjectID).Hex()
+			//user.ID = result.InsertedID.(primitive.ObjectID).Hex()
 		}
 	} else {
 		// Update existing user

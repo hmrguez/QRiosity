@@ -41,7 +41,6 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
     const GET_DAILY_CHALLENGE = gql`
         query {
             dailyChallenge(userId: "${username}") {
-                id
                 question
                 categories
                 type

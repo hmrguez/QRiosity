@@ -9,17 +9,17 @@ import (
 	"os"
 )
 
-type LLMServiceImpl struct {
+type DailyChallengeService struct {
 	baseURL string
 }
 
-func NewLLMService() *LLMServiceImpl {
-	return &LLMServiceImpl{
+func NewDailyChallengeService() *DailyChallengeService {
+	return &DailyChallengeService{
 		baseURL: os.Getenv("AI_API_URL"),
 	}
 }
 
-func (s *LLMServiceImpl) GetQuestion(category string) (models.Problem, error) {
+func (s *DailyChallengeService) GetQuestion(category string) (models.Problem, error) {
 	var problem models.Problem
 	url := fmt.Sprintf("%s/ask_question?topic=%s", s.baseURL, category)
 	resp, err := http.Get(url)
@@ -40,7 +40,7 @@ func (s *LLMServiceImpl) GetQuestion(category string) (models.Problem, error) {
 	return problem, nil
 }
 
-func (s *LLMServiceImpl) RateQuestion(question, answer string) (models.ChallengeResponse, error) {
+func (s *DailyChallengeService) RateQuestion(question, answer string) (models.ChallengeResponse, error) {
 	var challengeResponse models.ChallengeResponse
 	url := fmt.Sprintf("%s/rate_question", s.baseURL)
 

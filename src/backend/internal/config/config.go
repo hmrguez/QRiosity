@@ -10,11 +10,11 @@ import (
 )
 
 type Config struct {
-	Port        string
-	UserRepo    repository.IUserRepository
-	ProblemRepo repository.IProblemRepository
-	TopicRepo   repository.ITopicRepository
-	AuthService services.CognitoAuthService
+	Port                  string
+	UserRepo              repository.IUserRepository
+	DailyChallengeService services.IDailyChallengeService
+	TopicRepo             repository.ITopicRepository
+	AuthService           services.CognitoAuthService
 }
 
 func NewLocalConfig() *Config {
@@ -35,14 +35,12 @@ func NewLocalConfig() *Config {
 		os.Getenv("COGNITO_USER_POOL_REGION"),
 	)
 
-	localLlmService := services.NewLDefaultLMStudioService()
-
 	return &Config{
-		Port:        ":9000",
-		UserRepo:    userRepo,
-		AuthService: authService,
-		ProblemRepo: repository.NewMongoDBProblemRepository(localLlmService),
-		TopicRepo:   topicRepo,
+		Port:                  ":9000",
+		UserRepo:              userRepo,
+		AuthService:           authService,
+		TopicRepo:             topicRepo,
+		DailyChallengeService: services.NewLDefaultLMStudioService(),
 	}
 }
 
@@ -55,10 +53,9 @@ func NewProdConfig() *Config {
 		log.Fatalf("Failed to create session: %v", err)
 	}
 
-	//userRepo, err := repository.NewMongoDBUserRepository("mongodb://localhost:27017", "saas", "users")
 	userRepo, err := repository.NewDynamoDBUserRepository(sess, "Qriosity-Users")
 	if err != nil {
-		panic("Couldn't connnect to mongodb: " + err.Error())
+		panic("Couldn't connect to dynamo: " + err.Error())
 	}
 
 	authService := *services.NewCognitoAuthService(
@@ -67,13 +64,11 @@ func NewProdConfig() *Config {
 		os.Getenv("COGNITO_USER_POOL_REGION"),
 	)
 
-	llmService := services.NewLLMService()
-
 	return &Config{
-		Port:        ":9000",
-		UserRepo:    userRepo,
-		ProblemRepo: repository.NewMongoDBProblemRepository(llmService),
-		TopicRepo:   repository.NewDynamoDBTopicRepository(sess, "Qriosity-Topics"),
-		AuthService: authService,
+		Port:                  ":9000",
+		UserRepo:              userRepo,
+		TopicRepo:             repository.NewDynamoDBTopicRepository(sess, "Qriosity-Topics"),
+		AuthService:           authService,
+		DailyChallengeService: services.NewDailyChallengeService(),
 	}
 }
