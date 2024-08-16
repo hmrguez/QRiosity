@@ -7,7 +7,7 @@ import (
 
 type Resolver struct {
 	AuthService services.CognitoAuthService
-	UserRepo    repository.UserRepository
-	ProblemRepo repository.ProblemRepository
-	TopicRepo   repository.TopicRepository
+	UserRepo    repository.IUserRepository
+	ProblemRepo repository.IProblemRepository
+	TopicRepo   repository.ITopicRepository
 }

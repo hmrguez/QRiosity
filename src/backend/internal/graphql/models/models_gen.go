@@ -57,7 +57,6 @@ type Mutation struct {
 }
 
 type Problem struct {
-	ID         string   `json:"id"`
 	Question   string   `json:"question"`
 	Categories []string `json:"categories"`
 	Type       string   `json:"type"`
@@ -107,16 +106,8 @@ type Topic struct {
 }
 
 type User struct {
-	ID                      string   `json:"id"`
 	Name                    string   `json:"name"`
 	Email                   string   `json:"email"`
 	Topics                  []string `json:"topics,omitempty"`
 	DailyChallengeAvailable bool     `json:"dailyChallengeAvailable"`
-}
-
-type UserInput struct {
-	ID       string `json:"_id"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
 }

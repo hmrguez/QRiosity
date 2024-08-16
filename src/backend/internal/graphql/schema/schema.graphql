@@ -1,5 +1,4 @@
 type User {
-    id: ID!
     name: String!
     email: String!
     topics: [String!]
@@ -40,20 +39,11 @@ type Roadmap {
     courses: [Course!]!
 }
 
-input UserInput {
-    _id: String!
-    name: String!
-    email: String!
-    password: String!
-}
-
-
 type AuthPayload {
     token: String!
 }
 
 type Problem {
-    id: ID!
     question: String!
     categories: [String!]!
     type: String!
@@ -74,16 +64,17 @@ type ChallengeResponse {
 }
 
 type Query {
+    # Auth
+    login(username: String!, password: String!): AuthPayload!
     getUsers: [User!]!
     getUserByName(name: String!): User!
-    getProblems: [Problem!]!
-    getUser(id: ID!): User
-    dailyChallenge(userId: String!): Problem
-    login(username: String!, password: String!): AuthPayload!
-    getAllTopics: [Topic!]!
-
     resendConfirmationEmail(email: String!): Boolean!
 
+    # Daily
+    dailyChallenge(userId: String!): Problem
+
+    # Learning
+    getAllTopics: [Topic!]!
     getQuizes: [Quiz!]!
     getLessons: [Lesson!]!
     getCourses: [Course!]!
@@ -91,14 +82,15 @@ type Query {
 }
 
 type Mutation {
-    upsertUser(input: UserInput!): User!
-    upsertProblem(input: ProblemInput!): Problem!
-    dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
+    # Auth
     register(username: String!, password: String!, email: String!, topics: [String!]): String!
-    addTopics(names: [String!]!): [Topic!]!
-
     confirmEmail(email: String!, token: String!): Boolean!
 
+    # Daily
+    dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
+
+    # Learning
+    addTopics(names: [String!]!): [Topic!]!
     upsertCourse(input: CourseInput!): Course!
     upsertRoadmap(input: RoadmapInput!): Roadmap!
 }

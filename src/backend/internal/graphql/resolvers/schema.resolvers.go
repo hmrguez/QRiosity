@@ -13,53 +13,6 @@ import (
 	"math/rand"
 )
 
-// UpsertUser is the resolver for the upsertUser field.
-func (r *mutationResolver) UpsertUser(ctx context.Context, input models.UserInput) (*models.User, error) {
-	user := models.User{
-		ID:    input.ID,
-		Name:  input.Name,
-		Email: input.Email,
-	}
-	upsertedUser, err := r.UserRepo.UpsertUser(user)
-	if err != nil {
-		return nil, err
-	}
-	return &upsertedUser, nil
-}
-
-// UpsertProblem is the resolver for the upsertProblem field.
-func (r *mutationResolver) UpsertProblem(ctx context.Context, input models.ProblemInput) (*models.Problem, error) {
-	problem := models.Problem{
-		Question:   input.Question,
-		Categories: input.Categories,
-		Type:       input.Type,
-	}
-	upsertedProblem := r.ProblemRepo.UpsertProblem(problem)
-	return &upsertedProblem, nil
-}
-
-// DailyChallenge is the resolver for the dailyChallenge field.
-func (r *mutationResolver) DailyChallenge(ctx context.Context, username string, question string, answer string) (*models.ChallengeResponse, error) {
-	response, err := r.ProblemRepo.SubmitChallengeResponse(username, question, answer)
-	if err != nil {
-		return nil, err
-	}
-
-	// Update the user's daily challenge availability
-	user, err := r.UserRepo.GetUserByName(username)
-	if err != nil {
-		return nil, err
-	}
-
-	user.DailyChallengeAvailable = false
-	_, err = r.UserRepo.UpsertUser(*user)
-	if err != nil {
-		return nil, err
-	}
-
-	return &response, nil
-}
-
 // Register is the resolver for the register field.
 func (r *mutationResolver) Register(ctx context.Context, username string, password string, email string, topics []string) (string, error) {
 	// Register the user using CognitoAuthService
@@ -90,6 +43,38 @@ func (r *mutationResolver) Register(ctx context.Context, username string, passwo
 	return *registeredUsername, nil
 }
 
+// ConfirmEmail is the resolver for the confirmEmail field.
+func (r *mutationResolver) ConfirmEmail(ctx context.Context, email string, token string) (bool, error) {
+	_, err := r.AuthService.ConfirmSignUp(email, token)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+// DailyChallenge is the resolver for the dailyChallenge field.
+func (r *mutationResolver) DailyChallenge(ctx context.Context, username string, question string, answer string) (*models.ChallengeResponse, error) {
+	response, err := r.ProblemRepo.SubmitChallengeResponse(username, question, answer)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the user's daily challenge availability
+	user, err := r.UserRepo.GetUserByName(username)
+	if err != nil {
+		return nil, err
+	}
+
+	user.DailyChallengeAvailable = false
+	_, err = r.UserRepo.UpsertUser(*user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}
+
 // AddTopics is the resolver for the addTopics field.
 func (r *mutationResolver) AddTopics(ctx context.Context, names []string) ([]*models.Topic, error) {
 	var topics []*models.Topic
@@ -102,16 +87,6 @@ func (r *mutationResolver) AddTopics(ctx context.Context, names []string) ([]*mo
 	return topics, nil
 }
 
-// ConfirmEmail is the resolver for the confirmEmail field.
-func (r *mutationResolver) ConfirmEmail(ctx context.Context, email string, token string) (bool, error) {
-	_, err := r.AuthService.ConfirmSignUp(email, token)
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
 // UpsertCourse is the resolver for the upsertCourse field.
 func (r *mutationResolver) UpsertCourse(ctx context.Context, input models.CourseInput) (*models.Course, error) {
 	panic(fmt.Errorf("not implemented: UpsertCourse - upsertCourse"))
@@ -120,6 +95,23 @@ func (r *mutationResolver) UpsertCourse(ctx context.Context, input models.Course
 // UpsertRoadmap is the resolver for the upsertRoadmap field.
 func (r *mutationResolver) UpsertRoadmap(ctx context.Context, input models.RoadmapInput) (*models.Roadmap, error) {
 	panic(fmt.Errorf("not implemented: UpsertRoadmap - upsertRoadmap"))
+}
+
+// Login is the resolver for the login field.
+func (r *queryResolver) Login(ctx context.Context, username string, password string) (*models.AuthPayload, error) {
+	// TODO: Change parameter to email
+	// Authenticate the user using CognitoAuthService
+	cognitoResponse, err := r.AuthService.Login(username, password)
+	if err != nil {
+		return nil, errors.New("invalid email or password")
+	}
+
+	// Extract the token from the Cognito response
+	tokenString := cognitoResponse.AuthenticationResult.IdToken
+
+	return &models.AuthPayload{
+		Token: *tokenString,
+	}, nil
 }
 
 // GetUsers is the resolver for the getUsers field.
@@ -137,15 +129,14 @@ func (r *queryResolver) GetUserByName(ctx context.Context, name string) (*models
 	return user, nil
 }
 
-// GetProblems is the resolver for the getProblems field.
-func (r *queryResolver) GetProblems(ctx context.Context) ([]*models.Problem, error) {
-	problems := r.ProblemRepo.GetProblems()
-	return problems, nil
-}
-
-// GetUser is the resolver for the getUser field.
-func (r *queryResolver) GetUser(ctx context.Context, id string) (*models.User, error) {
-	return r.UserRepo.GetUserByID(id)
+// ResendConfirmationEmail is the resolver for the resendConfirmationEmail field.
+func (r *queryResolver) ResendConfirmationEmail(ctx context.Context, email string) (bool, error) {
+	_, err := r.AuthService.ResendConfirmationCode(email)
+	if err != nil {
+		return false, err
+	} else {
+		return true, nil
+	}
 }
 
 // DailyChallenge is the resolver for the dailyChallenge field.
@@ -166,36 +157,9 @@ func (r *queryResolver) DailyChallenge(ctx context.Context, userID string) (*mod
 	return problem, nil
 }
 
-// Login is the resolver for the login field.
-func (r *queryResolver) Login(ctx context.Context, username string, password string) (*models.AuthPayload, error) {
-	// TODO: Change parameter to email
-	// Authenticate the user using CognitoAuthService
-	cognitoResponse, err := r.AuthService.Login(username, password)
-	if err != nil {
-		return nil, errors.New("invalid email or password")
-	}
-
-	// Extract the token from the Cognito response
-	tokenString := cognitoResponse.AuthenticationResult.IdToken
-
-	return &models.AuthPayload{
-		Token: *tokenString,
-	}, nil
-}
-
 // GetAllTopics is the resolver for the getAllTopics field.
 func (r *queryResolver) GetAllTopics(ctx context.Context) ([]*models.Topic, error) {
 	return r.TopicRepo.GetAllTopics(ctx)
-}
-
-// ResendConfirmationEmail is the resolver for the resendConfirmationEmail field.
-func (r *queryResolver) ResendConfirmationEmail(ctx context.Context, email string) (bool, error) {
-	_, err := r.AuthService.ResendConfirmationCode(email)
-	if err != nil {
-		return false, err
-	} else {
-		return true, nil
-	}
 }
 
 // GetQuizes is the resolver for the getQuizes field.
@@ -226,11 +190,3 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-var jwtSecret = []byte("your_secret_key")

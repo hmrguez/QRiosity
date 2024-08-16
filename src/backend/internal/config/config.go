@@ -11,9 +11,9 @@ import (
 
 type Config struct {
 	Port        string
-	UserRepo    repository.UserRepository
-	ProblemRepo repository.ProblemRepository
-	TopicRepo   repository.TopicRepository
+	UserRepo    repository.IUserRepository
+	ProblemRepo repository.IProblemRepository
+	TopicRepo   repository.ITopicRepository
 	AuthService services.CognitoAuthService
 }
 
@@ -55,7 +55,8 @@ func NewProdConfig() *Config {
 		log.Fatalf("Failed to create session: %v", err)
 	}
 
-	userRepo, err := repository.NewMongoDBUserRepository("mongodb://localhost:27017", "saas", "users")
+	//userRepo, err := repository.NewMongoDBUserRepository("mongodb://localhost:27017", "saas", "users")
+	userRepo, err := repository.NewDynamoDBUserRepository(sess, "Qriosity-Users")
 	if err != nil {
 		panic("Couldn't connnect to mongodb: " + err.Error())
 	}
