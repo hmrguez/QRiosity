@@ -18,7 +18,9 @@ const REGISTER_MUTATION = gql`
 
 const CONFIRM_EMAIL_MUTATION = gql`
     mutation ConfirmEmail($email: String!, $token: String!) {
-        confirmEmail(email: $email, token: $token)
+        confirmEmail(email: $email, token: $token){
+			success
+		}
     }
 `;
 

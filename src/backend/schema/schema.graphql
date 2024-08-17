@@ -25,6 +25,10 @@ type Lesson {
 
 union Content = Quiz | Lesson
 
+type BareResponse {
+    success: Boolean!
+}
+
 type Course {
     id: ID!
     name: String!
@@ -68,7 +72,7 @@ type Query {
     login(username: String!, password: String!): AuthPayload!
     getUsers: [User!]!
     getUserByName(name: String!): User!
-    resendConfirmationEmail(email: String!): Boolean!
+    resendConfirmationEmail(email: String!): BareResponse!
 
     # Daily
     dailyChallenge(userId: String!): Problem
@@ -84,7 +88,7 @@ type Query {
 type Mutation {
     # Auth
     register(username: String!, password: String!, email: String!, topics: [String!]): String!
-    confirmEmail(email: String!, token: String!): Boolean!
+    confirmEmail(email: String!, token: String!): BareResponse!
 
     # Daily
     dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
