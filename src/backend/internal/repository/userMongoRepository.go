@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"backend/internal/graphql/models"
+	"backend/internal/domain"
 	"context"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,7 +30,7 @@ func NewMongoDBUserRepository(uri, dbName, collectionName string) (*MongoDBUserR
 	}, nil
 }
 
-func (r *MongoDBUserRepository) UpsertUser(user models.User) (models.User, error) {
+func (r *MongoDBUserRepository) UpsertUser(user domain.User) (domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -38,7 +38,7 @@ func (r *MongoDBUserRepository) UpsertUser(user models.User) (models.User, error
 		// Insert new user
 		_, err := r.collection.InsertOne(ctx, user)
 		if err != nil {
-			return models.User{}, err
+			return domain.User{}, err
 		} else {
 			//user.ID = result.InsertedID.(primitive.ObjectID).Hex()
 		}
@@ -52,14 +52,14 @@ func (r *MongoDBUserRepository) UpsertUser(user models.User) (models.User, error
 
 		_, err := r.collection.UpdateOne(ctx, filter, update, opts)
 		if err != nil {
-			return models.User{}, err
+			return domain.User{}, err
 		}
 	}
 
 	return user, nil
 }
 
-func (r *MongoDBUserRepository) GetUsers() []*models.User {
+func (r *MongoDBUserRepository) GetUsers() []*domain.User {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -70,9 +70,9 @@ func (r *MongoDBUserRepository) GetUsers() []*models.User {
 	}
 	defer cursor.Close(ctx)
 
-	var users []*models.User
+	var users []*domain.User
 	for cursor.Next(ctx) {
-		var user models.User
+		var user domain.User
 		if err := cursor.Decode(&user); err != nil {
 			fmt.Println("Error decoding user:", err)
 			continue
@@ -83,7 +83,7 @@ func (r *MongoDBUserRepository) GetUsers() []*models.User {
 	return users
 }
 
-func (r *MongoDBUserRepository) GetUserByID(id string) (*models.User, error) {
+func (r *MongoDBUserRepository) GetUserByID(id string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -92,7 +92,7 @@ func (r *MongoDBUserRepository) GetUserByID(id string) (*models.User, error) {
 		return nil, err
 	}
 
-	var user models.User
+	var user domain.User
 	err = r.collection.FindOne(ctx, bson.M{"_id": id}).Decode(&user)
 
 	if err != nil {
@@ -102,11 +102,11 @@ func (r *MongoDBUserRepository) GetUserByID(id string) (*models.User, error) {
 	return &user, nil
 }
 
-func (r *MongoDBUserRepository) GetUserByName(name string) (*models.User, error) {
+func (r *MongoDBUserRepository) GetUserByName(name string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var user models.User
+	var user domain.User
 
 	fmt.Println("Name:", name)
 

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"backend/internal/graphql/models"
+	"backend/internal/domain"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -22,10 +22,10 @@ func NewDynamoDBUserRepository(session *session.Session, tableName string) (*Dyn
 	}, nil
 }
 
-func (r *DynamoDBUserRepository) UpsertUser(user models.User) (models.User, error) {
+func (r *DynamoDBUserRepository) UpsertUser(user domain.User) (domain.User, error) {
 	av, err := dynamodbattribute.MarshalMap(user)
 	if err != nil {
-		return models.User{}, err
+		return domain.User{}, err
 	}
 
 	input := &dynamodb.PutItemInput{
@@ -35,13 +35,13 @@ func (r *DynamoDBUserRepository) UpsertUser(user models.User) (models.User, erro
 
 	_, err = r.client.PutItem(input)
 	if err != nil {
-		return models.User{}, err
+		return domain.User{}, err
 	}
 
 	return user, nil
 }
 
-func (r *DynamoDBUserRepository) GetUsers() []*models.User {
+func (r *DynamoDBUserRepository) GetUsers() []*domain.User {
 	input := &dynamodb.ScanInput{
 		TableName: aws.String(r.tableName),
 	}
@@ -52,7 +52,7 @@ func (r *DynamoDBUserRepository) GetUsers() []*models.User {
 		return nil
 	}
 
-	var users []*models.User
+	var users []*domain.User
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &users)
 	if err != nil {
 		fmt.Println("Error unmarshalling users:", err)
@@ -62,7 +62,7 @@ func (r *DynamoDBUserRepository) GetUsers() []*models.User {
 	return users
 }
 
-func (r *DynamoDBUserRepository) GetUserByName(name string) (*models.User, error) {
+func (r *DynamoDBUserRepository) GetUserByName(name string) (*domain.User, error) {
 	input := &dynamodb.QueryInput{
 		TableName: aws.String(r.tableName),
 		KeyConditions: map[string]*dynamodb.Condition{
@@ -86,7 +86,7 @@ func (r *DynamoDBUserRepository) GetUserByName(name string) (*models.User, error
 		return nil, fmt.Errorf("user not found")
 	}
 
-	var user models.User
+	var user domain.User
 	err = dynamodbattribute.UnmarshalMap(result.Items[0], &user)
 	if err != nil {
 		return nil, err

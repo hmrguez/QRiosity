@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"backend/internal/graphql/models"
+	"backend/internal/domain"
 	"context"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -21,7 +21,7 @@ func NewDynamoDBTopicRepository(sess *session.Session, tableName string) *Dynamo
 	}
 }
 
-func (r *DynamoDBTopicRepository) Insert(ctx context.Context, topics []*models.Topic) error {
+func (r *DynamoDBTopicRepository) Insert(ctx context.Context, topics []*domain.Topic) error {
 	for _, topic := range topics {
 		av, err := dynamodbattribute.MarshalMap(topic)
 		if err != nil {
@@ -41,7 +41,7 @@ func (r *DynamoDBTopicRepository) Insert(ctx context.Context, topics []*models.T
 	return nil
 }
 
-func (r *DynamoDBTopicRepository) GetAllTopics(ctx context.Context) ([]*models.Topic, error) {
+func (r *DynamoDBTopicRepository) GetAllTopics(ctx context.Context) ([]*domain.Topic, error) {
 	input := &dynamodb.ScanInput{
 		TableName: aws.String(r.tableName),
 	}
@@ -51,7 +51,7 @@ func (r *DynamoDBTopicRepository) GetAllTopics(ctx context.Context) ([]*models.T
 		return nil, err
 	}
 
-	var topics []*models.Topic
+	var topics []*domain.Topic
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &topics)
 	if err != nil {
 		return nil, err

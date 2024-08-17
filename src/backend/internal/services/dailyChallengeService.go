@@ -1,7 +1,7 @@
 package services
 
 import (
-	"backend/internal/graphql/models"
+	"backend/internal/domain"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -19,8 +19,8 @@ func NewDailyChallengeService() *DailyChallengeService {
 	}
 }
 
-func (s *DailyChallengeService) GetQuestion(category string) (models.Problem, error) {
-	var problem models.Problem
+func (s *DailyChallengeService) GetQuestion(category string) (domain.Problem, error) {
+	var problem domain.Problem
 	url := fmt.Sprintf("%s/ask_question?topic=%s", s.baseURL, category)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -40,8 +40,8 @@ func (s *DailyChallengeService) GetQuestion(category string) (models.Problem, er
 	return problem, nil
 }
 
-func (s *DailyChallengeService) RateQuestion(question, answer string) (models.ChallengeResponse, error) {
-	var challengeResponse models.ChallengeResponse
+func (s *DailyChallengeService) RateQuestion(question, answer string) (domain.ChallengeResponse, error) {
+	var challengeResponse domain.ChallengeResponse
 	url := fmt.Sprintf("%s/rate_question", s.baseURL)
 
 	payload := map[string]string{

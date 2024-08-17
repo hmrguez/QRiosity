@@ -1,7 +1,7 @@
 package main
 
 import (
-	"backend/backend_v2/internal/repository"
+	"backend/internal/repository"
 	"backend/internal/services"
 	"context"
 	"encoding/json"

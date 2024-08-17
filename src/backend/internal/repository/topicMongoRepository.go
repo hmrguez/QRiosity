@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"backend/internal/graphql/models"
+	"backend/internal/domain"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -27,15 +27,15 @@ func NewMongoDBTopicRepository(uri, dbName, collectionName string) (*TopicMongoD
 	}, nil
 }
 
-func (r *TopicMongoDBRepository) GetAllTopics(ctx context.Context) ([]*models.Topic, error) {
-	var topics []*models.Topic
+func (r *TopicMongoDBRepository) GetAllTopics(ctx context.Context) ([]*domain.Topic, error) {
+	var topics []*domain.Topic
 	cursor, err := r.collection.Find(ctx, bson.D{}, options.Find())
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
 	for cursor.Next(ctx) {
-		var topic models.Topic
+		var topic domain.Topic
 		if err := cursor.Decode(&topic); err != nil {
 			return nil, err
 		}
@@ -44,7 +44,7 @@ func (r *TopicMongoDBRepository) GetAllTopics(ctx context.Context) ([]*models.To
 	return topics, nil
 }
 
-func (r *TopicMongoDBRepository) Insert(ctx context.Context, topics []*models.Topic) error {
+func (r *TopicMongoDBRepository) Insert(ctx context.Context, topics []*domain.Topic) error {
 	var documents []interface{}
 	for _, topic := range topics {
 		documents = append(documents, topic)

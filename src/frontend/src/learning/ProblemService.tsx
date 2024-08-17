@@ -12,7 +12,6 @@ class ProblemService {
         const query = gql`
             query {
                 dailyChallenge(userId: "${userId}") {
-                    id
                     question
                     categories
                     type

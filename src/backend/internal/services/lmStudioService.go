@@ -1,7 +1,7 @@
 package services
 
 import (
-	"backend/internal/graphql/models"
+	"backend/internal/domain"
 	"bufio"
 	"bytes"
 	"encoding/json"
@@ -22,7 +22,7 @@ func NewLDefaultLMStudioService() *LMStudioService {
 	return &LMStudioService{endpoint: "http://localhost:1234/v1/chat/completions"}
 }
 
-func (s *LMStudioService) RateQuestion(question, answer string) (models.ChallengeResponse, error) {
+func (s *LMStudioService) RateQuestion(question, answer string) (domain.ChallengeResponse, error) {
 	// Define the request payload
 	payload := map[string]interface{}{
 		"messages": []map[string]string{
@@ -36,7 +36,7 @@ func (s *LMStudioService) RateQuestion(question, answer string) (models.Challeng
 
 	insight, err := AskLMStudio(payload, s.endpoint)
 	if err != nil {
-		return models.ChallengeResponse{}, err
+		return domain.ChallengeResponse{}, err
 	}
 
 	// Extract the first number found in the insight as the rating
@@ -46,7 +46,7 @@ func (s *LMStudioService) RateQuestion(question, answer string) (models.Challeng
 		rating, _ = strconv.Atoi(match)
 	}
 
-	return models.ChallengeResponse{
+	return domain.ChallengeResponse{
 		Question: question,
 		Answer:   answer,
 		Rating:   rating,
@@ -54,7 +54,7 @@ func (s *LMStudioService) RateQuestion(question, answer string) (models.Challeng
 	}, nil
 }
 
-func (s *LMStudioService) GetQuestion(category string) (models.Problem, error) {
+func (s *LMStudioService) GetQuestion(category string) (domain.Problem, error) {
 	// Define the request payload
 	payload := map[string]interface{}{
 		"messages": []map[string]string{
@@ -67,10 +67,10 @@ func (s *LMStudioService) GetQuestion(category string) (models.Problem, error) {
 
 	question, err := AskLMStudio(payload, s.endpoint)
 	if err != nil {
-		return models.Problem{}, err
+		return domain.Problem{}, err
 	}
 
-	return models.Problem{
+	return domain.Problem{
 		Question:   question,
 		Categories: append(make([]string, 0), category),
 		Type:       "LLM Asking",
