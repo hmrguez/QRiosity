@@ -99,7 +99,7 @@ func (s CognitoAuthService) ConfirmSignUp(email, confirmationCode string) (*cogn
 
 func (s CognitoAuthService) ResendConfirmationCode(email string) (*cognitoidentityprovider.ResendConfirmationCodeOutput, error) {
 	sess := session.Must(session.NewSession(&aws.Config{
-		Region: aws.String(s.AwsRegion), // Replace with your region
+		Region: aws.String(s.AwsRegion),
 	}))
 
 	svc := cognitoidentityprovider.New(sess)
