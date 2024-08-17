@@ -11,3 +11,4 @@
 - [ ] My Learning
 - [ ] Course builder, roadmap builder
 - [ ] DNS and CloudFront setup
+- [ ] Make Issues for all the above
