@@ -16,13 +16,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Bun
+      - name: Install Bun and Build
         run: |
           curl -fsSL https://bun.sh/install | bash
           echo 'export PATH="$HOME/.bun/bin:$PATH"' >> $GITHUB_ENV
-
-      - name: Build frontend
-        run: |
           cd src/frontend
           bun run build
 
