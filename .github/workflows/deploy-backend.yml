@@ -1,0 +1,57 @@
+name: Deploy Workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/backend/**'
+
+jobs:
+  deploy-auth:
+    name: Deploy Auth
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.5'
+
+      - name: Run deploy-auth
+        run: make deploy-auth
+
+  deploy-learning:
+    name: Deploy Learning
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.5'  # Adjust Go version as needed
+
+      - name: Run deploy-learning
+        run: make deploy-learning
+
+  deploy-daily:
+    name: Deploy Daily
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.5'  # Adjust Go version as needed
+
+      - name: Run deploy-daily
+        run: make deploy-daily
