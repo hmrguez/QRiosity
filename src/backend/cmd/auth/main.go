@@ -196,7 +196,6 @@ func handleResendConfirmationEmail(ctx context.Context, args json.RawMessage) (j
 	return response, nil
 }
 
-// Add this function to handle the getUserByName query
 func handleGetUserByName(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
 	var getUserArgs struct {
 		Name string `json:"name"`
