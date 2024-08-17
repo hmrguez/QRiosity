@@ -33,7 +33,7 @@ const LandingPage = () => {
 						<div className="nav-links">
 							<a className="nav-link" href="#about">About</a>
 							<a className="nav-link" href="#features">Features</a>
-							<a className="nav-link" href="#contact">Contact</a>
+							{/*<a className="nav-link" href="#contact">Contact</a>*/}
 
 							<div className="auth-buttons">
 								{loggedIn ? (
