@@ -33,23 +33,6 @@ func main() {
 }
 
 func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
-
-	//log.Printf("Event %+v\n", event)
-	//log.Printf("Variables %+v\n", event["variables"])
-	//
-	//log.Printf("Raw args: %+v\n", event["variables"])
-
-	//var queryArgs QueryArguments
-	//if err := json.Unmarshal(event["variables"].(byte), &queryArgs); err != nil {
-	//	return nil, err
-	//}
-	//
-	//log.Printf("Parsed args: %v", queryArgs)
-
-	//return nil, nil
-
-	//log.Printf("Event %v", event)
-	//
 	switch event.TypeName {
 	case "Query":
 		if event.FieldName == "dailyChallenge" {
