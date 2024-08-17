@@ -44,7 +44,6 @@ const Navbar = () => {
 	};
 
 
-
 	useEffect(() => {
 		const token = authService.getUsername();
 
