@@ -43,6 +43,7 @@ const Navbar = () => {
 		setShowModal(false);
 	};
 
+
 	useEffect(() => {
 		const token = authService.getUsername();
 
