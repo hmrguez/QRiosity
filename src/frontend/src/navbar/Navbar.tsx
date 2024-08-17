@@ -47,6 +47,7 @@ const Navbar = () => {
 		const token = authService.getUsername();
 
 		if (token) {
+			// @ts-ignore
 			setUsername(token);
 		} else {
 			console.error('No token found');
@@ -72,6 +73,12 @@ const Navbar = () => {
 					<li className={activeItem === 'My Learning' ? 'active' : ''}
 						onClick={() => handleItemClick('My Learning')}>
 						<Link to="/my-learning"><i className="icon-dashboard"></i> My Learning</Link>
+					</li>
+				</ul>
+				<ul className="nav-menu">
+					<li className={activeItem === 'Home' ? 'active' : ''}
+						onClick={() => handleItemClick('Home')}>
+						<Link to="/home"><i className="icon-dashboard"></i>Go To Landing</Link>
 					</li>
 				</ul>
 				<h3 className="menu-header">LEARNING</h3>

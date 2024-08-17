@@ -28,6 +28,7 @@ const RegisterForm = () => {
     useEffect(() => {
         const fetchTopics = async () => {
             const temp = await topicService.getAllTopics();
+            // @ts-ignore
             setAllTopics(temp);
             // allTopics = temp.map((topic: any) => {
             //     return {label: topic, value: topic}
