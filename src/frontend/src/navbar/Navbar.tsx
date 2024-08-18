@@ -9,20 +9,18 @@ import LearningService from "../learning/LearningService.tsx";
 import {Toast} from "primereact/toast";
 
 
+
 const Navbar = () => {
 	const [activeItem, setActiveItem] = useState('Dashboard');
 	const [showModal, setShowModal] = useState(false);
 	const [username, setUsername] = useState('');
 	const [challengeAvailable, setChallengeAvailable] = useState(false);
 
-
 	const client = useApolloClient();
 	const authService = new AuthService(client);
 	const learningService = new LearningService(client);
 
-
 	const toast = useRef<Toast>(null);
-
 
 	const {logout} = useAuth();
 
@@ -63,46 +61,64 @@ const Navbar = () => {
 	}, []);
 
 	return (
-		<div className="sidebar">
-			<Toast ref={toast} />
-			<nav className="mr-3">
-				<div className="user-info flex flex-column mt-2">
-					<span className="user-name text-center">{username}</span>
-				</div>
-				<ul className="nav-menu">
-					<li className={activeItem === 'My Learning' ? 'active' : ''}
-						onClick={() => handleItemClick('My Learning')}>
-						<Link to="/home/my-learning"><i className="icon-dashboard"></i> My Learning</Link>
-					</li>
-				</ul>
-				<ul className="nav-menu">
-					<li className={activeItem === 'Home' ? 'active' : ''}
-						onClick={() => handleItemClick('Home')}>
-						<Link to="/"><i className="icon-dashboard"></i>Go To Landing</Link>
-					</li>
-				</ul>
-				<h3 className="menu-header">LEARNING</h3>
-				<ul className="nav-menu">
-					<li className={activeItem === 'Learning Paths' ? 'active' : ''}
-						onClick={() => handleItemClick('Learning Paths')}>
-						<Link to="/home/roadmaps"><i className="icon-account"></i> Learning Paths</Link>
-					</li>
-					<li className={activeItem === 'Daily Challenge' ? 'active' : ''}
-						onClick={() => handleItemClick('Daily Challenge')}>
-						<a href="#" aria-disabled><i className="icon-publishing"></i> Daily
-							Challenge {challengeAvailable &&
-                                <span className="badge">New</span>}</a>
-					</li>
-				</ul>
-				<h3 className="menu-header">OTHER MENU</h3>
-				<ul className="nav-menu">
-					<li className={activeItem === 'Logout' ? 'active' : ''} onClick={() => handleItemClick('Login')}>
-						<a onClick={logout}><i className="icon-setting"></i>Logout</a>
-					</li>
-				</ul>
-			</nav>
+		<nav className="sidebar">
+			<Toast ref={toast}/>
 			<DailyChallengeModal visible={showModal} onHide={closeModal} onCorrectSubmit={() => setChallengeAvailable(false)}/>
-		</div>
+
+			<div className="main-section">
+				<div className="logo">
+					<h2>Qriosity</h2>
+				</div>
+				<ul className="nav-list">
+					<li className="nav-group">
+						<h3>Main</h3>
+						<ul>
+							<li>
+								<Link
+									to="/home/my-learning"
+									className={activeItem === 'My Learning' ? 'nav-link active' : 'nav-link '}
+									onClick={() => handleItemClick('My Learning')}
+								>
+									<i className="icon-dashboard"></i> My Learning
+								</Link>
+							</li>
+							<li>
+								<a
+									href="#"
+									className={activeItem === 'Daily Challenge' ? 'nav-link active' : 'nav-link '}
+									onClick={() => handleItemClick('Daily Challenge')}
+									aria-disabled
+								>
+									<i className="icon-publishing"></i> Daily Challenge
+									{challengeAvailable && <span className="badge">New</span>}
+								</a>
+							</li>
+						</ul>
+					</li>
+					<li className="nav-group">
+						<h3>Explore</h3>
+						<ul>
+							<li>
+								<Link
+									to="/home/roadmaps"
+									className={activeItem === 'Roadmaps' ? 'nav-link active' : 'nav-link'}
+									onClick={() => handleItemClick('Roadmaps')}
+								>
+									<i className="icon-account"></i> Learning Paths
+								</Link>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			<div className="user-section">
+				<div className="user-info">
+					<img src="https://via.placeholder.com/40" alt="User Avatar" className="user-avatar"/>
+					<span className="user-name">{username}</span>
+				</div>
+				<button className="logout-btn" onClick={logout}>Logout</button>
+			</div>
+		</nav>
 	);
 };
 
