@@ -79,7 +79,7 @@ const Navbar = () => {
 									className={activeItem === 'My Learning' ? 'nav-link active' : 'nav-link '}
 									onClick={() => handleItemClick('My Learning')}
 								>
-									<i className="icon-dashboard"></i> My Learning
+									<i className="pi pi-book"></i> My Learning
 								</Link>
 							</li>
 							<li>
@@ -89,7 +89,7 @@ const Navbar = () => {
 									onClick={() => handleItemClick('Daily Challenge')}
 									aria-disabled
 								>
-									<i className="icon-publishing"></i> Daily Challenge
+									<i className="pi pi-calendar-clock"></i> Daily Challenge
 									{challengeAvailable && <span className="badge">New</span>}
 								</a>
 							</li>
@@ -104,7 +104,7 @@ const Navbar = () => {
 									className={activeItem === 'Roadmaps' ? 'nav-link active' : 'nav-link'}
 									onClick={() => handleItemClick('Roadmaps')}
 								>
-									<i className="icon-account"></i> Roadmaps
+									<i className="pi pi-map"></i> Roadmaps
 								</Link>
 							</li>
 						</ul>
