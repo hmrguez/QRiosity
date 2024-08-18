@@ -1,7 +1,7 @@
 const Roadmaps = () => {
 	return (
 		<div>
-			<h1>Learning Paths</h1>
+			<h1>Roadmaps</h1>
 		</div>
 	);
 }

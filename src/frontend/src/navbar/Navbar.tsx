@@ -11,7 +11,7 @@ import {Toast} from "primereact/toast";
 
 
 const Navbar = () => {
-	const [activeItem, setActiveItem] = useState('Dashboard');
+	const [activeItem, setActiveItem] = useState('My Learning');
 	const [showModal, setShowModal] = useState(false);
 	const [username, setUsername] = useState('');
 	const [challengeAvailable, setChallengeAvailable] = useState(false);
@@ -104,7 +104,7 @@ const Navbar = () => {
 									className={activeItem === 'Roadmaps' ? 'nav-link active' : 'nav-link'}
 									onClick={() => handleItemClick('Roadmaps')}
 								>
-									<i className="icon-account"></i> Learning Paths
+									<i className="icon-account"></i> Roadmaps
 								</Link>
 							</li>
 						</ul>
