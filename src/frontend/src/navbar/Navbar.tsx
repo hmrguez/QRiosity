@@ -43,8 +43,6 @@ const Navbar = () => {
 		setShowModal(false);
 	};
 
-
-
 	useEffect(() => {
 		const token = authService.getUsername();
 
@@ -74,20 +72,20 @@ const Navbar = () => {
 				<ul className="nav-menu">
 					<li className={activeItem === 'My Learning' ? 'active' : ''}
 						onClick={() => handleItemClick('My Learning')}>
-						<Link to="/my-learning"><i className="icon-dashboard"></i> My Learning</Link>
+						<Link to="/home/my-learning"><i className="icon-dashboard"></i> My Learning</Link>
 					</li>
 				</ul>
 				<ul className="nav-menu">
 					<li className={activeItem === 'Home' ? 'active' : ''}
 						onClick={() => handleItemClick('Home')}>
-						<Link to="/home"><i className="icon-dashboard"></i>Go To Landing</Link>
+						<Link to="/"><i className="icon-dashboard"></i>Go To Landing</Link>
 					</li>
 				</ul>
 				<h3 className="menu-header">LEARNING</h3>
 				<ul className="nav-menu">
 					<li className={activeItem === 'Learning Paths' ? 'active' : ''}
 						onClick={() => handleItemClick('Learning Paths')}>
-						<Link to="/learning-paths"><i className="icon-account"></i> Learning Paths</Link>
+						<Link to="/home/roadmaps"><i className="icon-account"></i> Learning Paths</Link>
 					</li>
 					<li className={activeItem === 'Daily Challenge' ? 'active' : ''}
 						onClick={() => handleItemClick('Daily Challenge')}>

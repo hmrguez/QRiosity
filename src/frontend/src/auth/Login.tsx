@@ -20,7 +20,7 @@ const LoginForm = () => {
 		try {
 			await authService.login(username, password);
 			login();
-			navigate('/');
+			navigate('/home');
 		} catch (err) {
 			console.error(err);
 			setError('Login failed. Please check your username and password.');

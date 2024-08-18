@@ -1,4 +1,4 @@
-const LearningPaths = () => {
+const Roadmaps = () => {
 	return (
 		<div>
 			<h1>Learning Paths</h1>
@@ -6,4 +6,4 @@ const LearningPaths = () => {
 	);
 }
 
-export default LearningPaths
+export default Roadmaps

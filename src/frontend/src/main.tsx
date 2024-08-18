@@ -13,7 +13,7 @@ import Login from "./auth/Login.tsx";
 import Register from "./auth/Register.tsx";
 import {AuthProvider} from './auth/AuthContext';
 import PrivateRoute from './auth/PrivateRoute';
-import LearningPaths from "./learning/LearningPaths.tsx";
+import Roadmaps from "./learning/Roadmaps.tsx";
 import MyLearning from "./learning/MyLearning.tsx";
 import LandingPage from "./LandingPage.tsx";
 import ConfirmEmail from "./auth/ConfirmEmail.tsx";
@@ -21,7 +21,7 @@ import ConfirmEmail from "./auth/ConfirmEmail.tsx";
 
 const router = createBrowserRouter([
 	{
-		path: "/",
+		path: "/home",
 		element: (
 			<PrivateRoute>
 				<App/>
@@ -33,25 +33,25 @@ const router = createBrowserRouter([
 				element: <MyLearning/>
 			},
 			{
-				path: "learning-paths",
-				element: <LearningPaths/>
+				path: "roadmaps",
+				element: <Roadmaps/>
 			},
 		]
 	},
 	{
-		path: "home",
+		path: "/",
 		element: <LandingPage/>
 	},
 	{
-		path: "login",
+		path: "/login",
 		element: <Login/>
 	},
 	{
-		path: "register",
+		path: "/register",
 		element: <Register/>
 	},
 	{
-		path: "confirm-email",
+		path: "/confirm-email",
 		element: <ConfirmEmail/>
 	}
 ]);
