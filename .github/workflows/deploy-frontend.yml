@@ -41,5 +41,10 @@ jobs:
         run: |
           aws s3 sync ./src/frontend/dist s3://qriosity-site --delete
 
+      - name: Create Cloudfront Invalidation
+        run: |
+          aws cloudfront create-invalidation --distribution-id E3PISVH09HKHJA --paths "/*"
+
       - name: Confirm Deployment
         run: echo "Deployment to S3 bucket qriosity-site completed successfully."
+
