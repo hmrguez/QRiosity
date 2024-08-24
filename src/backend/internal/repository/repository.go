@@ -19,9 +19,11 @@ type ITopicRepository interface {
 type ICourseRepository interface {
 	GetAllCourses(ctx context.Context) ([]*domain.Course, error)
 	UpsertCourse(ctx context.Context, course *domain.Course) error
+	GetCourseByID(ctx context.Context, courseID string) (*domain.Course, error)
 }
 
 type IRoadmapRepository interface {
 	GetAllRoadmaps(ctx context.Context) ([]*domain.Roadmap, error)
 	UpsertRoadmap(ctx context.Context, roadmap *domain.Roadmap) error
+	GetRoadmap(ctx context.Context, roadmapID string) (*domain.Roadmap, error)
 }

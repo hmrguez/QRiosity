@@ -13,6 +13,12 @@ import (
 	"os"
 )
 
+var (
+	topicRepository   repository.ITopicRepository
+	courseRepository  repository.ICourseRepository
+	roadmapRepository repository.IRoadmapRepository
+)
+
 func main() {
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(os.Getenv("REPO_AWS_REGION")),
@@ -22,6 +28,8 @@ func main() {
 	}
 
 	topicRepository = repository.NewDynamoDBTopicRepository(sess, "Qriosity-Topics")
+	courseRepository = repository.NewDynamoDBCourseRepository(sess, "Qriosity-Courses")
+	roadmapRepository = repository.NewDynamoDBRoadmapRepository(sess, "Qriosity-Roadmaps")
 
 	lambda.Start(Handler)
 }
@@ -30,12 +38,12 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 	switch event.TypeName {
 	case "Query":
 		switch event.FieldName {
+		case "getRoadmapById":
+			return handleGetRoadmapById(ctx, event.Arguments)
+		case "getCourseById":
+			return handleGetCourseById(ctx, event.Arguments)
 		case "getAllTopics":
 			return handleGetAllTopics(ctx)
-		case "getQuizes":
-			return handleGetQuizes(ctx)
-		case "getLessons":
-			return handleGetLessons(ctx)
 		case "getCourses":
 			return handleGetCourses(ctx)
 		case "getRoadmaps":
@@ -59,10 +67,6 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 	return nil, errors.New("unhandled operation")
 }
 
-var (
-	topicRepository repository.ITopicRepository
-)
-
 type AppSyncEvent struct {
 	TypeName  string          `json:"parentTypeName"`
 	FieldName string          `json:"fieldName"`
@@ -71,6 +75,11 @@ type AppSyncEvent struct {
 
 type AddTopicsArguments struct {
 	Names []string `json:"names"`
+}
+
+type CourseAddedToRoadmapArguments struct {
+	CourseID  string `json:"courseId"`
+	RoadmapID string `json:"roadmapId"`
 }
 
 func handleGetAllTopics(ctx context.Context) (json.RawMessage, error) {
@@ -87,28 +96,56 @@ func handleGetAllTopics(ctx context.Context) (json.RawMessage, error) {
 	return response, nil
 }
 
-func handleGetQuizes(ctx context.Context) (json.RawMessage, error) {
-	panic("Not Implemented")
-}
-
-func handleGetLessons(ctx context.Context) (json.RawMessage, error) {
-	panic("Not Implemented")
-}
-
 func handleGetCourses(ctx context.Context) (json.RawMessage, error) {
-	panic("Not Implemented")
+	courses, err := courseRepository.GetAllCourses(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(courses)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func handleGetRoadmaps(ctx context.Context) (json.RawMessage, error) {
-	panic("Not Implemented")
+	roadmaps, err := roadmapRepository.GetAllRoadmaps(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(roadmaps)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func handleCourseAddedToRoadmap(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
-	panic("Not Implemented")
+	var courseAddedToRoadmapArgs CourseAddedToRoadmapArguments
+	if err := json.Unmarshal(args, &courseAddedToRoadmapArgs); err != nil {
+		return nil, err
+	}
+
+	roadmap, err := roadmapRepository.GetRoadmap(ctx, courseAddedToRoadmapArgs.RoadmapID)
+	if err != nil {
+		return nil, err
+	}
+
+	roadmap.CourseIDs = append(roadmap.CourseIDs, courseAddedToRoadmapArgs.CourseID)
+
+	if err := roadmapRepository.UpsertRoadmap(ctx, roadmap); err != nil {
+		return nil, err
+	}
+
+	return json.RawMessage(`{"success": true}`), nil
 }
 
 func handleUserLikedRoadmap(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
-	panic("Not Implemented")
+	panic("not implemented")
 }
 
 func handleAddTopics(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
@@ -135,11 +172,79 @@ func handleAddTopics(ctx context.Context, args json.RawMessage) (json.RawMessage
 }
 
 func handleUpsertCourse(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
-	panic("Not Implemented")
+	var course domain.Course
+	if err := json.Unmarshal(args, &course); err != nil {
+		return nil, err
+	}
 
+	if err := courseRepository.UpsertCourse(ctx, &course); err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(course)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 func handleUpsertRoadmap(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
-	panic("Not Implemented")
+	var roadmap domain.Roadmap
+	if err := json.Unmarshal(args, &roadmap); err != nil {
+		return nil, err
+	}
 
+	if err := roadmapRepository.UpsertRoadmap(ctx, &roadmap); err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(roadmap)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	var input struct {
+		ID string `json:"id"`
+	}
+	if err := json.Unmarshal(args, &input); err != nil {
+		return nil, err
+	}
+
+	roadmap, err := roadmapRepository.GetRoadmap(ctx, input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(roadmap)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func handleGetCourseById(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	var input struct {
+		ID string `json:"id"`
+	}
+	if err := json.Unmarshal(args, &input); err != nil {
+		return nil, err
+	}
+
+	course, err := courseRepository.GetCourseByID(ctx, input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(course)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }

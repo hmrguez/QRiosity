@@ -64,6 +64,7 @@ type Roadmap struct {
 	Name       string   `json:"name"`
 	Author     string   `json:"author"`
 	Courses    []Course `json:"courses"`
+	CourseIDs  []string `json:"courseIDs"`
 	Topics     []string `json:"topics"`
 	IsCustom   bool     `json:"isCustom"`
 	CreatedBy  string   `json:"createdBy"`
