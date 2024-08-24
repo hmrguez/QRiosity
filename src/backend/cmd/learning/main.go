@@ -172,10 +172,15 @@ func handleAddTopics(ctx context.Context, args json.RawMessage) (json.RawMessage
 }
 
 func handleUpsertCourse(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+
+	log.Println("Upserting course ", args)
+
 	var course domain.Course
 	if err := json.Unmarshal(args, &course); err != nil {
 		return nil, err
 	}
+
+	log.Println("Upserting unmarshalled course ", course)
 
 	if err := courseRepository.UpsertCourse(ctx, &course); err != nil {
 		return nil, err

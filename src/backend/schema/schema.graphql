@@ -32,6 +32,7 @@ type Roadmap {
     name: String!
     author: String!
     courses: [Course!]!
+    courseIDs: [String!]!
     topics: [String!]!
     isCustom: Boolean!
     createdBy: String!
@@ -135,7 +136,7 @@ input RoadmapInput {
     id: ID!
     name: String!
     author: String!
-    courses: [CourseInput!]!
+    courseIDs: [String!]!
     topics: [String!]!
     isCustom: Boolean!
     createdBy: String!
