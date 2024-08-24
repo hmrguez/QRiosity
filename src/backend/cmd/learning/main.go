@@ -173,21 +173,29 @@ func handleAddTopics(ctx context.Context, args json.RawMessage) (json.RawMessage
 
 func handleUpsertCourse(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
 
-	log.Println("Upserting course ", args)
-
 	// Unmarshal into map[string]interface{}
 	var tempMap map[string]interface{}
 	if err := json.Unmarshal(args, &tempMap); err != nil {
 		return nil, err
 	}
-	log.Println("Unmarshalled map: ", tempMap)
 
-	var course domain.Course
-	if err := json.Unmarshal(args, &course); err != nil {
+	// Extract the input field
+	inputData, ok := tempMap["input"]
+	if !ok {
+		return nil, errors.New("input field is missing")
+	}
+
+	// Marshal the input field back to JSON
+	inputJSON, err := json.Marshal(inputData)
+	if err != nil {
 		return nil, err
 	}
 
-	log.Println("Upserting unmarshalled course ", course)
+	// Unmarshal the input JSON into the domain.Course struct
+	var course domain.Course
+	if err := json.Unmarshal(inputJSON, &course); err != nil {
+		return nil, err
+	}
 
 	if err := courseRepository.UpsertCourse(ctx, &course); err != nil {
 		return nil, err
@@ -202,10 +210,31 @@ func handleUpsertCourse(ctx context.Context, args json.RawMessage) (json.RawMess
 }
 
 func handleUpsertRoadmap(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
-	var roadmap domain.Roadmap
-	if err := json.Unmarshal(args, &roadmap); err != nil {
+	// Unmarshal into map[string]interface{}
+	var tempMap map[string]interface{}
+	if err := json.Unmarshal(args, &tempMap); err != nil {
 		return nil, err
 	}
+
+	// Extract the input field
+	inputData, ok := tempMap["input"]
+	if !ok {
+		return nil, errors.New("input field is missing")
+	}
+
+	// Marshal the input field back to JSON
+	inputJSON, err := json.Marshal(inputData)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal the input JSON into the domain.Roadmap struct
+	var roadmap domain.Roadmap
+	if err := json.Unmarshal(inputJSON, &roadmap); err != nil {
+		return nil, err
+	}
+
+	log.Println("Upserting unmarshalled roadmap ", roadmap)
 
 	if err := roadmapRepository.UpsertRoadmap(ctx, &roadmap); err != nil {
 		return nil, err
