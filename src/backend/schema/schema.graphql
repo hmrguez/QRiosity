@@ -91,6 +91,8 @@ type Mutation {
     addTopics(names: [String!]!): [Topic!]!
     upsertCourse(input: CourseInput!): Course!
     upsertRoadmap(input: RoadmapInput!): Roadmap!
+    courseAddedToRoadmap(courseId: ID!, roadmapId: ID!): BareResponse!
+    userLikedRoadmap(userId: ID!, roadmapId: ID!): BareResponse!
 }
 
 input QuizInput {

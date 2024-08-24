@@ -49,6 +49,10 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 			return handleUpsertCourse(ctx, event.Arguments)
 		case "upsertRoadmap":
 			return handleUpsertRoadmap(ctx, event.Arguments)
+		case "courseAddedToRoadmap":
+			return handleCourseAddedToRoadmap(ctx, event.Arguments)
+		case "userLikedRoadmap":
+			return handleUserLikedRoadmap(ctx, event.Arguments)
 		}
 	}
 
@@ -93,12 +97,18 @@ func handleGetLessons(ctx context.Context) (json.RawMessage, error) {
 
 func handleGetCourses(ctx context.Context) (json.RawMessage, error) {
 	panic("Not Implemented")
-
 }
 
 func handleGetRoadmaps(ctx context.Context) (json.RawMessage, error) {
 	panic("Not Implemented")
+}
 
+func handleCourseAddedToRoadmap(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	panic("Not Implemented")
+}
+
+func handleUserLikedRoadmap(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	panic("Not Implemented")
 }
 
 func handleAddTopics(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
