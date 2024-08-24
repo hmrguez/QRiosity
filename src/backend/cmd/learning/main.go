@@ -175,6 +175,13 @@ func handleUpsertCourse(ctx context.Context, args json.RawMessage) (json.RawMess
 
 	log.Println("Upserting course ", args)
 
+	// Unmarshal into map[string]interface{}
+	var tempMap map[string]interface{}
+	if err := json.Unmarshal(args, &tempMap); err != nil {
+		return nil, err
+	}
+	log.Println("Unmarshalled map: ", tempMap)
+
 	var course domain.Course
 	if err := json.Unmarshal(args, &course); err != nil {
 		return nil, err
