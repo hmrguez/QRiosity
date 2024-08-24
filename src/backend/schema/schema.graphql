@@ -9,31 +9,22 @@ type Topic {
     name: String!
 }
 
-type Quiz {
-    id: ID!
-    name: String!
-    question: String!
-    answer: String!
-}
-
-type Lesson {
-    id: ID!
-    name: String!
-    url: String!
-    author: String!
-}
-
-union Content = Quiz | Lesson
-
 type BareResponse {
     success: Boolean!
 }
 
 type Course {
     id: ID!
-    name: String!
+    title: String!
+    url: String!
+    description: String!
+    source: String!
+    difficulty: String!
+    topics: [String!]!
+    isFree: Boolean!
     author: String!
-    content: [Content!]!
+    duration: Int!
+    language: String!
 }
 
 type Roadmap {
@@ -41,6 +32,11 @@ type Roadmap {
     name: String!
     author: String!
     courses: [Course!]!
+    topics: [String!]!
+    isCustom: Boolean!
+    createdBy: String!
+    likes: Int!
+    difficulty: String!
 }
 
 type AuthPayload {
@@ -79,8 +75,6 @@ type Query {
 
     # Learning
     getAllTopics: [Topic!]!
-    getQuizes: [Quiz!]!
-    getLessons: [Lesson!]!
     getCourses: [Course!]!
     getRoadmaps: [Roadmap!]!
 }
@@ -121,9 +115,16 @@ input ContentInput {
 
 input CourseInput {
     id: ID!
-    name: String!
+    title: String!
+    url: String!
+    description: String!
+    source: String!
+    difficulty: String!
+    topics: [String!]!
+    isFree: Boolean!
     author: String!
-    content: [ContentInput!]!
+    duration: Int!
+    language: String!
 }
 
 input RoadmapInput {
@@ -131,4 +132,9 @@ input RoadmapInput {
     name: String!
     author: String!
     courses: [CourseInput!]!
+    topics: [String!]!
+    isCustom: Boolean!
+    createdBy: String!
+    likes: Int!
+    difficulty: String!
 }

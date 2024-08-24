@@ -16,41 +16,6 @@ type ChallengeResponse struct {
 	Insight  string `json:"insight"`
 }
 
-type ContentInput struct {
-	Quiz   *QuizInput   `json:"quiz,omitempty"`
-	Lesson *LessonInput `json:"lesson,omitempty"`
-}
-
-type Course struct {
-	ID      string    `json:"id"`
-	Name    string    `json:"name"`
-	Author  string    `json:"author"`
-	Content []Content `json:"content"`
-}
-
-type CourseInput struct {
-	ID      string          `json:"id"`
-	Name    string          `json:"name"`
-	Author  string          `json:"author"`
-	Content []*ContentInput `json:"content"`
-}
-
-type Lesson struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	URL    string `json:"url"`
-	Author string `json:"author"`
-}
-
-func (Lesson) IsContent() {}
-
-type LessonInput struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	URL    string `json:"url"`
-	Author string `json:"author"`
-}
-
 type Mutation struct {
 }
 
@@ -69,36 +34,6 @@ type ProblemInput struct {
 type Query struct {
 }
 
-type Quiz struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Question string `json:"question"`
-	Answer   string `json:"answer"`
-}
-
-func (Quiz) IsContent() {}
-
-type QuizInput struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Question string `json:"question"`
-	Answer   string `json:"answer"`
-}
-
-type Roadmap struct {
-	ID      string    `json:"id"`
-	Name    string    `json:"name"`
-	Author  string    `json:"author"`
-	Courses []*Course `json:"courses"`
-}
-
-type RoadmapInput struct {
-	ID      string         `json:"id"`
-	Name    string         `json:"name"`
-	Author  string         `json:"author"`
-	Courses []*CourseInput `json:"courses"`
-}
-
 type Topic struct {
 	Name string `json:"name"`
 }
@@ -108,4 +43,30 @@ type User struct {
 	Email                   string   `json:"email"`
 	Topics                  []string `json:"topics,omitempty"`
 	DailyChallengeAvailable bool     `json:"dailyChallengeAvailable"`
+}
+
+type Course struct {
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	URL         string   `json:"url"`
+	Description string   `json:"description"`
+	Source      string   `json:"source"`
+	Difficulty  string   `json:"difficulty"`
+	Topics      []string `json:"topics"`
+	IsFree      bool     `json:"isFree"`
+	Author      string   `json:"author"`
+	Duration    int      `json:"duration"`
+	Language    string   `json:"language"`
+}
+
+type Roadmap struct {
+	ID         string   `json:"id"`
+	Name       string   `json:"name"`
+	Author     string   `json:"author"`
+	Courses    []Course `json:"courses"`
+	Topics     []string `json:"topics"`
+	IsCustom   bool     `json:"isCustom"`
+	CreatedBy  string   `json:"createdBy"`
+	Likes      int      `json:"likes"`
+	Difficulty string   `json:"difficulty"`
 }
