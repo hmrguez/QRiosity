@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"gopkg.in/gomail.v2"
 	"log"
 	"os"
 )
@@ -55,6 +56,8 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 			return handleRegister(ctx, event.Arguments)
 		case "confirmEmail":
 			return handleConfirmEmail(ctx, event.Arguments)
+		case "sendFeedback":
+			return handleSendFeedback(ctx, event.Arguments)
 		}
 	}
 
@@ -210,6 +213,39 @@ func handleGetUserByName(ctx context.Context, args json.RawMessage) (json.RawMes
 	}
 
 	response, err := json.Marshal(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func handleSendFeedback(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	var feedbackArgs struct {
+		Feedback string `json:"feedback"`
+		From     string `json:"from"`
+	}
+	if err := json.Unmarshal(args, &feedbackArgs); err != nil {
+		return nil, err
+	}
+
+	email := os.Getenv("EMAIL")
+
+	// Create a new email message
+	m := gomail.NewMessage()
+	m.SetHeader("From", email)
+	m.SetHeader("To", email)
+	m.SetHeader("Subject", "New Feedback Received")
+	m.SetBody("text/plain", "Feedback from: "+feedbackArgs.From+"\n\n"+feedbackArgs.Feedback)
+
+	d := gomail.NewDialer("smtp.gmail.com", 587, email, os.Getenv("EMAIL_PASS"))
+
+	if err := d.DialAndSend(m); err != nil {
+		log.Printf("Could not send email: %v", err)
+		return nil, err
+	}
+
+	response, err := json.Marshal(map[string]bool{"success": true})
 	if err != nil {
 		return nil, err
 	}

@@ -88,6 +88,7 @@ type Mutation {
     # Auth
     register(username: String!, password: String!, email: String!, topics: [String!]): String!
     confirmEmail(email: String!, token: String!): BareResponse!
+    sendFeedback(feedback: String!, from: String!): BareResponse!
 
     # Daily
     dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!

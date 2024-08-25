@@ -33,7 +33,7 @@ const LandingPage = () => {
 						<div className="nav-links">
 							<a className="nav-link" href="#about">About</a>
 							<a className="nav-link" href="#features">Features</a>
-							{/*<a className="nav-link" href="#contact">Contact</a>*/}
+							<a className="nav-link" href="#contact">Contact</a>
 
 							<div className="auth-buttons">
 								{loggedIn ? (
@@ -75,17 +75,16 @@ const LandingPage = () => {
 						<p>Explore a vast library of courses and resources from trusted providers.</p>
 					</div>
 				</section>
-				{/*TODO: Implement Contact*/}
-				{/*<section className="contact" id="contact">*/}
-				{/*	<h2>Contact Us</h2>*/}
-				{/*	<p>Have questions or need more information? Reach out to us, and we’ll be happy to assist you.</p>*/}
-				{/*	<form>*/}
-				{/*		<input type="text" name="name" placeholder="Your Name" required />*/}
-				{/*		<input type="email" name="email" placeholder="Your Email" required />*/}
-				{/*		<textarea name="message" placeholder="Your Message" required></textarea>*/}
-				{/*		<input type="submit" value="Send Message" />*/}
-				{/*	</form>*/}
-				{/*</section>*/}
+				<section className="contact" id="contact">
+					<h2>Contact Us</h2>
+					<p>Have questions or need more information? Reach out to us, and we’ll be happy to assist you.</p>
+					<form>
+						<input type="text" name="name" placeholder="Your Name" required/>
+						<input type="email" name="email" placeholder="Your Email" required/>
+						<textarea name="message" placeholder="Your Message" required></textarea>
+						<input type="submit" value="Send Message"/>
+					</form>
+				</section>
 			</main>
 			<footer>
 				<div className="container">
