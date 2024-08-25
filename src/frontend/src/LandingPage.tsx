@@ -1,9 +1,19 @@
 import './LandingPage.css';
 import image from './assets/image.jpeg'
 import {Link} from "react-router-dom";
-import {useApolloClient} from "@apollo/client";
+import {gql, useApolloClient, useMutation} from "@apollo/client";
 import AuthService from "./auth/AuthService.tsx";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
+import {Toast} from "primereact/toast";
+
+// Define the GraphQL mutation
+const SEND_FEEDBACK = gql`
+    mutation SendFeedback($feedback: String!, $from: String!) {
+        sendFeedback(feedback: $feedback, from: $from) {
+            success
+        }
+    }
+`;
 
 const LandingPage = () => {
 
@@ -12,6 +22,30 @@ const LandingPage = () => {
 
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [username, setUsername] = useState("");
+
+	const [email, setEmail] = useState("");
+	const [message, setMessage] = useState("");
+	const [sendFeedback, {loading, error}] = useMutation(SEND_FEEDBACK);
+
+	const toast = useRef<Toast>(null);
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		try {
+			const response = await sendFeedback({
+				variables: {
+					feedback: message,
+					from: email,
+				},
+			});
+			if (response.data.sendFeedback.success) {
+				toast.current?.show({severity: 'success', summary: 'Success', detail: 'Feedback sent successfully!'});
+			}
+		} catch (err) {
+			console.error("Error sending feedback:", err);
+			toast.current?.show({severity: 'error', summary: 'Error', detail: 'Failed to send feedback.'});
+		}
+	};
 
 	useEffect(() => {
 		const checkLoginStatus = async () => {
@@ -26,6 +60,8 @@ const LandingPage = () => {
 
 	return (
 		<div className="landing">
+			<Toast ref={toast}/>
+
 			<header>
 				<div className="container">
 					<nav>
@@ -78,11 +114,24 @@ const LandingPage = () => {
 				<section className="contact" id="contact">
 					<h2>Contact Us</h2>
 					<p>Have questions or need more information? Reach out to us, and we’ll be happy to assist you.</p>
-					<form>
-						<input type="text" name="name" placeholder="Your Name" required/>
-						<input type="email" name="email" placeholder="Your Email" required/>
-						<textarea name="message" placeholder="Your Message" required></textarea>
-						<input type="submit" value="Send Message"/>
+					<form onSubmit={handleSubmit}>
+						<input
+							type="email"
+							name="email"
+							placeholder="Your Email"
+							required
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+						/>
+						<textarea
+							name="message"
+							placeholder="Your Message"
+							required
+							value={message}
+							onChange={(e) => setMessage(e.target.value)}
+						/>
+						<input type="submit" value="Send Message" disabled={loading}/>
+						{error && <p>Error: {error.message}</p>}
 					</form>
 				</section>
 			</main>
