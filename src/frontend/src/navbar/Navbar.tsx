@@ -117,6 +117,20 @@ const Navbar = () => {
 							</li>
 						</ul>
 					</li>
+					<li className="nav-group">
+						<h3>Creator</h3>
+						<ul>
+							<li>
+								<Link
+									to="/home/build-roadmap"
+									className={activeItem === 'Build Roadmap' ? 'nav-link active' : 'nav-link'}
+									onClick={() => handleItemClick('Build Roadmap')}
+								>
+									<i className="pi pi-pencil"></i> Build Roadmap
+								</Link>
+							</li>
+						</ul>
+					</li>
 				</ul>
 			</div>
 			<div className="user-section">

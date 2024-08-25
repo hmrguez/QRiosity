@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roadmap Display</title>
+    <title>Roadmap Builder</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,53 +37,6 @@
             position: sticky;
             top: 20px;
             height: fit-content;
-        }
-
-        .roadmap-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .roadmap-author {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .roadmap-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .roadmap-topics {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .topic-chip {
-            background-color: #e0e0e0;
-            color: #333;
-            padding: 4px 8px;
-            border-radius: 16px;
-            font-size: 12px;
         }
 
         .course-list {
@@ -142,72 +95,276 @@
             font-size: 12px;
             color: #999;
         }
+
+        .add-course {
+            padding: 20px;
+            border-top: 1px dashed #ccc;
+            color: #999;
+            font-style: italic;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-course:hover {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .input-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .save-button:hover {
+            background-color: #45a049;
+        }
+
+        .course-selector {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .course-selector-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .selectable-course-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .selectable-course-item {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .selectable-course-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .selectable-course-item:last-child {
+            border-bottom: none;
+        }
+
+        #course-search {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .close-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .close-button:hover {
+            background-color: #d32f2f;
+        }
     </style>
 </head>
 <body>
 <div class="roadmap-container">
     <div class="roadmap-courses">
         <ul class="course-list">
-            <!-- Repeat this structure for each course in the roadmap -->
+            <!-- Example course item -->
             <li class="course-item">
-                <h3 class="course-title">Course Title</h3>
-                <p class="course-description">A brief description of the course content goes here.</p>
+                <h3 class="course-title">Introduction to Web Development</h3>
+                <p class="course-description">Learn the basics of HTML, CSS, and JavaScript.</p>
                 <div class="course-meta">
-                    <span class="course-difficulty">Intermediate</span>
-                    <span class="course-duration">8 hours</span>
-                </div>
-            </li>
-            <li class="course-item">
-                <h3 class="course-title">Course Title</h3>
-                <p class="course-description">A brief description of the course content goes here.</p>
-                <div class="course-meta">
-                    <span class="course-difficulty">Intermediate</span>
-                    <span class="course-duration">8 hours</span>
-                </div>
-            </li>
-            <li class="course-item">
-                <h3 class="course-title">Course Title</h3>
-                <p class="course-description">A brief description of the course content goes here.</p>
-                <div class="course-meta">
-                    <span class="course-difficulty">Intermediate</span>
-                    <span class="course-duration">8 hours</span>
-                </div>
-            </li>
-            <li class="course-item">
-                <h3 class="course-title">Course Title</h3>
-                <p class="course-description">A brief description of the course content goes here.</p>
-                <div class="course-meta">
-                    <span class="course-difficulty">Intermediate</span>
-                    <span class="course-duration">8 hours</span>
+                    <span class="course-difficulty">Beginner</span>
+                    <span class="course-duration">10 hours</span>
                 </div>
             </li>
             <!-- Add more course items here -->
         </ul>
+        <div class="add-course">+ Add new course</div>
     </div>
     <div class="roadmap-details">
-        <h2 class="roadmap-title">Roadmap Title</h2>
-        <p class="roadmap-author">by Author Name</p>
-        <div class="roadmap-stats">
-            <div class="stat-item">
-                <div class="stat-value">10</div>
-                <div class="stat-label">Courses</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">Intermediate</div>
-                <div class="stat-label">Difficulty</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">123</div>
-                <div class="stat-label">Likes</div>
-            </div>
+        <div class="input-group">
+            <label for="roadmap-title">Roadmap Title</label>
+            <input id="roadmap-title" name="roadmap-title" placeholder="Enter roadmap title" type="text">
         </div>
-        <div class="roadmap-topics">
-            <span class="topic-chip">JavaScript</span>
-            <span class="topic-chip">Web Development</span>
-            <span class="topic-chip">Frontend</span>
+        <div class="input-group">
+            <label for="roadmap-description">Description</label>
+            <textarea id="roadmap-description" name="roadmap-description"
+                      placeholder="Enter roadmap description"></textarea>
         </div>
-        <p class="roadmap-custom">Custom Roadmap</p>
+        <div class="input-group">
+            <label for="roadmap-difficulty">Difficulty</label>
+            <select id="roadmap-difficulty" name="roadmap-difficulty">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="roadmap-topics">Topics (comma-separated)</label>
+            <input id="roadmap-topics" name="roadmap-topics" placeholder="e.g. JavaScript, Web Development, Frontend"
+                   type="text">
+        </div>
+        <button class="save-button">Save Roadmap</button>
     </div>
 </div>
+
+<div class="course-selector" id="course-selector">
+    <div class="course-selector-content">
+        <h2>Select a Course</h2>
+        <input id="course-search" placeholder="Search courses..." type="text">
+        <ul class="selectable-course-list" id="course-list">
+            <!-- Courses will be populated here -->
+        </ul>
+        <button class="close-button" id="close-selector">Close</button>
+    </div>
+</div>
+
+
+<script>
+    // Sample course data
+    const courses = [
+        {
+            id: 1,
+            title: "Introduction to JavaScript",
+            description: "Learn the basics of JavaScript programming",
+            difficulty: "Beginner",
+            duration: 8
+        },
+        {
+            id: 2,
+            title: "Advanced CSS Techniques",
+            description: "Master modern CSS layouts and animations",
+            difficulty: "Intermediate",
+            duration: 10
+        },
+        {
+            id: 3,
+            title: "React Fundamentals",
+            description: "Build interactive UIs with React",
+            difficulty: "Intermediate",
+            duration: 12
+        },
+        // Add more courses as needed
+    ];
+
+    const addCourseButton = document.querySelector('.add-course');
+    const courseSelector = document.getElementById('course-selector');
+    const closeSelectorButton = document.getElementById('close-selector');
+    const courseList = document.getElementById('course-list');
+    const courseSearch = document.getElementById('course-search');
+    const roadmapCourseList = document.querySelector('.course-list');
+
+    function populateCourseList(coursesToShow) {
+        courseList.innerHTML = '';
+        coursesToShow.forEach(course => {
+            const li = document.createElement('li');
+            li.className = 'selectable-course-item';
+            li.innerHTML = `
+            <h3>${course.title}</h3>
+            <p>${course.description}</p>
+            <div class="course-meta">
+                <span>${course.difficulty}</span>
+                <span>${course.duration} hours</span>
+            </div>
+        `;
+            li.addEventListener('click', () => addCourseToRoadmap(course));
+            courseList.appendChild(li);
+        });
+    }
+
+    function addCourseToRoadmap(course) {
+        const li = document.createElement('li');
+        li.className = 'course-item';
+        li.innerHTML = `
+        <h3 class="course-title">${course.title}</h3>
+        <p class="course-description">${course.description}</p>
+        <div class="course-meta">
+            <span class="course-difficulty">${course.difficulty}</span>
+            <span class="course-duration">${course.duration} hours</span>
+        </div>
+    `;
+        roadmapCourseList.insertBefore(li, addCourseButton.parentElement);
+        courseSelector.style.display = 'none';
+    }
+
+    addCourseButton.addEventListener('click', () => {
+        courseSelector.style.display = 'block';
+        populateCourseList(courses);
+    });
+
+    closeSelectorButton.addEventListener('click', () => {
+        courseSelector.style.display = 'none';
+    });
+
+    courseSearch.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredCourses = courses.filter(course =>
+            course.title.toLowerCase().includes(searchTerm) ||
+            course.description.toLowerCase().includes(searchTerm)
+        );
+        populateCourseList(filteredCourses);
+    });
+
+    // Close the popup if clicked outside the content
+    courseSelector.addEventListener('click', (e) => {
+        if (e.target === courseSelector) {
+            courseSelector.style.display = 'none';
+        }
+    });
+</script>
 </body>
 </html>

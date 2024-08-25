@@ -12,6 +12,7 @@ const GET_DAILY_CHALLENGE_AVAILABILITY = gql`
 const GET_COURSES = gql`
     query GetCourses {
         getCourses {
+            id
             title
             url
             description
@@ -60,6 +61,15 @@ const GET_ROADMAP_BY_ID = gql`
     }
 `;
 
+const UPSERT_ROADMAP = gql`
+    mutation UpsertRoadmap($input: RoadmapInput!) {
+        upsertRoadmap(input: $input) {
+            id
+        }
+    }
+`;
+
+
 
 class LearningService {
 	private client: ApolloClient<any>;
@@ -99,6 +109,14 @@ class LearningService {
 			variables: {id},
 		});
 		return data.getRoadmapById;
+	}
+
+	async upsertRoadmap(input: any): Promise<any> {
+		const {data} = await this.client.mutate({
+			mutation: UPSERT_ROADMAP,
+			variables: {input},
+		});
+		return data.upsertRoadmap;
 	}
 }
 
