@@ -6,7 +6,7 @@ import "./Roadmaps.css";
 import {Course} from "./Courses.tsx";
 
 // Define the Roadmap interface
-interface Roadmap {
+export interface Roadmap {
 	id: string;
 	title: string;
 	author: string;

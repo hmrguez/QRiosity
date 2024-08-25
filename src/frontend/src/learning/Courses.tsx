@@ -4,6 +4,7 @@ import {useApolloClient} from "@apollo/client";
 import LearningService from "./LearningService.tsx";
 
 export interface Course {
+    id: string;
     title: string;
     description: string;
     topics: string[];

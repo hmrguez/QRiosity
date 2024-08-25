@@ -1,18 +1,24 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import LearningService from './LearningService';
 import './RoadmapDetail.css';
 import {useApolloClient} from "@apollo/client";
+import {Roadmap} from "./Roadmaps.tsx";
 
 const RoadmapDetail = () => {
 	const {id} = useParams();
-	const [roadmap, setRoadmap] = useState(null);
+	const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
 
 	const apolloClient = useApolloClient();
 	const learningService = new LearningService(apolloClient);
 
 	useEffect(() => {
 		const fetchRoadmap = async () => {
+
+			if (!id) {
+				return;
+			}
+
 			const roadmapData = await learningService.getRoadmapById(id);
 			setRoadmap(roadmapData);
 		};
@@ -24,7 +30,7 @@ const RoadmapDetail = () => {
 		return <div>Loading...</div>;
 	}
 
-	const handleCourseClick = (courseUrl) => {
+	const handleCourseClick = (courseUrl: string) => {
 		window.open(courseUrl, '_blank');
 	};
 
