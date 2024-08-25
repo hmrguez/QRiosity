@@ -256,8 +256,6 @@ func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMe
 		return nil, err
 	}
 
-	log.Println("Id", input.ID)
-
 	roadmap, err := roadmapRepository.GetRoadmap(ctx, input.ID)
 	if err != nil {
 		return nil, err
