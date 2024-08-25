@@ -18,6 +18,7 @@ import MyLearning from "./learning/MyLearning.tsx";
 import LandingPage from "./LandingPage.tsx";
 import ConfirmEmail from "./auth/ConfirmEmail.tsx";
 import Courses from "./learning/Courses.tsx";
+import RoadmapDetail from "./learning/RoadmapDetail.tsx";
 
 
 const router = createBrowserRouter([
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
 				path: "courses",
 				element: <Courses/>
 			},
+			{
+				path: "roadmap/:id",
+				element: <RoadmapDetail/>
+			}
 		]
 	},
 	{

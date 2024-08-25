@@ -3,55 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roadmap Grid</title>
+    <title>Roadmap Display</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             margin: 0;
             padding: 20px;
+            color: #333;
         }
 
-        .roadmap-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+        .roadmap-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .roadmap-card {
+        .roadmap-courses {
+            flex: 2;
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            transition: transform 0.2s ease-in-out;
         }
 
-        .roadmap-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .roadmap-content {
+        .roadmap-details {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
         }
 
         .roadmap-title {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
-            margin: 0 0 10px;
-            color: #333;
+            margin-bottom: 10px;
         }
 
         .roadmap-author {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .roadmap-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .stat-label {
             font-size: 14px;
             color: #666;
-            margin-bottom: 15px;
         }
 
         .roadmap-topics {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .topic-chip {
@@ -62,58 +86,128 @@
             font-size: 12px;
         }
 
-        .roadmap-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: #999;
+        .course-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .course-item {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-item:last-child {
+            border-bottom: none;
+        }
+
+        .course-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .course-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #999;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .course-item:hover::before {
+            transform: translateX(0);
+        }
+
+        .course-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .course-description {
+            font-size: 14px;
+            color: #666;
             margin-bottom: 10px;
         }
 
-        .roadmap-difficulty {
-            background-color: #eee;
-            padding: 3px 8px;
-            border-radius: 12px;
-        }
-
-        .roadmap-likes {
+        .course-meta {
             display: flex;
-            align-items: center;
-        }
-
-        .roadmap-likes::before {
-            content: "❤️";
-            margin-right: 5px;
-        }
-
-        .roadmap-custom {
-            font-style: italic;
-            color: #666;
+            justify-content: space-between;
             font-size: 12px;
+            color: #999;
         }
     </style>
 </head>
 <body>
-<div class="roadmap-grid">
-    <!-- Repeat this card structure for each roadmap -->
-    <div class="roadmap-card">
-        <div class="roadmap-content">
-            <h2 class="roadmap-title">Roadmap Title</h2>
-            <p class="roadmap-author">by Author Name</p>
-            <div class="roadmap-topics">
-                <span class="topic-chip">JavaScript</span>
-                <span class="topic-chip">Web Development</span>
-                <span class="topic-chip">Frontend</span>
-            </div>
-            <div class="roadmap-meta">
-                <span class="roadmap-difficulty">Intermediate</span>
-                <span class="roadmap-likes">123</span>
-            </div>
-            <p class="roadmap-custom">Custom Roadmap</p>
-        </div>
+<div class="roadmap-container">
+    <div class="roadmap-courses">
+        <ul class="course-list">
+            <!-- Repeat this structure for each course in the roadmap -->
+            <li class="course-item">
+                <h3 class="course-title">Course Title</h3>
+                <p class="course-description">A brief description of the course content goes here.</p>
+                <div class="course-meta">
+                    <span class="course-difficulty">Intermediate</span>
+                    <span class="course-duration">8 hours</span>
+                </div>
+            </li>
+            <li class="course-item">
+                <h3 class="course-title">Course Title</h3>
+                <p class="course-description">A brief description of the course content goes here.</p>
+                <div class="course-meta">
+                    <span class="course-difficulty">Intermediate</span>
+                    <span class="course-duration">8 hours</span>
+                </div>
+            </li>
+            <li class="course-item">
+                <h3 class="course-title">Course Title</h3>
+                <p class="course-description">A brief description of the course content goes here.</p>
+                <div class="course-meta">
+                    <span class="course-difficulty">Intermediate</span>
+                    <span class="course-duration">8 hours</span>
+                </div>
+            </li>
+            <li class="course-item">
+                <h3 class="course-title">Course Title</h3>
+                <p class="course-description">A brief description of the course content goes here.</p>
+                <div class="course-meta">
+                    <span class="course-difficulty">Intermediate</span>
+                    <span class="course-duration">8 hours</span>
+                </div>
+            </li>
+            <!-- Add more course items here -->
+        </ul>
     </div>
-    <!-- Add more roadmap cards here -->
+    <div class="roadmap-details">
+        <h2 class="roadmap-title">Roadmap Title</h2>
+        <p class="roadmap-author">by Author Name</p>
+        <div class="roadmap-stats">
+            <div class="stat-item">
+                <div class="stat-value">10</div>
+                <div class="stat-label">Courses</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">Intermediate</div>
+                <div class="stat-label">Difficulty</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">123</div>
+                <div class="stat-label">Likes</div>
+            </div>
+        </div>
+        <div class="roadmap-topics">
+            <span class="topic-chip">JavaScript</span>
+            <span class="topic-chip">Web Development</span>
+            <span class="topic-chip">Frontend</span>
+        </div>
+        <p class="roadmap-custom">Custom Roadmap</p>
+    </div>
 </div>
 </body>
 </html>

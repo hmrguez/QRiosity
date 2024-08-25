@@ -27,8 +27,31 @@ const GET_COURSES = gql`
 const GET_ROADMAPS = gql`
     query GetRoadmaps {
         getRoadmaps {
+            id
             title
             author
+            topics
+            isCustom
+            likes
+            difficulty
+        }
+    }
+`;
+
+const GET_ROADMAP_BY_ID = gql`
+    query GetRoadmapById($id: ID!) {
+        getRoadmapById(id: $id) {
+            id
+            title
+            author
+            courses {
+                id
+                title
+                description
+                difficulty
+                duration
+                url
+            }
             topics
             isCustom
             likes
@@ -68,6 +91,14 @@ class LearningService {
 			query: GET_ROADMAPS,
 		});
 		return data.getRoadmaps;
+	}
+
+	async getRoadmapById(id: string): Promise<any> {
+		const {data} = await this.client.query({
+			query: GET_ROADMAP_BY_ID,
+			variables: {id},
+		});
+		return data.getRoadmapById;
 	}
 }
 

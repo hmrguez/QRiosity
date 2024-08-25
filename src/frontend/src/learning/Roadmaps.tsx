@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
 import {useApolloClient} from "@apollo/client";
+import {useNavigate} from "react-router-dom";
 import LearningService from "./LearningService.tsx";
 import "./Roadmaps.css";
 import {Course} from "./Courses.tsx";
-
 
 // Define the Roadmap interface
 interface Roadmap {
@@ -22,6 +22,7 @@ interface Roadmap {
 const Roadmaps = () => {
 	const client = useApolloClient();
 	const learningService = new LearningService(client);
+	const navigate = useNavigate();
 
 	const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
 
@@ -33,10 +34,14 @@ const Roadmaps = () => {
 		});
 	}, []);
 
+	const handleRoadmapClick = (id: string) => {
+		navigate(`/home/roadmap/${id}`);
+	};
+
 	return (
 		<div className="roadmap-grid">
 			{roadmaps.map((roadmap) => (
-				<div className="roadmap-card" key={roadmap.id}>
+				<div className="roadmap-card" key={roadmap.id} onClick={() => handleRoadmapClick(roadmap.id)}>
 					<div className="roadmap-content">
 						<h2 className="roadmap-title">{roadmap.title}</h2>
 						<p className="roadmap-author">by {roadmap.author}</p>
