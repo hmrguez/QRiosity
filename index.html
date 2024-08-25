@@ -3,368 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roadmap Builder</title>
+    <title>Add New Course</title>
     <style>
+        :root {
+            --primary-color: #333;
+            --secondary-color: #666;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --accent-color: #444;
+            --hover-color: #222;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
             margin: 0;
             padding: 20px;
             color: #333;
+            line-height: 1.6;
         }
 
-        .roadmap-container {
-            display: flex;
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .roadmap-courses {
-            flex: 2;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .roadmap-details {
-            flex: 1;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-
-        .course-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .course-item {
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .course-item:last-child {
-            border-bottom: none;
-        }
-
-        .course-item:hover {
-            background-color: #f9f9f9;
-        }
-
-        .course-item::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background-color: #999;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-
-        .course-item:hover::before {
-            transform: translateX(0);
-        }
-
-        .course-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .course-description {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-
-        .course-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #999;
-        }
-
-        .add-course {
-            padding: 20px;
-            border-top: 1px dashed #ccc;
-            color: #999;
-            font-style: italic;
-            cursor: pointer;
+        .course-form-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 40px;
             transition: all 0.3s ease;
         }
 
-        .add-course:hover {
-            background-color: #f0f0f0;
-            color: #666;
+        .course-form-container:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
         }
 
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 25px;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            transition: color 0.3s ease;
+        }
+
+        .input-group:focus-within label {
+            color: var(--accent-color);
         }
 
         .input-group input,
         .input-group textarea,
         .input-group select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
         }
 
         .input-group textarea {
-            height: 100px;
+            height: 120px;
             resize: vertical;
         }
 
-        .save-button {
-            background-color: #4CAF50;
+        .input-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .submit-button {
+            background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .save-button:hover {
-            background-color: #45a049;
-        }
-
-        .course-selector {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .course-selector-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
+            padding: 14px 20px;
+            font-size: 18px;
             border-radius: 8px;
-            width: 80%;
-            max-width: 600px;
-            max-height: 80%;
-            overflow-y: auto;
-        }
-
-        .selectable-course-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 20px 0;
-        }
-
-        .selectable-course-item {
-            padding: 10px;
-            border-bottom: 1px solid #e0e0e0;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .selectable-course-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        .selectable-course-item:last-child {
-            border-bottom: none;
-        }
-
-        #course-search {
+            transition: all 0.3s ease;
+            display: block;
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
+            margin-top: 30px;
         }
 
-        .close-button {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+        .submit-button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
         }
 
-        .close-button:hover {
-            background-color: #d32f2f;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .course-form-container {
+            animation: fadeIn 0.2s ease-out;
         }
     </style>
 </head>
 <body>
-<div class="roadmap-container">
-    <div class="roadmap-courses">
-        <ul class="course-list">
-            <!-- Example course item -->
-            <li class="course-item">
-                <h3 class="course-title">Introduction to Web Development</h3>
-                <p class="course-description">Learn the basics of HTML, CSS, and JavaScript.</p>
-                <div class="course-meta">
-                    <span class="course-difficulty">Beginner</span>
-                    <span class="course-duration">10 hours</span>
-                </div>
-            </li>
-            <!-- Add more course items here -->
-        </ul>
-        <div class="add-course">+ Add new course</div>
-    </div>
-    <div class="roadmap-details">
+<div class="course-form-container">
+    <h2 class="form-title">Add New Course</h2>
+    <form id="course-form">
         <div class="input-group">
-            <label for="roadmap-title">Roadmap Title</label>
-            <input id="roadmap-title" name="roadmap-title" placeholder="Enter roadmap title" type="text">
+            <label for="title">Title</label>
+            <input id="title" name="title" required type="text">
         </div>
         <div class="input-group">
-            <label for="roadmap-description">Description</label>
-            <textarea id="roadmap-description" name="roadmap-description"
-                      placeholder="Enter roadmap description"></textarea>
+            <label for="description">Description</label>
+            <textarea id="description" name="description" required></textarea>
         </div>
         <div class="input-group">
-            <label for="roadmap-difficulty">Difficulty</label>
-            <select id="roadmap-difficulty" name="roadmap-difficulty">
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
+            <label for="topics">Topics (comma-separated)</label>
+            <input id="topics" name="topics" placeholder="e.g. JavaScript, Web Development, React" type="text">
+        </div>
+        <div class="input-group">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty" name="difficulty" required>
+                <option value="">Select difficulty</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
             </select>
         </div>
         <div class="input-group">
-            <label for="roadmap-topics">Topics (comma-separated)</label>
-            <input id="roadmap-topics" name="roadmap-topics" placeholder="e.g. JavaScript, Web Development, Frontend"
-                   type="text">
+            <label for="duration">Duration (in hours)</label>
+            <input id="duration" min="1" name="duration" required type="number">
         </div>
-        <button class="save-button">Save Roadmap</button>
-    </div>
-</div>
-
-<div class="course-selector" id="course-selector">
-    <div class="course-selector-content">
-        <h2>Select a Course</h2>
-        <input id="course-search" placeholder="Search courses..." type="text">
-        <ul class="selectable-course-list" id="course-list">
-            <!-- Courses will be populated here -->
-        </ul>
-        <button class="close-button" id="close-selector">Close</button>
-    </div>
-</div>
-
-
-<script>
-    // Sample course data
-    const courses = [
-        {
-            id: 1,
-            title: "Introduction to JavaScript",
-            description: "Learn the basics of JavaScript programming",
-            difficulty: "Beginner",
-            duration: 8
-        },
-        {
-            id: 2,
-            title: "Advanced CSS Techniques",
-            description: "Master modern CSS layouts and animations",
-            difficulty: "Intermediate",
-            duration: 10
-        },
-        {
-            id: 3,
-            title: "React Fundamentals",
-            description: "Build interactive UIs with React",
-            difficulty: "Intermediate",
-            duration: 12
-        },
-        // Add more courses as needed
-    ];
-
-    const addCourseButton = document.querySelector('.add-course');
-    const courseSelector = document.getElementById('course-selector');
-    const closeSelectorButton = document.getElementById('close-selector');
-    const courseList = document.getElementById('course-list');
-    const courseSearch = document.getElementById('course-search');
-    const roadmapCourseList = document.querySelector('.course-list');
-
-    function populateCourseList(coursesToShow) {
-        courseList.innerHTML = '';
-        coursesToShow.forEach(course => {
-            const li = document.createElement('li');
-            li.className = 'selectable-course-item';
-            li.innerHTML = `
-            <h3>${course.title}</h3>
-            <p>${course.description}</p>
-            <div class="course-meta">
-                <span>${course.difficulty}</span>
-                <span>${course.duration} hours</span>
-            </div>
-        `;
-            li.addEventListener('click', () => addCourseToRoadmap(course));
-            courseList.appendChild(li);
-        });
-    }
-
-    function addCourseToRoadmap(course) {
-        const li = document.createElement('li');
-        li.className = 'course-item';
-        li.innerHTML = `
-        <h3 class="course-title">${course.title}</h3>
-        <p class="course-description">${course.description}</p>
-        <div class="course-meta">
-            <span class="course-difficulty">${course.difficulty}</span>
-            <span class="course-duration">${course.duration} hours</span>
+        <div class="input-group">
+            <label for="language">Language</label>
+            <input id="language" name="language" required type="text">
         </div>
-    `;
-        roadmapCourseList.insertBefore(li, addCourseButton.parentElement);
-        courseSelector.style.display = 'none';
-    }
-
-    addCourseButton.addEventListener('click', () => {
-        courseSelector.style.display = 'block';
-        populateCourseList(courses);
-    });
-
-    closeSelectorButton.addEventListener('click', () => {
-        courseSelector.style.display = 'none';
-    });
-
-    courseSearch.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const filteredCourses = courses.filter(course =>
-            course.title.toLowerCase().includes(searchTerm) ||
-            course.description.toLowerCase().includes(searchTerm)
-        );
-        populateCourseList(filteredCourses);
-    });
-
-    // Close the popup if clicked outside the content
-    courseSelector.addEventListener('click', (e) => {
-        if (e.target === courseSelector) {
-            courseSelector.style.display = 'none';
-        }
-    });
-</script>
+        <div class="input-group">
+            <label class="checkbox-label">
+                <input id="isFree" name="isFree" type="checkbox">
+                Is this course free?
+            </label>
+        </div>
+        <div class="input-group">
+            <label for="url">Course URL</label>
+            <input id="url" name="url" required type="url">
+        </div>
+        <button class="submit-button" type="submit">Add Course</button>
+    </form>
+</div>
 </body>
 </html>

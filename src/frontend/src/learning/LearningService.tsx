@@ -69,6 +69,14 @@ const UPSERT_ROADMAP = gql`
     }
 `;
 
+const UPSERT_COURSE = gql`
+    mutation UpsertCourse($input: CourseInput!) {
+        upsertCourse(input: $input) {
+            id
+        }
+    }
+`;
+
 
 
 class LearningService {
@@ -117,6 +125,14 @@ class LearningService {
 			variables: {input},
 		});
 		return data.upsertRoadmap;
+	}
+
+	async upsertCourse(input: any): Promise<any> {
+		const {data} = await this.client.mutate({
+			mutation: UPSERT_COURSE,
+			variables: {input},
+		});
+		return data.upsertCourse;
 	}
 }
 

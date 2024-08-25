@@ -129,6 +129,15 @@ const Navbar = () => {
 									<i className="pi pi-pencil"></i> Build Roadmap
 								</Link>
 							</li>
+							<li>
+								<Link
+									to="/home/create-course"
+									className={activeItem === 'Create Course' ? 'nav-link active' : 'nav-link'}
+									onClick={() => handleItemClick('Create Course')}
+								>
+									<i className="pi pi-pen-to-square"></i> Create Course
+								</Link>
+							</li>
 						</ul>
 					</li>
 				</ul>
