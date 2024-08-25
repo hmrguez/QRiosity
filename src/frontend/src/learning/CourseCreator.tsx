@@ -107,6 +107,7 @@ const CourseCreator = () => {
 						type="text"
 						id="source"
 						name="source"
+						placeholder="e.g. Udemy | FreeCodeCamp | YouTube"
 						value={source}
 						onChange={(e) => setSource(e.target.value)}
 						required
