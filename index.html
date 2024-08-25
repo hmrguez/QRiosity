@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Grid</title>
+    <title>Roadmap Grid</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,13 +12,13 @@
             padding: 20px;
         }
 
-        .course-grid {
+        .roadmap-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
         }
 
-        .course-card {
+        .roadmap-card {
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -26,36 +26,28 @@
             transition: transform 0.2s ease-in-out;
         }
 
-        .course-card:hover {
+        .roadmap-card:hover {
             transform: translateY(-5px);
         }
 
-        .course-image {
-            width: 100%;
-            height: 150px;
-            background-color: #ddd;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .course-content {
+        .roadmap-content {
             padding: 20px;
         }
 
-        .course-title {
-            font-size: 18px;
+        .roadmap-title {
+            font-size: 20px;
             font-weight: bold;
             margin: 0 0 10px;
             color: #333;
         }
 
-        .course-description {
+        .roadmap-author {
             font-size: 14px;
             color: #666;
             margin-bottom: 15px;
         }
 
-        .course-topics {
+        .roadmap-topics {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
@@ -70,127 +62,58 @@
             font-size: 12px;
         }
 
-        .course-meta {
+        .roadmap-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 12px;
             color: #999;
+            margin-bottom: 10px;
         }
 
-        .course-difficulty {
+        .roadmap-difficulty {
             background-color: #eee;
             padding: 3px 8px;
             border-radius: 12px;
         }
 
-        .course-duration {
+        .roadmap-likes {
             display: flex;
             align-items: center;
         }
 
-        .course-duration::before {
-            content: "⏱";
+        .roadmap-likes::before {
+            content: "❤️";
             margin-right: 5px;
         }
 
-        .course-language {
-            text-transform: uppercase;
-        }
-
-        .course-price {
-            font-weight: bold;
-            color: #4CAF50;
+        .roadmap-custom {
+            font-style: italic;
+            color: #666;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-<div class="course-grid">
-    <!-- Repeat this card structure for each course -->
-    <div class="course-card">
-        <div class="course-image" style="background-image: url('https://via.placeholder.com/40');"></div>
-        <div class="course-content">
-            <h2 class="course-title">Course Title</h2>
-            <p class="course-description">A brief description of the course content goes here.</p>
-            <div class="course-topics">
+<div class="roadmap-grid">
+    <!-- Repeat this card structure for each roadmap -->
+    <div class="roadmap-card">
+        <div class="roadmap-content">
+            <h2 class="roadmap-title">Roadmap Title</h2>
+            <p class="roadmap-author">by Author Name</p>
+            <div class="roadmap-topics">
                 <span class="topic-chip">JavaScript</span>
                 <span class="topic-chip">Web Development</span>
                 <span class="topic-chip">Frontend</span>
             </div>
-            <div class="course-meta">
-                <span class="course-difficulty">Intermediate</span>
-                <span class="course-duration">8 hours</span>
+            <div class="roadmap-meta">
+                <span class="roadmap-difficulty">Intermediate</span>
+                <span class="roadmap-likes">123</span>
             </div>
-            <div class="course-meta">
-                <span class="course-language">EN</span>
-                <span class="course-price">Free</span>
-            </div>
+            <p class="roadmap-custom">Custom Roadmap</p>
         </div>
     </div>
-    <!-- Add more course cards here -->
-    <div class="course-card">
-        <div class="course-image" style="background-image: url('https://via.placeholder.com/40');"></div>
-        <div class="course-content">
-            <h2 class="course-title">Course Title</h2>
-            <p class="course-description">A brief description of the course content goes here.</p>
-            <div class="course-topics">
-                <span class="topic-chip">JavaScript</span>
-                <span class="topic-chip">Web Development</span>
-                <span class="topic-chip">Frontend</span>
-            </div>
-            <div class="course-meta">
-                <span class="course-difficulty">Intermediate</span>
-                <span class="course-duration">8 hours</span>
-            </div>
-            <div class="course-meta">
-                <span class="course-language">EN</span>
-                <span class="course-price">Free</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="course-card">
-        <div class="course-image" style="background-image: url('https://via.placeholder.com/40');"></div>
-        <div class="course-content">
-            <h2 class="course-title">Course Title</h2>
-            <p class="course-description">A brief description of the course content goes here.</p>
-            <div class="course-topics">
-                <span class="topic-chip">JavaScript</span>
-                <span class="topic-chip">Web Development</span>
-                <span class="topic-chip">Frontend</span>
-            </div>
-            <div class="course-meta">
-                <span class="course-difficulty">Intermediate</span>
-                <span class="course-duration">8 hours</span>
-            </div>
-            <div class="course-meta">
-                <span class="course-language">EN</span>
-                <span class="course-price">Free</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="course-card">
-        <div class="course-image" style="background-image: url('https://via.placeholder.com/40');"></div>
-        <div class="course-content">
-            <h2 class="course-title">Course Title</h2>
-            <p class="course-description">A brief description of the course content goes here.</p>
-            <div class="course-topics">
-                <span class="topic-chip">JavaScript</span>
-                <span class="topic-chip">Web Development</span>
-                <span class="topic-chip">Frontend</span>
-            </div>
-            <div class="course-meta">
-                <span class="course-difficulty">Intermediate</span>
-                <span class="course-duration">8 hours</span>
-            </div>
-            <div class="course-meta">
-                <span class="course-language">EN</span>
-                <span class="course-price">Free</span>
-            </div>
-        </div>
-    </div>
-
+    <!-- Add more roadmap cards here -->
 </div>
 </body>
 </html>

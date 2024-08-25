@@ -27,12 +27,10 @@ const GET_COURSES = gql`
 const GET_ROADMAPS = gql`
     query GetRoadmaps {
         getRoadmaps {
-            id
             title
             author
             topics
             isCustom
-            createdBy
             likes
             difficulty
         }
