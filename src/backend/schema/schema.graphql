@@ -29,7 +29,7 @@ type Course {
 
 type Roadmap {
     id: ID!
-    name: String!
+    title: String!
     author: String!
     courses: [Course!]!
     courseIDs: [String!]!
@@ -134,7 +134,7 @@ input CourseInput {
 
 input RoadmapInput {
     id: ID!
-    name: String!
+    title: String!
     author: String!
     courseIDs: [String!]!
     topics: [String!]!

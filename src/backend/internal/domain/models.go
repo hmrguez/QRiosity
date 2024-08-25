@@ -61,7 +61,7 @@ type Course struct {
 
 type Roadmap struct {
 	ID         string   `json:"id"`
-	Name       string   `json:"name"`
+	Title      string   `json:"title"`
 	Author     string   `json:"author"`
 	Courses    []Course `json:"courses"`
 	CourseIDs  []string `json:"courseIDs"`
