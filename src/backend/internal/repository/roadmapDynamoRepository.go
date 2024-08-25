@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"log"
 )
 
 type DynamoDBRoadmapRepository struct {
@@ -65,6 +66,8 @@ func (r *DynamoDBRoadmapRepository) GetRoadmap(ctx context.Context, roadmapID st
 		},
 	}
 
+	log.Println("Fetching roadmap with ID", roadmapID)
+
 	result, err := r.db.GetItemWithContext(ctx, input)
 	if err != nil {
 		return nil, err
@@ -80,11 +83,15 @@ func (r *DynamoDBRoadmapRepository) GetRoadmap(ctx context.Context, roadmapID st
 		return nil, err
 	}
 
+	log.Printf("Found roadmap %v", roadmap)
+
 	// Collect all course IDs
 	courseIDs := make(map[string]struct{})
 	for _, courseID := range roadmap.CourseIDs {
 		courseIDs[courseID] = struct{}{}
 	}
+
+	log.Printf("Found course IDs %v", courseIDs)
 
 	// Prepare keys for BatchGetItem
 	keys := make([]map[string]*dynamodb.AttributeValue, 0, len(courseIDs))
@@ -108,6 +115,8 @@ func (r *DynamoDBRoadmapRepository) GetRoadmap(ctx context.Context, roadmapID st
 		return nil, err
 	}
 
+	log.Printf("BatchGetItem result %v", batchGetResult)
+
 	// Unmarshal courses
 	courses := make(map[string]*domain.Course)
 	err = dynamodbattribute.UnmarshalListOfMaps(batchGetResult.Responses["Qriosity-Courses"], &courses)
@@ -115,12 +124,16 @@ func (r *DynamoDBRoadmapRepository) GetRoadmap(ctx context.Context, roadmapID st
 		return nil, err
 	}
 
+	log.Printf("Unmarshalled courses %v", courses)
+
 	// Populate Courses field in roadmap
 	for _, courseID := range roadmap.CourseIDs {
 		if course, ok := courses[courseID]; ok {
 			roadmap.Courses = append(roadmap.Courses, *course)
 		}
 	}
+
+	log.Printf("Populated roadmap %v", roadmap)
 
 	return &roadmap, nil
 }
