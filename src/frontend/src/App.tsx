@@ -6,7 +6,9 @@ function App() {
 	return (
 		<div className="flex gap-3">
 			<Navbar/>
+			{/*<div style={{marginLeft: '275px', marginRight: "30px", marginTop: "-17px"}}>*/}
 			<Outlet/>
+			{/*</div>*/}
 		</div>
 	);
 }

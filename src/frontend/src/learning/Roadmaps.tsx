@@ -1,6 +1,8 @@
+import "./Roadmaps.css"
+
 const Roadmaps = () => {
 	return (
-		<div>
+		<div className="roadmaps">
 			<h1>Roadmaps</h1>
 		</div>
 	);

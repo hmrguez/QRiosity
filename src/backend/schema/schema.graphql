@@ -80,6 +80,8 @@ type Query {
     getAllTopics: [Topic!]!
     getCourses: [Course!]!
     getRoadmaps: [Roadmap!]!
+    getCourseFeed(userId: String): [Course!]!
+    getRoadmapFeed(userId: String): [Roadmap!]!
 }
 
 type Mutation {

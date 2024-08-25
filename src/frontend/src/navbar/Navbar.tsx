@@ -9,7 +9,6 @@ import LearningService from "../learning/LearningService.tsx";
 import {Toast} from "primereact/toast";
 
 
-
 const Navbar = () => {
 	const [activeItem, setActiveItem] = useState('My Learning');
 	const [showModal, setShowModal] = useState(false);
@@ -79,7 +78,7 @@ const Navbar = () => {
 									className={activeItem === 'My Learning' ? 'nav-link active' : 'nav-link '}
 									onClick={() => handleItemClick('My Learning')}
 								>
-									<i className="pi pi-book"></i> My Learning
+									<i className="pi pi-bookmark"></i> My Learning
 								</Link>
 							</li>
 							<li>
@@ -105,6 +104,15 @@ const Navbar = () => {
 									onClick={() => handleItemClick('Roadmaps')}
 								>
 									<i className="pi pi-map"></i> Roadmaps
+								</Link>
+							</li>
+							<li>
+								<Link
+									to="/home/courses"
+									className={activeItem === 'Courses' ? 'nav-link active' : 'nav-link'}
+									onClick={() => handleItemClick('Courses')}
+								>
+									<i className="pi pi-book"></i> Courses
 								</Link>
 							</li>
 						</ul>
