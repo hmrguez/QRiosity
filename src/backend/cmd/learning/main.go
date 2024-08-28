@@ -14,6 +14,7 @@ import (
 )
 
 var (
+	userRepository    repository.IUserRepository
 	topicRepository   repository.ITopicRepository
 	courseRepository  repository.ICourseRepository
 	roadmapRepository repository.IRoadmapRepository
@@ -30,6 +31,7 @@ func main() {
 	topicRepository = repository.NewDynamoDBTopicRepository(sess, "Qriosity-Topics")
 	courseRepository = repository.NewDynamoDBCourseRepository(sess, "Qriosity-Courses")
 	roadmapRepository = repository.NewDynamoDBRoadmapRepository(sess, "Qriosity-Roadmaps")
+	userRepository, _ = repository.NewDynamoDBUserRepository(sess, "Qriosity-Users")
 
 	lambda.Start(Handler)
 }
@@ -48,6 +50,8 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 			return handleGetCourses(ctx)
 		case "getRoadmaps":
 			return handleGetRoadmaps(ctx)
+		case "getRoadmapsByUser":
+			return handleGetRoadmapsByUser(ctx, event.Arguments)
 		}
 	case "Mutation":
 		switch event.FieldName {
@@ -145,7 +149,31 @@ func handleCourseAddedToRoadmap(ctx context.Context, args json.RawMessage) (json
 }
 
 func handleUserLikedRoadmap(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
-	panic("not implemented")
+	// Fetch the user ID and roadmap ID from the arguments
+	var input struct {
+		UserID    string `json:"userId"`
+		RoadmapID string `json:"roadmapId"`
+	}
+
+	if err := json.Unmarshal(args, &input); err != nil {
+		return nil, err
+	}
+
+	// Fetch the user by ID
+	user, err := userRepository.GetUserByName(input.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Append the roadmap ID to the user's liked roadmaps
+	user.Roadmaps = append(user.Roadmaps, input.RoadmapID)
+
+	// Update user
+	if _, err := userRepository.UpsertUser(*user); err != nil {
+		return nil, err
+	}
+
+	return json.RawMessage(`{"success": true}`), nil
 }
 
 func handleAddTopics(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
@@ -283,6 +311,27 @@ func handleGetCourseById(ctx context.Context, args json.RawMessage) (json.RawMes
 	}
 
 	response, err := json.Marshal(course)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func handleGetRoadmapsByUser(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	var input struct {
+		UserID string `json:"userId"`
+	}
+	if err := json.Unmarshal(args, &input); err != nil {
+		return nil, err
+	}
+
+	roadmaps, err := roadmapRepository.GetRoadmapsByUser(ctx, input.UserID, userRepository)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(roadmaps)
 	if err != nil {
 		return nil, err
 	}

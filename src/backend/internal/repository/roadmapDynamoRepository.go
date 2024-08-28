@@ -120,3 +120,41 @@ func (r *DynamoDBRoadmapRepository) GetRoadmap(ctx context.Context, roadmapID st
 
 	return &roadmap, nil
 }
+
+func (r *DynamoDBRoadmapRepository) GetRoadmapsByUser(ctx context.Context, userID string, userRepo IUserRepository) ([]*domain.Roadmap, error) {
+	// Fetch the user
+	user, err := userRepo.GetUserByName(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Now fetch all roadmaps using a batch operation from the user.RoadmapIds
+	keys := make([]map[string]*dynamodb.AttributeValue, 0, len(user.Roadmaps))
+	for _, roadmapID := range user.Roadmaps {
+		keys = append(keys, map[string]*dynamodb.AttributeValue{
+			"id": {S: aws.String(roadmapID)},
+		})
+	}
+
+	batchGetInput := &dynamodb.BatchGetItemInput{
+		RequestItems: map[string]*dynamodb.KeysAndAttributes{
+			r.tableName: {
+				Keys: keys,
+			},
+		},
+	}
+
+	batchGetResult, err := r.db.BatchGetItemWithContext(ctx, batchGetInput)
+	if err != nil {
+		return nil, nil
+	}
+
+	// Unmarshal roadmaps
+	var roadmaps []*domain.Roadmap
+	err = dynamodbattribute.UnmarshalListOfMaps(batchGetResult.Responses[r.tableName], &roadmaps)
+	if err != nil {
+		return nil, err
+	}
+
+	return roadmaps, nil
+}

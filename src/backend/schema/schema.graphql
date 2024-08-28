@@ -5,6 +5,7 @@ type User {
     topics: [String!]
     dailyChallengeAvailable: Boolean!
     username: String!
+    roadmapsIds: [String!]
 }
 
 type Topic {
@@ -84,6 +85,7 @@ type Query {
     getRoadmaps: [Roadmap!]!
     getCourseFeed(userId: String): [Course!]!
     getRoadmapFeed(userId: String): [Roadmap!]!
+    getRoadmapsByUser(userId: String): [Roadmap!]!
 }
 
 input UserEditInput {
