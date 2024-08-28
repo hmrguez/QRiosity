@@ -76,6 +76,18 @@ h2 {
     transition: background-color 0.3s;
 }
 
+.topic input {
+    border: none;
+    background: none;
+    font-size: 14px;
+    outline: none;
+    padding: 0;
+}
+
+.topic input:focus {
+    border: none;
+}
+
 .topic:hover {
     background-color: #d0d0d0;
 }

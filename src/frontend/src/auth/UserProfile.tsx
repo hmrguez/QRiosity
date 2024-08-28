@@ -49,10 +49,30 @@ const UserProfile: React.FC = () => {
 		setIsChanged(true);
 	}, [userName, topics, role]);
 
+	const editTopic = (index: number, newValue: string) => {
+		const newTopics = [...topics];
+		newTopics[index] = newValue;
+		setTopics(newTopics);
+	};
+
+	const handleBlur = (index: number) => {
+		const newTopics = [...topics];
+		if (!newTopics[index].trim()) {
+			newTopics.splice(index, 1);
+		}
+		setTopics(newTopics);
+	};
+
 	const renderTopics = () => {
 		return topics.map((topic, index) => (
 			<div key={index} className="topic">
-				{topic}
+				<input
+					type="text"
+					value={topic}
+					onChange={(e) => editTopic(index, e.target.value)}
+					onBlur={() => handleBlur(index)}
+					className="bg-transparent outline-none"
+				/>
 				<button className="delete-topic" onClick={() => deleteTopic(index)}>x</button>
 			</div>
 		));
@@ -71,11 +91,10 @@ const UserProfile: React.FC = () => {
 		setLoading(true);
 		// Add logic to save changes here, e.g., call updateUser mutation
 		await authService.updateUser({
-			name: userName,
+			name: name as string,
+			username: userName,
 			role: role === 'Rookie' ? 0 : role === 'Aspirant' ? 1 : 2,
-			email: '', // Add email if needed
-			topics: topics,
-			dailyChallengeAvailable: false // Set this based on your logic
+			topics: topics, // Set this based on your logic
 		});
 		setIsEditingName(false);
 		setIsChanged(false);

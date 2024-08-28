@@ -98,13 +98,7 @@ class AuthService {
 		return data.getUserByName;
 	}
 
-	async updateUser(input: {
-		name: string;
-		role: number;
-		email: string;
-		topics: string[];
-		dailyChallengeAvailable: boolean;
-	}) {
+	async updateUser(input: { name: string, username: string, role: number, topics: string[] }) {
 		const {data} = await this.client.mutate({
 			mutation: UPDATE_USER_MUTATION,
 			variables: {input},
