@@ -58,6 +58,8 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 			return handleConfirmEmail(ctx, event.Arguments)
 		case "sendFeedback":
 			return handleSendFeedback(ctx, event.Arguments)
+		case "updateUser":
+			return handleUpdateUser(ctx, event.Arguments)
 		}
 	}
 
@@ -132,6 +134,7 @@ func handleRegister(ctx context.Context, args json.RawMessage) (json.RawMessage,
 
 	user := domain.User{
 		Name:                    *registeredUsername,
+		Role:                    0,
 		Email:                   registerArgs.Email,
 		Topics:                  registerArgs.Topics,
 		DailyChallengeAvailable: true,
@@ -187,6 +190,27 @@ func handleResendConfirmationEmail(ctx context.Context, args json.RawMessage) (j
 	}
 
 	_, err := authService.ResendConfirmationCode(resendArgs.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(map[string]bool{"success": true})
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func handleUpdateUser(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	var userEditArgs struct {
+		Input domain.User `json:"input"`
+	}
+	if err := json.Unmarshal(args, &userEditArgs); err != nil {
+		return nil, err
+	}
+
+	_, err := userRepository.UpsertUser(userEditArgs.Input)
 	if err != nil {
 		return nil, err
 	}

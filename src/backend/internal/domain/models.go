@@ -40,6 +40,7 @@ type Topic struct {
 
 type User struct {
 	Name                    string   `json:"name"`
+	Role                    int      `json:"role"`
 	Email                   string   `json:"email"`
 	Topics                  []string `json:"topics,omitempty"`
 	DailyChallengeAvailable bool     `json:"dailyChallengeAvailable"`

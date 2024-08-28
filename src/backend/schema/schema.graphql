@@ -1,5 +1,6 @@
 type User {
     name: String!
+    role: Int!
     email: String!
     topics: [String!]
     dailyChallengeAvailable: Boolean!
@@ -84,11 +85,20 @@ type Query {
     getRoadmapFeed(userId: String): [Roadmap!]!
 }
 
+input UserEditInput {
+    name: String!
+    role: Int!
+    email: String!
+    topics: [String!]
+    dailyChallengeAvailable: Boolean!
+}
+
 type Mutation {
     # Auth
     register(username: String!, password: String!, email: String!, topics: [String!]): String!
     confirmEmail(email: String!, token: String!): BareResponse!
     sendFeedback(feedback: String!, from: String!): BareResponse!
+    updateUser(input: UserEditInput!): BareResponse!
 
     # Daily
     dailyChallenge(username: String!, question: String!, answer: String!): ChallengeResponse!
