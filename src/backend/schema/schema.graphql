@@ -4,6 +4,7 @@ type User {
     email: String!
     topics: [String!]
     dailyChallengeAvailable: Boolean!
+    username: String!
 }
 
 type Topic {

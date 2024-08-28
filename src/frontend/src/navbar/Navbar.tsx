@@ -25,7 +25,12 @@ const Navbar = () => {
 
 	const handleItemClick = (item: SetStateAction<string>) => {
 		if (item === 'Daily Challenge' && !challengeAvailable) {
-			toast.current?.show({severity: 'warn', summary: 'Daily Challenge', detail: 'Challenge not available', life: 3000});
+			toast.current?.show({
+				severity: 'warn',
+				summary: 'Daily Challenge',
+				detail: 'Challenge not available',
+				life: 3000
+			});
 			return;
 		}
 
@@ -62,7 +67,8 @@ const Navbar = () => {
 	return (
 		<nav className="sidebar">
 			<Toast ref={toast}/>
-			<DailyChallengeModal visible={showModal} onHide={closeModal} onCorrectSubmit={() => setChallengeAvailable(false)}/>
+			<DailyChallengeModal visible={showModal} onHide={closeModal}
+								 onCorrectSubmit={() => setChallengeAvailable(false)}/>
 
 			<div className="main-section">
 				<div className="logo">
@@ -143,7 +149,7 @@ const Navbar = () => {
 				</ul>
 			</div>
 			<div className="user-section">
-				<Link to="/home/profile" className="user-info">
+				<Link to={"/home/profile/" + authService.getCognitoUsername()} className="user-info">
 					<img src="https://via.placeholder.com/40" alt="User Avatar" className="user-avatar"/>
 					<span className="user-name">{username}</span>
 				</Link>

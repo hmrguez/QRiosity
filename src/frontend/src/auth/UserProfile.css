@@ -1,4 +1,8 @@
-/* src/frontend/src/auth/UserProfile.css */
+.super-container {
+    margin-left: var(--navbar-margin-left);
+    width: 100%;
+}
+
 .profile-container {
     margin: 50px auto;
     background-color: white;
@@ -8,11 +12,13 @@
     width: 80%;
     max-width: 600px;
 }
+
 .profile-header {
     display: flex;
     align-items: center;
     margin-bottom: 30px;
 }
+
 .profile-pic {
     width: 100px;
     height: 100px;
@@ -21,35 +27,43 @@
     margin-right: 20px;
     border: 3px solid #333;
 }
+
 .profile-info {
     flex-grow: 1;
 }
+
 h1, h2 {
     margin: 0;
 }
+
 h1 {
     color: #333;
     font-size: 28px;
     cursor: pointer;
 }
+
 h2 {
     color: #666;
     font-size: 18px;
     font-weight: normal;
 }
+
 .topics-container {
     margin-top: 20px;
 }
+
 .topics-title {
     font-size: 20px;
     color: #333;
     margin-bottom: 10px;
 }
+
 .topics {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
+
 .topic {
     background-color: #e0e0e0;
     color: #333;
@@ -61,6 +75,7 @@ h2 {
     justify-content: space-between;
     transition: background-color 0.3s;
 }
+
 .topic:hover {
     background-color: #d0d0d0;
 }
@@ -81,6 +96,7 @@ h2 {
     border-bottom: 2px solid #333;
     outline: none;
 }
+
 .add-topic {
     background-color: #333;
     color: white;
@@ -91,6 +107,7 @@ h2 {
     cursor: pointer;
     transition: background-color 0.3s;
 }
+
 .add-topic:hover {
     background-color: #555;
 }

@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -133,6 +134,7 @@ func handleRegister(ctx context.Context, args json.RawMessage) (json.RawMessage,
 	registeredUsername := cognitoResponse.UserSub
 
 	user := domain.User{
+		Username:                registerArgs.Username,
 		Name:                    *registeredUsername,
 		Role:                    0,
 		Email:                   registerArgs.Email,
@@ -235,6 +237,8 @@ func handleGetUserByName(ctx context.Context, args json.RawMessage) (json.RawMes
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("User %v", user)
 
 	response, err := json.Marshal(user)
 	if err != nil {

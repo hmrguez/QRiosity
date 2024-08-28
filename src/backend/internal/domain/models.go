@@ -44,6 +44,7 @@ type User struct {
 	Email                   string   `json:"email"`
 	Topics                  []string `json:"topics,omitempty"`
 	DailyChallengeAvailable bool     `json:"dailyChallengeAvailable"`
+	Username                string   `json:"username"`
 }
 
 type Course struct {

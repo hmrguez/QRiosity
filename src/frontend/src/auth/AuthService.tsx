@@ -24,19 +24,19 @@ const CONFIRM_EMAIL_MUTATION = gql`
     }
 `;
 
+const GET_USER_BY_NAME_QUERY = gql`
+    query GetUserByName($name: String!) {
+        getUserByName(name: $name) {
+            username
+            topics
+            role
+        }
+    }
+`;
+
 
 class AuthService {
-	private domain = 'qriosity.auth.us-east-2.amazoncognito.com';
-	private clientId = '5cpkviq3bb7e1dvdhcuqidju1g';
-	private redirectUri = 'http://localhost:5173/oauth-callback';
-	private responseType = 'code'; // or 'token'
-	private scope = 'openid profile email';
-
-	private googleLoginUrl = `https://${this.domain}/oauth2/authorize?identity_provider=Google&response_type=${this.responseType}&client_id=${this.clientId}&redirect_uri=${this.redirectUri}&scope=${this.scope}`;
-
-
 	client;
-
 
 	constructor(client: ApolloClient<any>) {
 		this.client = client;
@@ -82,6 +82,14 @@ class AuthService {
 		return response.data.resendConfirmationEmail;
     }
 
+	async getProfile(name: string) {
+		const {data} = await this.client.query({
+			query: GET_USER_BY_NAME_QUERY,
+			variables: {name},
+		});
+		return data.getUserByName;
+	}
+
 
 	isLoggedIn() {
 		return !!localStorage.getItem('token');
@@ -112,10 +120,6 @@ class AuthService {
 	logout() {
 		localStorage.removeItem('token');
 	}
-
-	signInWithGoogle() {
-		window.location.href = this.googleLoginUrl;
-	};
 }
 
 export default AuthService;
