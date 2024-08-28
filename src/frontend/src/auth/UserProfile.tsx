@@ -13,6 +13,7 @@ const UserProfile: React.FC = () => {
 	const [isEditingName, setIsEditingName] = useState<boolean>(false);
 	const [isChanged, setIsChanged] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [isEditable, setIsEditable] = useState<boolean>(false);
 
 	const apolloClient = useApolloClient();
 	const authService = new AuthService(apolloClient)
@@ -41,6 +42,9 @@ const UserProfile: React.FC = () => {
 				default:
 					setRole('Unknown');
 			}
+
+			const cognitoUsername = await authService.getCognitoUsername();
+			setIsEditable(cognitoUsername === name);
 		};
 		fetchProfile();
 	}, [name]);
@@ -66,14 +70,20 @@ const UserProfile: React.FC = () => {
 	const renderTopics = () => {
 		return topics.map((topic, index) => (
 			<div key={index} className="topic">
-				<input
-					type="text"
-					value={topic}
-					onChange={(e) => editTopic(index, e.target.value)}
-					onBlur={() => handleBlur(index)}
-					className="bg-transparent outline-none"
-				/>
-				<button className="delete-topic" onClick={() => deleteTopic(index)}>x</button>
+				{isEditable ? (
+					<input
+						type="text"
+						value={topic}
+						onChange={(e) => editTopic(index, e.target.value)}
+						onBlur={() => handleBlur(index)}
+						className="bg-transparent outline-none"
+					/>
+				) : (
+					<span>{topic}</span>
+				)}
+				{isEditable && (
+					<button className="delete-topic" onClick={() => deleteTopic(index)}>x</button>
+				)}
 			</div>
 		));
 	};
@@ -116,8 +126,10 @@ const UserProfile: React.FC = () => {
 								onBlur={() => setIsEditingName(false)}
 								autoFocus
 							/>
-						) : (
+						) : isEditable ? (
 							<h1 onClick={() => setIsEditingName(true)}>{userName}</h1>
+						) : (
+							<h1>{userName}</h1>
 						)}
 						<h2>{role}</h2>
 					</div>
@@ -127,13 +139,15 @@ const UserProfile: React.FC = () => {
 					<div className="topics" id="topics-list">
 						{renderTopics()}
 					</div>
-					<div className="flex justify-content-between">
-						<Button className="p-button-contrast p-button-rounded mt-3" label="Add Topic"
-								onClick={addTopic}/>
-						<Button className="p-button-contrast p-button-rounded mt-3"
-								label={loading ? "Saving..." : "Save"} onClick={saveChanges}
-								disabled={!isChanged || loading}/>
-					</div>
+					{isEditable && (
+						<div className="flex justify-content-between">
+							<Button className="p-button-contrast p-button-rounded mt-3" label="Add Topic"
+									onClick={addTopic}/>
+							<Button className="p-button-contrast p-button-rounded mt-3"
+									label={loading ? "Saving..." : "Save"} onClick={saveChanges}
+									disabled={!isChanged || loading}/>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
