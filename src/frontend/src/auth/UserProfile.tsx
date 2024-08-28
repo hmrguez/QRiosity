@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
-import './UserProfile.css';
-import {Button} from "primereact/button";
-import AuthService from './AuthService';
+import {useParams} from "react-router-dom";
+import {useEffect, useState} from "react";
 import {useApolloClient} from "@apollo/client";
+import AuthService from "./AuthService.tsx";
+import {Button} from "primereact/button";
+import "./UserProfile.css"
 
 const UserProfile: React.FC = () => {
 	const {name} = useParams<{ name: string }>();
@@ -12,6 +12,7 @@ const UserProfile: React.FC = () => {
 	const [topics, setTopics] = useState<string[]>([]);
 	const [isEditingName, setIsEditingName] = useState<boolean>(false);
 	const [isChanged, setIsChanged] = useState<boolean>(false);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	const apolloClient = useApolloClient();
 	const authService = new AuthService(apolloClient)
@@ -24,7 +25,7 @@ const UserProfile: React.FC = () => {
 			}
 
 			const profile = await authService.getProfile(name);
-			setUserName(profile.name);
+			setUserName(profile.username);
 			setTopics(profile.topics);
 
 			switch (profile.role) {
@@ -46,7 +47,7 @@ const UserProfile: React.FC = () => {
 
 	useEffect(() => {
 		setIsChanged(true);
-	}, [userName, topics]);
+	}, [userName, topics, role]);
 
 	const renderTopics = () => {
 		return topics.map((topic, index) => (
@@ -66,9 +67,19 @@ const UserProfile: React.FC = () => {
 		setTopics([...topics, 'New Topic']);
 	};
 
-	const saveChanges = () => {
+	const saveChanges = async () => {
+		setLoading(true);
+		// Add logic to save changes here, e.g., call updateUser mutation
+		await authService.updateUser({
+			name: userName,
+			role: role === 'Rookie' ? 0 : role === 'Aspirant' ? 1 : 2,
+			email: '', // Add email if needed
+			topics: topics,
+			dailyChallengeAvailable: false // Set this based on your logic
+		});
 		setIsEditingName(false);
 		setIsChanged(false);
+		setLoading(false);
 	};
 
 	return (
@@ -100,13 +111,13 @@ const UserProfile: React.FC = () => {
 					<div className="flex justify-content-between">
 						<Button className="p-button-contrast p-button-rounded mt-3" label="Add Topic"
 								onClick={addTopic}/>
-						<Button className="p-button-contrast p-button-rounded mt-3" label="Save" onClick={saveChanges}
-								disabled={!isChanged}/>
+						<Button className="p-button-contrast p-button-rounded mt-3"
+								label={loading ? "Saving..." : "Save"} onClick={saveChanges}
+								disabled={!isChanged || loading}/>
 					</div>
 				</div>
 			</div>
 		</div>
-
 	);
 };
 

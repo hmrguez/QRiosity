@@ -212,7 +212,18 @@ func handleUpdateUser(ctx context.Context, args json.RawMessage) (json.RawMessag
 		return nil, err
 	}
 
-	_, err := userRepository.UpsertUser(userEditArgs.Input)
+	// First fetch the user
+	user, err := userRepository.GetUserByName(userEditArgs.Input.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	// Updatable fields
+	user.Topics = userEditArgs.Input.Topics
+	user.Role = userEditArgs.Input.Role
+	user.Username = userEditArgs.Input.Username
+
+	_, err = userRepository.UpsertUser(*user)
 	if err != nil {
 		return nil, err
 	}

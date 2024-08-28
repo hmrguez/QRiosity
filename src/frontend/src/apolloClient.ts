@@ -8,9 +8,20 @@ const client = new ApolloClient({
 			'x-api-key': "da2-gytwuzuubzdgxpe3tzaqfdufka",  // Replace with your AppSync API key if using API key authentication
 		},
 	}),
-	cache: new InMemoryCache(),
+	cache: new InMemoryCache({
+		typePolicies: {
+			Query: {
+				fields: {
+					getUserByName: {
+						merge(existing = {}, incoming) {
+							return {...existing, ...incoming};
+						}
+					}
+				}
+			}
+		}
+	})
 });
-
 
 // const client = new ApolloClient({
 // 	uri: 'http://localhost:9000/query',

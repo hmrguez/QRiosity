@@ -34,6 +34,14 @@ const GET_USER_BY_NAME_QUERY = gql`
     }
 `;
 
+const UPDATE_USER_MUTATION = gql`
+    mutation UpdateUser($input: UserEditInput!) {
+        updateUser(input: $input) {
+            success
+        }
+    }
+`;
+
 
 class AuthService {
 	client;
@@ -88,6 +96,20 @@ class AuthService {
 			variables: {name},
 		});
 		return data.getUserByName;
+	}
+
+	async updateUser(input: {
+		name: string;
+		role: number;
+		email: string;
+		topics: string[];
+		dailyChallengeAvailable: boolean;
+	}) {
+		const {data} = await this.client.mutate({
+			mutation: UPDATE_USER_MUTATION,
+			variables: {input},
+		});
+		return data.updateUser;
 	}
 
 
