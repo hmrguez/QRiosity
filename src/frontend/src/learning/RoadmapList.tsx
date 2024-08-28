@@ -24,25 +24,27 @@ const RoadmapList: React.FC<RoadmapListProps> = ({roadmaps}) => {
 	}
 
 	return (
-		<div className="container">
-			<h1>My Roadmaps</h1>
-			<div className="roadmap-list">
-				{roadmaps.map((roadmap) => (
-					<div key={roadmap.id} className="roadmap-card" onClick={() => onRoadmapClick(roadmap.id)}>
-						<div className="roadmap-title">{roadmap.title}</div>
-						<div className="roadmap-author">By: {roadmap.author}</div>
-						<div className="roadmap-topics">
-							{roadmap.topics.map((topic, idx) => (
-								<span key={idx} className="topic">{topic}</span>
-							))}
+		<div className="roadmap-list-wrapper">
+			<div className="container">
+				<h1>My Roadmaps</h1>
+				<div className="roadmap-list">
+					{roadmaps.map((roadmap) => (
+						<div key={roadmap.id} className="roadmap-card" onClick={() => onRoadmapClick(roadmap.id)}>
+							<div className="roadmap-title">{roadmap.title}</div>
+							<div className="roadmap-author">By: {roadmap.author}</div>
+							<div className="roadmap-topics">
+								{roadmap.topics.map((topic, idx) => (
+									<span key={idx} className="topic">{topic}</span>
+								))}
+							</div>
+							<div className="roadmap-meta">
+								<span className="difficulty">{roadmap.difficulty}</span>
+								<span className="likes">{roadmap.likes}</span>
+								{roadmap.isCustom && <span className="custom-badge">Custom</span>}
+							</div>
 						</div>
-						<div className="roadmap-meta">
-							<span className="difficulty">{roadmap.difficulty}</span>
-							<span className="likes">{roadmap.likes}</span>
-							{roadmap.isCustom && <span className="custom-badge">Custom</span>}
-						</div>
-					</div>
-				))}
+					))}
+				</div>
 			</div>
 		</div>
 	);
