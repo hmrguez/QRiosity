@@ -1,0 +1,81 @@
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+}
+
+h1 {
+    /*text-align: center;*/
+    color: black;
+    margin-bottom: 30px;
+}
+
+.roadmap-list {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.roadmap-card {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s ease;
+}
+
+.roadmap-card:hover {
+    transform: translateY(-5px);
+}
+
+.roadmap-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.roadmap-author {
+    color: var(--secondary-color);
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.roadmap-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.topic {
+    background-color: var(--background-color);
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 0.8em;
+}
+
+.roadmap-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--secondary-color);
+    font-size: 0.9em;
+}
+
+.custom-badge {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 0.8em;
+}
+
+.likes {
+    display: flex;
+    align-items: center;
+}
+
+.likes::before {
+    content: '❤️';
+    margin-right: 5px;
+}
