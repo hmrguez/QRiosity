@@ -143,10 +143,10 @@ const Navbar = () => {
 				</ul>
 			</div>
 			<div className="user-section">
-				<div className="user-info">
+				<Link to="/home/profile" className="user-info">
 					<img src="https://via.placeholder.com/40" alt="User Avatar" className="user-avatar"/>
 					<span className="user-name">{username}</span>
-				</div>
+				</Link>
 				<button className="logout-btn" onClick={logout}>Logout</button>
 			</div>
 		</nav>

@@ -21,6 +21,7 @@ import Courses from "./learning/Courses.tsx";
 import RoadmapDetail from "./learning/RoadmapDetail.tsx";
 import RoadmapBuilder from "./learning/RoadmapBuilder.tsx";
 import CourseCreator from "./learning/CourseCreator.tsx";
+import Profile from "./auth/UserProfile.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
 			</PrivateRoute>
 		),
 		children: [
+			{
+				path: "profile",
+				element: <Profile/>
+			},
 			{
 				path: "my-learning",
 				element: <MyLearning/>

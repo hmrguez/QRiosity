@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useApolloClient } from '@apollo/client';
+import React, {useState} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
+import {useApolloClient} from '@apollo/client';
 import AuthService from './AuthService';
-import { useAuth } from './AuthContext.tsx';
+import {useAuth} from './AuthContext.tsx';
 import './Login.css'
 
 const LoginForm = () => {
@@ -61,7 +61,7 @@ const LoginForm = () => {
 			{/*	<span>or</span>*/}
 			{/*</div>*/}
 			{/*<div className="google-wrapper">*/}
-			{/*	<button className="google-login">*/}
+			{/*	<button className="google-login" onClick={() => authService.signInWithGoogle()}>*/}
 			{/*		<img src={image} alt="Google logo"/>*/}
 			{/*		Sign in with Google*/}
 			{/*	</button>*/}
