@@ -1,26 +1,30 @@
-import "./MyLearning.css";
+import {useEffect, useState} from "react";
+import {useApolloClient} from "@apollo/client";
 import RoadmapList from "./RoadmapList";
+import LearningService from "./LearningService";
+import AuthService from "../auth/AuthService";
+import "./MyLearning.css";
 
 const MyLearning = () => {
-	const roadmaps = [
-		{
-			id: "1",
-			title: "Web Development Fundamentals",
-			author: "John Doe",
-			topics: ["HTML", "CSS", "JavaScript"],
-			difficulty: "Beginner",
-			likes: 150,
-		},
-		{
-			id: "2",
-			title: "Advanced Machine Learning",
-			author: "Jane Smith",
-			topics: ["Python", "TensorFlow", "Neural Networks"],
-			difficulty: "Advanced",
-			likes: 320,
-			isCustom: true,
-		},
-	];
+	const client = useApolloClient();
+	const learningService = new LearningService(client);
+	const authService = new AuthService(client);
+
+	const [roadmaps, setRoadmaps] = useState<any[]>([]);
+
+	useEffect(() => {
+		const fetchRoadmaps = async () => {
+			const userId = authService.getCognitoUsername();
+			try {
+				const roadmaps = await learningService.getRoadmapsByUser(userId as string);
+				setRoadmaps(roadmaps);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		fetchRoadmaps();
+	}, []);
 
 	return (
 		<div className="my-learning">
