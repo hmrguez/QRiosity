@@ -7,8 +7,13 @@ import {Button} from "primereact/button";
 import AuthService from "../auth/AuthService.tsx";
 import {Toast} from "primereact/toast";
 import {useNavigate} from "react-router-dom";
+import FileUpload from "../utils/FileInput.tsx";
 
 const RoadmapBuilder = () => {
+	const fileUploadRef = useRef<{ handleSubmit: () => void }>(null);
+
+
+
 	const [roadmapTitle, setRoadmapTitle] = useState('');
 	const [roadmapDescription, setRoadmapDescription] = useState('');
 	const [roadmapDifficulty, setRoadmapDifficulty] = useState('beginner');
@@ -64,6 +69,7 @@ const RoadmapBuilder = () => {
 
 		try {
 			await learningService.upsertRoadmap(roadmapInput);
+			fileUploadRef.current?.handleSubmit();
 			toast.current?.show({severity: 'success', summary: 'Success', detail: 'Roadmap saved', life: 3000});
 			router(`/home/roadmap/${roadmapInput.id}`);
 		} catch (error) {
@@ -173,6 +179,8 @@ const RoadmapBuilder = () => {
 						onChange={(e) => setRoadmapTopics(e.target.value)}
 					/>
 				</div>
+				<FileUpload ref={fileUploadRef}/>
+
 				<Button severity="contrast" onClick={saveRoadmap} disabled={loading} loading={loading}>
 					{loading ? 'Saving...' : 'Save Roadmap'}
 				</Button>
