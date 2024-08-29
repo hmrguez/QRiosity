@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	bucketName = os.Getenv("BUCKET_NAME")
 	s3Client   *s3.S3
+	bucketName = os.Getenv("BUCKET_NAME")
 )
 
 func init() {
@@ -25,7 +25,11 @@ func init() {
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	fileData, err := base64.StdEncoding.DecodeString(request.Body)
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 400, Body: fmt.Sprintf("Failed to decode file data: %s", err)}, nil
+		return events.APIGatewayProxyResponse{
+			StatusCode: 400,
+			Body:       fmt.Sprintf("Failed to decode file data: %s", err),
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
+		}, nil
 	}
 
 	fileName := request.Headers["filename"]
@@ -37,10 +41,18 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	})
 
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: fmt.Sprintf("Failed to upload file to S3: %s", err)}, nil
+		return events.APIGatewayProxyResponse{
+			StatusCode: 500,
+			Body:       fmt.Sprintf("Failed to upload file to S3: %s", err),
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
+		}, nil
 	}
 
-	return events.APIGatewayProxyResponse{StatusCode: 200, Body: "File uploaded successfully!"}, nil
+	return events.APIGatewayProxyResponse{
+		StatusCode: 200,
+		Body:       "File uploaded successfully!",
+		Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
+	}, nil
 }
 
 func main() {
