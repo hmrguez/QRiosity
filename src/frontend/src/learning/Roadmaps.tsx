@@ -4,22 +4,8 @@ import {useNavigate} from "react-router-dom";
 import {Button} from 'primereact/button';
 import LearningService from "./LearningService.tsx";
 import "./Roadmaps.css";
-import {Course} from "./Courses.tsx";
 import AuthService from "../auth/AuthService.tsx";
-
-// Define the Roadmap interface
-export interface Roadmap {
-	id: string;
-	title: string;
-	author: string;
-	courses: Course[];
-	courseIDs: string[];
-	topics: string[];
-	isCustom: boolean;
-	createdBy: string;
-	likes: number;
-	difficulty: string;
-}
+import {Roadmap} from "./Roadmap.tsx";
 
 const Roadmaps = () => {
 	const client = useApolloClient();

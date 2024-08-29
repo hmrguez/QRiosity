@@ -28,7 +28,7 @@ const MyLearning = () => {
 
 	return (
 		<div className="my-learning">
-			<RoadmapList roadmaps={roadmaps}/>
+			<RoadmapList roadmaps={roadmaps} liked={[true, true]}/>
 		</div>
 	);
 };

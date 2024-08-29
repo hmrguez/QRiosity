@@ -3,7 +3,8 @@ import {useParams} from 'react-router-dom';
 import LearningService from './LearningService';
 import './RoadmapDetail.css';
 import {useApolloClient} from "@apollo/client";
-import {Roadmap} from "./Roadmaps.tsx";
+
+import {Roadmap} from "./Roadmap.tsx";
 
 const RoadmapDetail = () => {
 	const {id} = useParams();

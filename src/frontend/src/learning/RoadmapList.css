@@ -2,6 +2,7 @@
     max-width: 800px;
     margin: 50px auto;
     font-size: .9rem;
+    color: #FFFFFF;
 }
 
 h1 {
@@ -17,10 +18,12 @@ h1 {
 }
 
 .roadmap-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    background-color: #2C2C2C;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 300px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
 }
 
@@ -28,38 +31,35 @@ h1 {
     transform: translateY(-5px);
 }
 
-.roadmap-title {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 10px;
+.card-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    filter: grayscale(100%);
 }
 
-.roadmap-author {
-    color: #666;
-    font-style: italic;
-    margin-bottom: 10px;
+.card-content {
+    padding: 20px;
 }
 
-.roadmap-topics {
+.card-title {
+    font-size: 24px;
+    margin: 0;
+    margin-bottom: 10px;
+    color: #FFFFFF;
+}
+
+.card-meta {
     display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 10px;
-}
-
-.topic {
-    background-color: #f5f5f5;
-    border-radius: 20px;
-    padding: 5px 10px;
-    font-size: 0.8em;
-}
-
-.roadmap-meta {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    color: #666;
-    font-size: 0.9em;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #BFBFBF;
+}
+
+.author {
+    margin-right: 8px;
 }
 
 .custom-badge {
@@ -70,12 +70,53 @@ h1 {
     font-size: 0.8em;
 }
 
-.likes {
+.difficulty {
+    margin-left: auto;
+    font-size: 14px;
+    color: #CCCCCC;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.like-section {
     display: flex;
     align-items: center;
 }
 
-.likes::before {
-    content: '❤️';
-    margin-right: 5px;
+.like-button {
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    font-size: 20px;
+    cursor: pointer;
+    outline: none;
+}
+
+.like-button:hover {
+    color: #FF6B6B;
+}
+
+.like-counter {
+    margin-left: 5px;
+    font-size: 14px;
+}
+
+.topics {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.topic-tag {
+    background-color: #3D3D3D;
+    color: #FFFFFF;
+    border-radius: 12px;
+    padding: 5px 10px;
+    font-size: 12px;
+    margin-left: 5px;
+    margin-bottom: 5px;
 }
