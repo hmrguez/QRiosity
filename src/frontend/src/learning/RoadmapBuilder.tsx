@@ -83,22 +83,45 @@ const RoadmapBuilder = () => {
 		fetchCourses();
 	}, []);
 
+	const moveCourseUp = (index: number) => {
+		if (index > 0) {
+			const newCourses = [...addedCourses];
+			[newCourses[index - 1], newCourses[index]] = [newCourses[index], newCourses[index - 1]];
+			setAddedCourses(newCourses);
+		}
+	};
+
+	const moveCourseDown = (index: number) => {
+		if (index < addedCourses.length - 1) {
+			const newCourses = [...addedCourses];
+			[newCourses[index + 1], newCourses[index]] = [newCourses[index], newCourses[index + 1]];
+			setAddedCourses(newCourses);
+		}
+	};
+
 	return (
 		<div className="roadmap-container">
 			<Toast ref={toast}/>
 			<div className="roadmap-courses">
 				<ul className="course-list">
-					{addedCourses.map(course => (
+					{addedCourses.map((course, index) => (
 						<li key={course.id} className="course-item">
-							<h3 className="course-title">{course.title}</h3>
-							<p className="course-description">{course.description}</p>
-							<div className="course-meta">
-								<span className="course-difficulty">{course.difficulty}</span>
-								<span className="course-duration">{course.duration} hours</span>
+							<div className="course-content">
+								<h3 className="course-title">{course.title}</h3>
+								<p className="course-description">{course.description}</p>
+								<div className="course-meta">
+									<span className="course-difficulty">{course.difficulty}</span>
+									<span className="course-duration">{course.duration} hours</span>
+								</div>
 							</div>
-							<button className="remove-course-button"
-									onClick={() => removeCourseFromRoadmap(course.id)}>Remove
-							</button>
+							<div className="course-actions">
+								<Button className="p-button-icon p-button-contrast" icon="pi pi-chevron-up"
+										onClick={() => moveCourseUp(index)}/>
+								<Button className="p-button-icon p-button-danger" icon="pi pi-times"
+										onClick={() => removeCourseFromRoadmap(course.id)}/>
+								<Button className="p-button-icon p-button-contrast" icon="pi pi-chevron-down"
+										onClick={() => moveCourseDown(index)}/>
+							</div>
 						</li>
 					))}
 				</ul>
