@@ -9,8 +9,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 var (
@@ -21,6 +23,16 @@ var (
 func init() {
 	sess := session.Must(session.NewSession())
 	s3Client = s3.New(sess)
+	rand.Seed(time.Now().UnixNano())
+}
+
+func generateRandomFilename() string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, 10)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(b)
 }
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -34,7 +46,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		}, nil
 	}
 
-	fileName := request.Headers["filename"]
+	fileName := generateRandomFilename()
 
 	_, err = s3Client.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(bucketName),
@@ -53,7 +65,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
-		Body:       "File uploaded successfully!",
+		Body:       fmt.Sprintf("{filename: \"%s\"}", fileName),
 		Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 	}, nil
 }

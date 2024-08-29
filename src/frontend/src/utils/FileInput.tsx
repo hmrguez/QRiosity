@@ -10,12 +10,12 @@ const FileUpload = forwardRef((_, ref) => {
 		setSelectedFile(event.target.files ? event.target.files[0] : null);
 	};
 
-	const handleSubmit = async (event?: React.FormEvent) => {
+	const handleSubmit = async (event?: React.FormEvent): Promise<string | null> => {
 		if (event) event.preventDefault();
 
 		if (!selectedFile) {
 			alert("Please select a file to upload.");
-			return;
+			return null;
 		}
 
 		const formData = new FormData();
@@ -29,8 +29,12 @@ const FileUpload = forwardRef((_, ref) => {
 
 			const data = await response.json();
 			console.log('File uploaded successfully:', data);
+
+			return data.filename;
+
 		} catch (error) {
 			console.error('Error uploading file:', error);
+			return null;
 		}
 	};
 
