@@ -73,4 +73,5 @@ type Roadmap struct {
 	CreatedBy  string   `json:"createdBy"`
 	Likes      int      `json:"likes"`
 	Difficulty string   `json:"difficulty"`
+	Liked      bool     `json:"liked,omitempty"`
 }

@@ -52,6 +52,8 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 			return handleGetRoadmaps(ctx)
 		case "getRoadmapsByUser":
 			return handleGetRoadmapsByUser(ctx, event.Arguments)
+		case "getRoadmapFeed":
+			return handleGetRoadmapFeed(ctx, event.Arguments)
 		}
 	case "Mutation":
 		switch event.FieldName {
@@ -329,6 +331,43 @@ func handleGetRoadmapsByUser(ctx context.Context, args json.RawMessage) (json.Ra
 	roadmaps, err := roadmapRepository.GetRoadmapsByUser(ctx, input.UserID, userRepository)
 	if err != nil {
 		return nil, err
+	}
+
+	response, err := json.Marshal(roadmaps)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	var input struct {
+		UserID string `json:"userId"`
+	}
+	if err := json.Unmarshal(args, &input); err != nil {
+		return nil, err
+	}
+
+	// Fetch all roadmaps
+	roadmaps, err := roadmapRepository.GetAllRoadmaps(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch the user by ID
+	user, err := userRepository.GetUserByName(input.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, roadmap := range roadmaps {
+		for _, roadmapID := range user.Roadmaps {
+			if roadmap.ID == roadmapID {
+				roadmap.Liked = true
+				break
+			}
+		}
 	}
 
 	response, err := json.Marshal(roadmaps)

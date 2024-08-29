@@ -41,6 +41,7 @@ type Roadmap {
     createdBy: String!
     likes: Int!
     difficulty: String!
+    liked: Boolean!
 }
 
 type AuthPayload {
