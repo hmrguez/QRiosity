@@ -95,7 +95,7 @@ jobs:
   deploy-s3-lambda:
     name: Deploy S3 Lambda
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'src/backend/cmd/s3')
+    if: contains(github.event.head_commit.message, 'src/backend/cmd/image-upload')
 
     steps:
       - name: Checkout code
