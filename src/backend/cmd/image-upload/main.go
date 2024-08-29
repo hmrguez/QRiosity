@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	s3Client   *s3.S3
 	bucketName = os.Getenv("BUCKET_NAME")
+	s3Client   *s3.S3
 )
 
 func init() {
