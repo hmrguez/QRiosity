@@ -51,13 +51,13 @@ const RoadmapBuilder = () => {
 	const saveRoadmap = async () => {
 		setLoading(true);
 		const roadmapInput = {
-			id: crypto.randomUUID(), // Generate or fetch the ID as needed
+			id: crypto.randomUUID(),
 			title: roadmapTitle,
-			author: authService.getUsername(), // Replace with the actual current user
+			author: authService.getUsername(),
 			courseIDs: addedCourses.map(course => course.id),
 			topics: roadmapTopics.split(',').map(topic => topic.trim()),
 			isCustom: true,
-			createdBy: authService.getUsername(), // Replace with the actual current user
+			createdBy: authService.getUsername(),
 			likes: 0,
 			difficulty: roadmapDifficulty,
 		};

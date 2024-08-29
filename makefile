@@ -18,3 +18,9 @@ deploy-learning:
 	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o bootstrap main.go && \
 	zip -r learning.zip bootstrap && \
 	aws lambda update-function-code --function-name learning-appsync --zip-file fileb://learning.zip
+
+deploy-s3-lambda:
+	cd src/backend/cmd/image-upload && \
+	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o bootstrap main.go && \
+	zip -r image-upload.zip bootstrap && \
+	aws lambda update-function-code --function-name image-upload --zip-file fileb://image-upload.zip
