@@ -191,7 +191,7 @@ class LearningService {
             query: GET_ROADMAP_FEED,
             variables: {userId},
         });
-        return data.targetQuery;
+        return data.getRoadmapFeed;
     }
 }
 

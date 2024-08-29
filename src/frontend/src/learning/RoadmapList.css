@@ -1,6 +1,6 @@
 .container {
-    max-width: 800px;
-    margin: 50px auto;
+    /*max-width: 800px;*/
+    margin-top: 50px;
     font-size: .9rem;
     color: #FFFFFF;
 }
@@ -12,9 +12,9 @@ h1 {
 
 .roadmap-list {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-start;
     gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
 .roadmap-card {
@@ -22,7 +22,7 @@ h1 {
     border-radius: 12px;
     overflow: hidden;
     width: 300px;
-    margin: 20px auto;
+    /*margin: 20px auto;*/
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
 }

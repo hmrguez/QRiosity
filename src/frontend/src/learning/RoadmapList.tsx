@@ -10,10 +10,10 @@ import AuthService from "../auth/AuthService.tsx";
 
 interface RoadmapListProps {
 	roadmaps: Roadmap[];
-	liked: boolean[];
+	myLearning: boolean;
 }
 
-const RoadmapList: React.FC<RoadmapListProps> = ({roadmaps, liked}) => {
+const RoadmapList: React.FC<RoadmapListProps> = ({roadmaps, myLearning}) => {
 	const navigate = useNavigate();
 	const client = useApolloClient();
 	const learningService = new LearningService(client);
@@ -28,7 +28,7 @@ const RoadmapList: React.FC<RoadmapListProps> = ({roadmaps, liked}) => {
 			if (success) {
 				const roadmapIndex = roadmaps.findIndex((roadmap) => roadmap.id === roadmapId);
 				roadmaps[roadmapIndex].likes += 1;
-				liked[roadmapIndex] = true;
+				roadmaps[roadmapIndex].liked = true;
 			}
 		} catch (error) {
 			console.error(error);
@@ -44,9 +44,8 @@ const RoadmapList: React.FC<RoadmapListProps> = ({roadmaps, liked}) => {
 	return (
 		<div className="roadmap-list-wrapper">
 			<div className="container">
-				<h1>My Roadmaps</h1>
 				<div className="roadmap-list">
-					{roadmaps.map((roadmap, index) => (
+					{roadmaps.map((roadmap) => (
 						<div key={roadmap.id} className="roadmap-card" onClick={() => onRoadmapClick(roadmap.id)}>
 							<div className="card-image">
 								<img src={roadmap.imageUrl} alt="Roadmap Image"/>
@@ -60,16 +59,15 @@ const RoadmapList: React.FC<RoadmapListProps> = ({roadmaps, liked}) => {
 								</div>
 								<div className="card-footer">
 									<div className="like-section">
-										{liked[index] ?
+										{myLearning || roadmap.liked ?
 											<Button
 												style={{color: '#FF6B6B'}}
 												className="like-button"
 												icon="pi pi-heart-fill"
 											/> :
 											<Button
-												icon="pi pi-thumbs-up"
-												label="Like"
-												className="p-button-rounded p-button-success p-button-text"
+												className="like-button"
+												icon="pi pi-heart-fill"
 												onClick={(e) => {
 													e.stopPropagation();
 													handleLikeClick(roadmap.id);
