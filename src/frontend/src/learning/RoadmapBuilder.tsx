@@ -13,7 +13,6 @@ const RoadmapBuilder = () => {
 	const fileUploadRef = useRef<{ handleSubmit: () => void }>(null);
 
 
-
 	const [roadmapTitle, setRoadmapTitle] = useState('');
 	const [roadmapDescription, setRoadmapDescription] = useState('');
 	const [roadmapDifficulty, setRoadmapDifficulty] = useState('beginner');
@@ -55,7 +54,7 @@ const RoadmapBuilder = () => {
 
 	const saveRoadmap = async () => {
 		setLoading(true);
-		const roadmapInput = {
+		let roadmapInput = {
 			id: crypto.randomUUID(),
 			title: roadmapTitle,
 			author: authService.getUsername(),
@@ -65,11 +64,18 @@ const RoadmapBuilder = () => {
 			createdBy: authService.getUsername(),
 			likes: 0,
 			difficulty: roadmapDifficulty,
+			imageUrl: ''
 		};
 
+
 		try {
+			const filename = fileUploadRef.current?.handleSubmit();
+
+			if (filename) {
+				roadmapInput.imageUrl = filename;
+			}
+
 			await learningService.upsertRoadmap(roadmapInput);
-			fileUploadRef.current?.handleSubmit();
 			toast.current?.show({severity: 'success', summary: 'Success', detail: 'Roadmap saved', life: 3000});
 			router(`/home/roadmap/${roadmapInput.id}`);
 		} catch (error) {
