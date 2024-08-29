@@ -99,6 +99,21 @@ const GET_ROADMAPS_BY_USER = gql`
     }
 `;
 
+const GET_ROADMAP_FEED = gql`
+    query GetRoadmapFeed($userId: String!) {
+        getRoadmapFeed(userId: $userId) {
+            id
+            title
+            author
+            topics
+            isCustom
+            likes
+            difficulty
+            liked
+        }
+    }
+`;
+
 class LearningService {
     private client: ApolloClient<any>;
     private authService: AuthService;
@@ -169,6 +184,14 @@ class LearningService {
             variables: {userId},
         });
         return data.getRoadmapsByUser;
+    }
+
+    async getRoadmapFeed(userId: string): Promise<any> {
+        const {data} = await this.client.query({
+            query: GET_ROADMAP_FEED,
+            variables: {userId},
+        });
+        return data.targetQuery;
     }
 }
 
