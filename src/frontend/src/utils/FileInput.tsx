@@ -27,10 +27,10 @@ const FileUpload = forwardRef((_, ref) => {
 				body: formData,
 			});
 
-			const data = await response.json();
+			const data = await response.text();
 			console.log('File uploaded successfully:', data);
 
-			return data.filename;
+			return data;
 
 		} catch (error) {
 			console.error('Error uploading file:', error);

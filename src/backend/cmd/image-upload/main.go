@@ -65,7 +65,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
-		Body:       fmt.Sprintf("%s", fileName),
+		Body:       fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucketName, fileName),
 		Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 	}, nil
 }

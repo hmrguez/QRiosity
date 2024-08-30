@@ -69,7 +69,7 @@ const RoadmapBuilder = () => {
 
 
 		try {
-			const filename = fileUploadRef.current?.handleSubmit();
+			const filename = await fileUploadRef.current?.handleSubmit();
 
 			if (filename) {
 				roadmapInput.imageUrl = filename;
