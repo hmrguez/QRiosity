@@ -3,141 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Learning - Roadmaps</title>
+    <title>Gradient Card Design</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #1A1A1A;
-            color: #EAEAEA;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
         }
 
-        .detail-card {
-            background-color: #2C2C2C;
-            border-radius: 12px;
-            overflow: hidden;
+        .card {
             width: 300px;
-            margin: 20px auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
+        .card-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+            /*image: url('image.jpeg');*/
+            /*background: none;*/
+            background-image: linear-gradient(to bottom, #f00, #00f);
+        }
+
+        .card-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            /*background: linear-gradient(to bottom, transparent, red);*/
+        }
         .card-image img {
             width: 100%;
-            height: auto;
-            display: block;
+            height: 100%;
             object-fit: cover;
-            filter: grayscale(100%);
         }
-
         .card-content {
             padding: 20px;
         }
-
         .card-title {
             font-size: 24px;
-            margin: 0;
+            font-weight: bold;
             margin-bottom: 10px;
-            color: #FFFFFF;
         }
 
-        .card-meta {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #BFBFBF;
-        }
-
-        .author {
-            margin-right: 8px;
-        }
-
-        .verified {
-            background-color: #1A73E8;
-            color: #FFFFFF;
-            border-radius: 50%;
-            padding: 2px 6px;
-            font-size: 12px;
-            margin-right: 8px;
-        }
-
-        .difficulty {
-            margin-left: auto;
-            font-size: 14px;
-            color: #CCCCCC;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .like-section {
-            display: flex;
-            align-items: center;
-        }
-
-        .like-button {
-            background: none;
-            border: none;
-            color: #FFFFFF;
-            font-size: 18px;
-            cursor: pointer;
-            outline: none;
-        }
-
-        .like-button:hover {
-            color: #FF6B6B;
-        }
-
-        .like-counter {
-            margin-left: 5px;
-            font-size: 14px;
-        }
-
-        .topics {
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .topic-tag {
-            background-color: #3D3D3D;
-            color: #FFFFFF;
-            border-radius: 12px;
-            padding: 5px 10px;
-            font-size: 12px;
-            margin-left: 5px;
-            margin-bottom: 5px;
+        .card-description {
+            font-size: 16px;
+            color: #666;
         }
     </style>
 </head>
 <body>
-<div class="detail-card">
+<div class="card">
     <div class="card-image">
-        <img alt="Course Image" src="path-to-your-image.jpg">
+        <img alt="Card image" src="image.jpeg">
     </div>
     <div class="card-content">
-        <h2 class="card-title">Course Title</h2>
-        <div class="card-meta">
-            <span class="author">Author Name</span>
-            <span class="verified">&#10003;</span>
-            <span class="difficulty">Intermediate</span>
-        </div>
-        <div class="card-footer">
-            <div class="like-section">
-                <button class="like-button">&#9829;</button>
-                <span class="like-counter">123</span>
-            </div>
-            <div class="topics">
-                <span class="topic-tag">Topic 1</span>
-                <span class="topic-tag">Topic 2</span>
-                <span class="topic-tag">Topic 3</span>
-                <span class="topic-tag">Topic 4</span>
-                <span class="topic-tag">Topic 5</span>
-            </div>
-        </div>
+        <h2 class="card-title">Card Title</h2>
+        <p class="card-description">This is a description of the card. It can contain any text you want to include.</p>
     </div>
 </div>
 </body>
 </html>
+

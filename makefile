@@ -24,3 +24,13 @@ deploy-s3-lambda:
 	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o bootstrap main.go && \
 	zip -r image-upload.zip bootstrap && \
 	aws lambda update-function-code --function-name image-upload --zip-file fileb://image-upload.zip
+
+deploy-python-lambda:
+	@echo "Usage: make deploy-python-lambda NAME=<name>"
+	@if [ -z "$(NAME)" ]; then \
+		echo "Error: NAME is required"; \
+		exit 1; \
+	fi
+	cd src/ai/$(NAME) && \
+	zip -r $(NAME).zip lambda_function.py && \
+	aws lambda update-function-code --function-name $(NAME) --zip-file fileb://$(NAME).zip
