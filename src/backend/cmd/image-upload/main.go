@@ -65,7 +65,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
-		Body:       fmt.Sprintf("{filename: \"%s\"}", fileName),
+		Body:       fmt.Sprintf("%s", fileName),
 		Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 	}, nil
 }
