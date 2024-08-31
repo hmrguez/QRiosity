@@ -89,7 +89,7 @@ func (r *DynamoDBCourseRepository) GetBulkByUrl(ctx context.Context, urls []stri
 	for _, url := range urls {
 		queryInput := &dynamodb.QueryInput{
 			TableName:              aws.String(r.tableName),
-			IndexName:              aws.String("YourSecondaryIndexName"), // Replace with your secondary index name
+			IndexName:              aws.String("url-index"),
 			KeyConditionExpression: aws.String("#u = :url"),
 			ExpressionAttributeNames: map[string]*string{
 				"#u": aws.String("url"),
