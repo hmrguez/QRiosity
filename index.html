@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gradient Card Design</title>
+    <title>Modern Input and Button</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,62 +15,44 @@
             background-color: #f0f0f0;
         }
 
-        .card {
-            width: 300px;
-            background: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        .container {
+            display: flex;
+            gap: 10px;
         }
 
-        .card-image {
-            position: relative;
-            height: 200px;
-            overflow: hidden;
-            /*image: url('image.jpeg');*/
-            /*background: none;*/
-            background-image: linear-gradient(to bottom, #f00, #00f);
-        }
-
-        .card-image::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 50%;
-            /*background: linear-gradient(to bottom, transparent, red);*/
-        }
-        .card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .card-content {
-            padding: 20px;
-        }
-        .card-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .card-description {
+        input[type="text"] {
+            padding: 10px 15px;
             font-size: 16px;
-            color: #666;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #555;
+        }
+
+        .auto-generate-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .auto-generate-btn:hover {
+            background-color: #555;
         }
     </style>
 </head>
 <body>
-<div class="card">
-    <div class="card-image">
-        <img alt="Card image" src="image.jpeg">
-    </div>
-    <div class="card-content">
-        <h2 class="card-title">Card Title</h2>
-        <p class="card-description">This is a description of the card. It can contain any text you want to include.</p>
-    </div>
+<div class="container">
+    <input placeholder="Roadmap Topic" type="text">
+    <button class="auto-generate-btn">Auto Generate</button>
 </div>
 </body>
 </html>
-

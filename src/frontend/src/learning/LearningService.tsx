@@ -99,6 +99,27 @@ const GET_ROADMAPS_BY_USER = gql`
     }
 `;
 
+const CUSTOM_ROADMAP_REQUESTED = gql`
+    mutation CustomRoadmapRequested($prompt: String) {
+        customRoadmapRequested(prompt: $prompt) {
+            title
+            topics
+            likes
+            difficulty
+            description
+            courses {
+                id
+                title
+                description
+                difficulty
+                duration
+                url
+                isFree
+            }
+        }
+    }
+`;
+
 const GET_ROADMAP_FEED = gql`
     query GetRoadmapFeed($userId: String!) {
         getRoadmapFeed(userId: $userId) {
@@ -192,6 +213,14 @@ class LearningService {
             variables: {userId},
         });
         return data.getRoadmapFeed;
+    }
+
+    async customRoadmapRequested(prompt: string): Promise<any> {
+        const {data} = await this.client.mutate({
+            mutation: CUSTOM_ROADMAP_REQUESTED,
+            variables: {prompt},
+        });
+        return data.customRoadmapRequested;
     }
 }
 

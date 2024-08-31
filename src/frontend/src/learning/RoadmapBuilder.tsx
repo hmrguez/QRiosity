@@ -30,7 +30,32 @@ const RoadmapBuilder = () => {
 	const learningService = new LearningService(apolloClient);
 	const authService = new AuthService(apolloClient);
 
+	const [loadingAutoGenerate, setLoadingAutoGenerate] = useState(false);
+
 	const toast = useRef<Toast>(null);
+
+	const handleAutoGenerate = async () => {
+		setLoadingAutoGenerate(true);
+		try {
+			const prompt = "Roadmap Topic"; // You can replace this with a dynamic value if needed
+			const data = await learningService.customRoadmapRequested(prompt);
+			setRoadmapTitle(data.title);
+			setAddedCourses(data.courses);
+			setRoadmapTopics(data.topics.join(', '));
+			setRoadmapDifficulty(data.difficulty);
+			setRoadmapDescription(data.description);
+		} catch (error) {
+			console.error(error);
+			toast.current?.show({
+				severity: 'error',
+				summary: 'Error',
+				detail: 'Failed to auto-generate roadmap',
+				life: 3000
+			});
+		} finally {
+			setLoadingAutoGenerate(false);
+		}
+	};
 
 	const addCourseToRoadmap = (course: Course) => {
 		setAddedCourses([...addedCourses, course]);
@@ -64,7 +89,8 @@ const RoadmapBuilder = () => {
 			createdBy: authService.getUsername(),
 			likes: 0,
 			difficulty: roadmapDifficulty,
-			imageUrl: ''
+			imageUrl: '',
+			description: roadmapDescription
 		};
 
 
@@ -140,6 +166,18 @@ const RoadmapBuilder = () => {
 				<div className="add-course" onClick={openModal}>+ Add new course</div>
 			</div>
 			<div className="roadmap-details">
+				<div className="prompt">
+					<input type="text" placeholder="Roadmap Topic"/>
+					<Button className="auto-generate-btn"
+							label="Auto Generate"
+							onClick={handleAutoGenerate}
+							loading={loadingAutoGenerate}
+							disabled={loadingAutoGenerate}>
+					</Button>
+				</div>
+
+				<br/>
+
 				<div className="input-group">
 					<label htmlFor="roadmap-title">Roadmap Title</label>
 					<input
