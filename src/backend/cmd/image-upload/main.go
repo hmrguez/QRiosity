@@ -2,131 +2,116 @@ package main
 
 import (
 	"bytes"
-	"crypto/rand"
+	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
-	"mime/multipart"
+	"io/ioutil"
+	"math/rand"
 	"net/http"
-	"path/filepath"
+	"os"
 	"strings"
+	"time"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-const (
-	maxFileSize = 5 * 1024 * 1024 // 5MB
-	bucketName  = "roadmap-images"
-)
+func handler(ctx context.Context) (interface{}, error) {
+	// Create an S3 client
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
+	s3Client := s3.New(sess)
 
-func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// Parse the incoming request to extract the image file
-	contentType := request.Headers["Content-Type"]
-	if contentType == "" {
-		contentType = request.Headers["content-type"]
-	}
-
-	if !strings.HasPrefix(contentType, "multipart/form-data") {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "Invalid content type",
-		}, nil
-	}
-
-	reader := multipart.NewReader(bytes.NewReader([]byte(request.Body)), contentType)
-	part, err := reader.NextPart()
+	// Get the request body
+	requestBody, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "Failed to read the image file",
-		}, nil
+		return nil, fmt.Errorf("error reading request body: %v", err)
 	}
 
-	defer part.Close()
-
-	// Validate file type
-	fileType := strings.ToLower(part.Header.Get("Content-Type"))
-	if fileType != "image/jpeg" && fileType != "image/jpg" && fileType != "image/png" && fileType != "image/webp" {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "Invalid file type",
-		}, nil
+	// Parse the multipart form data
+	var formData struct {
+		File []struct {
+			Content string `form:"file"`
+		} `form:"file"`
+	}
+	if err := json.Unmarshal(requestBody, &formData); err != nil {
+		return nil, fmt.Errorf("error parsing form data: %v", err)
 	}
 
-	// Check file size
-	buf := new(bytes.Buffer)
-	fileSize, err := io.Copy(buf, part)
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       "Failed to read the file",
-		}, nil
+	// Check if there's at least one file
+	if len(formData.File) == 0 {
+		return nil, fmt.Errorf("no file provided")
 	}
 
-	if fileSize > maxFileSize {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "File size exceeds the 5MB limit",
-		}, nil
+	// Process each file
+	for _, file := range formData.File {
+		// Extract the content from the base64 encoded string
+		imgData, err := base64.StdEncoding.DecodeString(file.Content)
+		if err != nil {
+			return nil, fmt.Errorf("error decoding base64: %v", err)
+		}
+
+		// Validate the file type
+		contentType := http.DetectContentType(imgData)
+		if !isValidImageType(contentType) {
+			return nil, fmt.Errorf("invalid image type: %s", contentType)
+		}
+
+		// Get extension from content type
+		var ext = strings.Split(contentType, "/")[1]
+
+		// Validate the file size
+		if float64(len(imgData)) > 5*1024*1024 { // 5 MB
+			return nil, fmt.Errorf("file exceeds 5MB limit")
+		}
+
+		// Generate a random filename
+		rand.Seed(time.Now().UnixNano())
+		fileName := generateRandomName() + "." + ext
+
+		// Upload the file to S3
+		_, err = s3Client.PutObject(&s3.PutObjectInput{
+			Bucket: aws.String("roadmap-images"),
+			Key:    aws.String(fileName),
+			Body:   bytes.NewReader(imgData),
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error uploading file to S3: %v", err)
+		}
+
+		// Return the URL of the uploaded file
+		url := fmt.Sprintf("https://s3.amazonaws.com/%s/%s", "your-bucket-name", fileName)
+		return map[string]string{"url": url}, nil
 	}
 
-	// Generate a random file name
-	fileName, err := generateRandomFileName(part.FileName())
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       "Failed to generate file name",
-		}, nil
-	}
-
-	// Upload the file to S3
-	sess := session.Must(session.NewSession())
-	uploader := s3.New(sess)
-	_, err = uploader.PutObject(&s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(fileName),
-		Body:   bytes.NewReader(buf.Bytes()),
-		ACL:    aws.String("public-read"),
-	})
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       "Failed to upload file to S3",
-		}, nil
-	}
-
-	// Return success response with the S3 URL
-	fileURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucketName, fileName)
-	response := map[string]string{"url": fileURL}
-	responseJSON, _ := json.Marshal(response)
-
-	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusOK,
-		Body:       string(responseJSON),
-	}, nil
+	return nil, nil
 }
 
-func generateRandomFileName(fileName string) (string, error) {
-	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+// Helper functions
+
+func isValidImageType(contentType string) bool {
+	validTypes := []string{"image/jpeg", "image/jpg", "image/png", "image/webp"}
+	for _, t := range validTypes {
+		if contentType == t {
+			return true
+		}
+	}
+	return false
+}
+
+func generateRandomName() string {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	b := make([]byte, 15)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", err
-	}
-
 	for i := range b {
-		b[i] = letterBytes[int(b[i])%len(letterBytes)]
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
 	}
-
-	ext := strings.ToLower(strings.TrimPrefix(fileName, filepath.Ext(fileName)))
-
-	return fmt.Sprintf("%s.%s", string(b), ext), nil
+	return string(b)
 }
 
-func main() {
+func init() {
 	lambda.Start(handler)
 }
