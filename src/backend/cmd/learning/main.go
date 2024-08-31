@@ -90,6 +90,8 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 		return nil, err
 	}
 
+	log.Printf("User %s requested a custom roadmap for prompt %s", input.UserID, input.Prompt)
+
 	// Fetch roadmap from the roadmap service
 	roadmap, err := roadmapService.GetCustomRoadmap(input.Prompt)
 	if err != nil {
