@@ -14,6 +14,7 @@ const Navbar = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [username, setUsername] = useState('');
 	const [challengeAvailable, setChallengeAvailable] = useState(false);
+	const [role, setRole] = useState<number>(0);
 
 	const client = useApolloClient();
 	const authService = new AuthService(client);
@@ -56,8 +57,9 @@ const Navbar = () => {
 		}
 
 		const fetchChallengeAvailability = async () => {
-			const available = await learningService.getDailyChallengeAvailability();
-			setChallengeAvailable(available);
+			const data = await learningService.getNavbarData();
+			setChallengeAvailable(data.dailyChallengeAvailable);
+			setRole(data.role);
 		};
 
 		fetchChallengeAvailability();
@@ -123,7 +125,7 @@ const Navbar = () => {
 							</li>
 						</ul>
 					</li>
-					<li className="nav-group">
+					{role > 0 && (<li className="nav-group">
 						<h3>Creator</h3>
 						<ul>
 							<li>
@@ -145,7 +147,7 @@ const Navbar = () => {
 								</Link>
 							</li>
 						</ul>
-					</li>
+					</li>)}
 				</ul>
 			</div>
 			<div className="user-section">

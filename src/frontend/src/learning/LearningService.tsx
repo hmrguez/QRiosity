@@ -1,10 +1,11 @@
 import {ApolloClient, gql} from '@apollo/client';
 import AuthService from '../auth/AuthService';
 
-const GET_DAILY_CHALLENGE_AVAILABILITY = gql`
-    query GetDailyChallengeAvailability($name: String!) {
+const GET_NAVBAR_DATA = gql`
+    query GetNavbarData($name: String!) {
         getUserByName(name: $name) {
             dailyChallengeAvailable
+            role
         }
     }
 `;
@@ -136,92 +137,92 @@ const GET_ROADMAP_FEED = gql`
 `;
 
 class LearningService {
-    private client: ApolloClient<any>;
-    private authService: AuthService;
+	private client: ApolloClient<any>;
+	private authService: AuthService;
 
-    constructor(client: ApolloClient<any>) {
-        this.client = client;
-        this.authService = new AuthService(client);
-    }
+	constructor(client: ApolloClient<any>) {
+		this.client = client;
+		this.authService = new AuthService(client);
+	}
 
-    async getDailyChallengeAvailability(): Promise<boolean> {
-        const username = this.authService.getCognitoUsername();
-        const {data} = await this.client.query({
-            query: GET_DAILY_CHALLENGE_AVAILABILITY,
-            variables: {name: username},
-        });
-        return data.getUserByName.dailyChallengeAvailable;
-    }
+	async getNavbarData(): Promise<{ dailyChallengeAvailable: boolean, role: number }> {
+		const username = this.authService.getCognitoUsername();
+		const {data} = await this.client.query({
+			query: GET_NAVBAR_DATA,
+			variables: {name: username},
+		});
+		return data.getUserByName;
+	}
 
-    async getCourses(): Promise<any[]> {
-        const {data} = await this.client.query({
-            query: GET_COURSES,
-        });
-        return data.getCourses;
-    }
+	async getCourses(): Promise<any[]> {
+		const {data} = await this.client.query({
+			query: GET_COURSES,
+		});
+		return data.getCourses;
+	}
 
-    async getRoadmaps(): Promise<any[]> {
-        const {data} = await this.client.query({
-            query: GET_ROADMAPS,
-        });
-        return data.getRoadmaps;
-    }
+	async getRoadmaps(): Promise<any[]> {
+		const {data} = await this.client.query({
+			query: GET_ROADMAPS,
+		});
+		return data.getRoadmaps;
+	}
 
-    async getRoadmapById(id: string): Promise<any> {
-        const {data} = await this.client.query({
-            query: GET_ROADMAP_BY_ID,
-            variables: {id},
-        });
-        return data.getRoadmapById;
-    }
+	async getRoadmapById(id: string): Promise<any> {
+		const {data} = await this.client.query({
+			query: GET_ROADMAP_BY_ID,
+			variables: {id},
+		});
+		return data.getRoadmapById;
+	}
 
-    async upsertRoadmap(input: any): Promise<any> {
-        const {data} = await this.client.mutate({
-            mutation: UPSERT_ROADMAP,
-            variables: {input},
-        });
-        return data.upsertRoadmap;
-    }
+	async upsertRoadmap(input: any): Promise<any> {
+		const {data} = await this.client.mutate({
+			mutation: UPSERT_ROADMAP,
+			variables: {input},
+		});
+		return data.upsertRoadmap;
+	}
 
-    async upsertCourse(input: any): Promise<any> {
-        const {data} = await this.client.mutate({
-            mutation: UPSERT_COURSE,
-            variables: {input},
-        });
-        return data.upsertCourse;
-    }
+	async upsertCourse(input: any): Promise<any> {
+		const {data} = await this.client.mutate({
+			mutation: UPSERT_COURSE,
+			variables: {input},
+		});
+		return data.upsertCourse;
+	}
 
-    async userLikedRoadmap(userId: string, roadmapId: string): Promise<boolean> {
-        const {data} = await this.client.mutate({
-            mutation: USER_LIKED_ROADMAP,
-            variables: {userId, roadmapId},
-        });
-        return data.userLikedRoadmap.success;
-    }
+	async userLikedRoadmap(userId: string, roadmapId: string): Promise<boolean> {
+		const {data} = await this.client.mutate({
+			mutation: USER_LIKED_ROADMAP,
+			variables: {userId, roadmapId},
+		});
+		return data.userLikedRoadmap.success;
+	}
 
-    async getRoadmapsByUser(userId: string): Promise<any[]> {
-        const {data} = await this.client.query({
-            query: GET_ROADMAPS_BY_USER,
-            variables: {userId},
-        });
-        return data.getRoadmapsByUser;
-    }
+	async getRoadmapsByUser(userId: string): Promise<any[]> {
+		const {data} = await this.client.query({
+			query: GET_ROADMAPS_BY_USER,
+			variables: {userId},
+		});
+		return data.getRoadmapsByUser;
+	}
 
-    async getRoadmapFeed(userId: string): Promise<any> {
-        const {data} = await this.client.query({
-            query: GET_ROADMAP_FEED,
-            variables: {userId},
-        });
-        return data.getRoadmapFeed;
-    }
+	async getRoadmapFeed(userId: string): Promise<any> {
+		const {data} = await this.client.query({
+			query: GET_ROADMAP_FEED,
+			variables: {userId},
+		});
+		return data.getRoadmapFeed;
+	}
 
-    async customRoadmapRequested(prompt: string): Promise<any> {
-        const {data} = await this.client.mutate({
-            mutation: CUSTOM_ROADMAP_REQUESTED,
-            variables: {prompt},
-        });
-        return data.customRoadmapRequested;
-    }
+	async customRoadmapRequested(prompt: string): Promise<any> {
+		const {data} = await this.client.mutate({
+			mutation: CUSTOM_ROADMAP_REQUESTED,
+			variables: {prompt},
+		});
+		return data.customRoadmapRequested;
+	}
 }
 
 export default LearningService;
