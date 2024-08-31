@@ -115,7 +115,7 @@ type Mutation {
     upsertRoadmap(input: RoadmapInput!): Roadmap!
     courseAddedToRoadmap(courseId: ID!, roadmapId: ID!): BareResponse!
     userLikedRoadmap(userId: ID!, roadmapId: ID!): BareResponse!
-    customRoadmapRequested(prompt: String): Roadmap!
+    customRoadmapRequested(prompt: String, userId: String): Roadmap!
 }
 
 input QuizInput {

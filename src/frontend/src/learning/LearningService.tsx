@@ -101,8 +101,8 @@ const GET_ROADMAPS_BY_USER = gql`
 `;
 
 const CUSTOM_ROADMAP_REQUESTED = gql`
-    mutation CustomRoadmapRequested($prompt: String) {
-        customRoadmapRequested(prompt: $prompt) {
+    mutation CustomRoadmapRequested($prompt: String, $userId: String) {
+        customRoadmapRequested(prompt: $prompt, userId: $userId) {
             title
             topics
             likes
