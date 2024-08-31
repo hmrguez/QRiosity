@@ -161,4 +161,5 @@ input RoadmapInput {
     createdBy: String!
     likes: Int!
     difficulty: String!
+    description: String!
 }
