@@ -46,7 +46,8 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		}, nil
 	}
 
-	fileName := generateRandomFilename()
+	extension := strings.Split(request.Headers["Content-Type"], "/")[1]
+	fileName := generateRandomFilename() + "." + extension
 
 	_, err = s3Client.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(bucketName),
