@@ -63,16 +63,17 @@ type Course struct {
 }
 
 type Roadmap struct {
-	ID         string   `json:"id"`
-	Title      string   `json:"title"`
-	Author     string   `json:"author"`
-	Courses    []Course `json:"courses"`
-	CourseIDs  []string `json:"courseIDs"`
-	Topics     []string `json:"topics"`
-	IsCustom   bool     `json:"isCustom"`
-	CreatedBy  string   `json:"createdBy"`
-	Likes      int      `json:"likes"`
-	Difficulty string   `json:"difficulty"`
-	Liked      bool     `json:"liked,omitempty"`
-	ImageURL   string   `json:"imageUrl"`
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	Author      string   `json:"author"`
+	Courses     []Course `json:"courses"`
+	CourseIDs   []string `json:"courseIDs"`
+	Topics      []string `json:"topics"`
+	IsCustom    bool     `json:"isCustom"`
+	CreatedBy   string   `json:"createdBy"`
+	Likes       int      `json:"likes"`
+	Difficulty  string   `json:"difficulty"`
+	Liked       bool     `json:"liked,omitempty"`
+	ImageURL    string   `json:"imageUrl"`
+	Description string   `json:"description"`
 }
