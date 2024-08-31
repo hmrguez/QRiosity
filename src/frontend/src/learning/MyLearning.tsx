@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
 import {useApolloClient} from "@apollo/client";
-import RoadmapList from "./RoadmapList";
 import LearningService from "./LearningService";
 import AuthService from "../auth/AuthService";
 import "./MyLearning.css";
+import ParentComponent from "../utils/ParentComponent.tsx";
 
 const MyLearning = () => {
 	const client = useApolloClient();
@@ -29,7 +29,11 @@ const MyLearning = () => {
 	return (
 		<div className="my-learning mt-5">
 			<h1>My Roadmaps</h1>
-			<RoadmapList roadmaps={roadmaps} myLearning={true}/>
+
+			<ParentComponent/>
+			{/*<FileInput />*/}
+
+			{/*<RoadmapList roadmaps={roadmaps} myLearning={true}/>*/}
 		</div>
 	);
 };
