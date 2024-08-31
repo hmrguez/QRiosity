@@ -21,8 +21,7 @@ deploy-learning:
 
 deploy-s3-lambda:
 	cd src/backend/cmd/image-upload && \
-	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o bootstrap main.go && \
-	zip -r image-upload.zip bootstrap && \
+	zip -r image-upload.zip lambda_function.py && \
 	aws lambda update-function-code --function-name image-upload --zip-file fileb://image-upload.zip
 
 deploy-python-lambda:

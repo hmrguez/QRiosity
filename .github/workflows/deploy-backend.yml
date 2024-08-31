@@ -92,18 +92,13 @@ jobs:
       - name: Run deploy-daily
         run: make deploy-daily
 
-  deploy-s3-lambda:
-    name: Deploy S3 Lambda
+  deploy-ai:
+    name: Deploy Get Roadmap
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21.5'
 
       - name: Install AWS CLI
         run: |

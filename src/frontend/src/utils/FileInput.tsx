@@ -4,10 +4,30 @@ import './FileInput.css';
 const FileUpload = forwardRef((_, ref) => {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [filename, setFilename] = useState<string>('');
+	const [uploadStatus, setUploadStatus] = useState<string>('');
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setFilename(event.target.files ? event.target.files[0].name : '');
-		setSelectedFile(event.target.files ? event.target.files[0] : null);
+		const file = event.target.files ? event.target.files[0] : null;
+		if (file) {
+			const fileType = file.type.toLowerCase();
+			const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+			if (!validTypes.includes(fileType)) {
+				alert('Invalid file type. Please select a JPEG, JPG, PNG, or WEBP image.');
+				return;
+			}
+
+			if (file.size > 5 * 1024 * 1024) {
+				alert('File size exceeds the 5MB limit.');
+				return;
+			}
+
+			setFilename(file.name);
+			setSelectedFile(file);
+		} else {
+			setFilename('');
+			setSelectedFile(null);
+		}
 	};
 
 	const handleSubmit = async (event?: React.FormEvent): Promise<string | null> => {
@@ -27,13 +47,18 @@ const FileUpload = forwardRef((_, ref) => {
 				body: formData,
 			});
 
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
 			const data = await response.text();
 			console.log('File uploaded successfully:', data);
+			setUploadStatus(`File uploaded successfully: ${data}`);
 
 			return data;
-
 		} catch (error) {
 			console.error('Error uploading file:', error);
+			setUploadStatus('Error uploading file.');
 			return null;
 		}
 	};
@@ -43,14 +68,18 @@ const FileUpload = forwardRef((_, ref) => {
 	}));
 
 	return (
-
 		<form onSubmit={handleSubmit} className="file-input-container">
-			<input type="file" id="file-input" className="file-input" onChange={handleFileChange}/>
+			<input
+				type="file"
+				id="file-input"
+				className="file-input"
+				onChange={handleFileChange}
+				accept=".jpeg,.jpg,.png,.webp"
+			/>
 			<label htmlFor="file-input" className="file-input-label">Thumbnail</label>
 			<div id="file-name" className="file-name">{filename}</div>
 		</form>
-
-	)
+	);
 });
 
 export default FileUpload;
