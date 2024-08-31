@@ -106,7 +106,7 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 			return
 		}
 
-		user.GenUsagesRemaining--
+		user.GenUsagesRemaining = user.GenUsagesRemaining - 1
 		if _, err := userRepository.UpsertUser(*user); err != nil {
 			return
 		}
