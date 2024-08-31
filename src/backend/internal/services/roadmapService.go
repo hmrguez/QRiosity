@@ -21,6 +21,9 @@ func NewRoadmapService() *RoadmapService {
 func (s *RoadmapService) GetCustomRoadmap(topic string) (domain.Roadmap, error) {
 	var roadmap domain.Roadmap
 	url := fmt.Sprintf("%s/get-roadmap?topic=%s", s.baseURL, topic)
+
+	fmt.Println("URL: ", url)
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return roadmap, err
