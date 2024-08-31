@@ -117,6 +117,7 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 		log.Printf("Key: %s, Value: %t", key, value)
 	}
 
+	var allCourses []domain.Course
 	var newCourses []*domain.Course
 	for _, course := range roadmap.Courses {
 		if !existingCourseMap[course.URL] {
@@ -129,12 +130,15 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 			newCourse.ID = randomGuid.String()
 			newCourse.Author = "Qriosity-AI"
 			newCourses = append(newCourses, &newCourse)
+			allCourses = append(allCourses, newCourse)
 		} else {
 			// Attach ID
 			for _, existingCourse := range existingCourses {
 				if existingCourse.URL == course.URL {
-					course.ID = existingCourse.ID
-					course.Author = existingCourse.Author
+					oldCourse := course
+					oldCourse.ID = existingCourse.ID
+					oldCourse.Author = existingCourse.Author
+					allCourses = append(allCourses, oldCourse)
 					break
 				}
 			}
@@ -152,6 +156,8 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 			return nil, err
 		}
 	}
+
+	roadmap.Courses = allCourses
 
 	// Return the updated roadmap
 	response, err := json.Marshal(roadmap)

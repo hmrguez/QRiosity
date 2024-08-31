@@ -8,5 +8,5 @@ type IDailyChallengeService interface {
 }
 
 type IRoadmapService interface {
-	GetCustomRoadmap(topic string) (domain.Roadmap, error)
+	GetCustomRoadmap(topic string) (*domain.Roadmap, error)
 }
