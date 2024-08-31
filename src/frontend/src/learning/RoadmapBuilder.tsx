@@ -42,7 +42,8 @@ const RoadmapBuilder = () => {
 	const handleAutoGenerate = async () => {
 		setLoadingAutoGenerate(true);
 		try {
-			const data = await learningService.customRoadmapRequested(prompt);
+			const userId = authService.getCognitoUsername();
+			const data = await learningService.customRoadmapRequested(prompt, userId as string);
 			setRoadmapTitle(data.title);
 			setAddedCourses(data.courses);
 			setRoadmapTopics(data.topics.join(', '));

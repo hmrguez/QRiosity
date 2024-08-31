@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"os"
+	"sync"
 )
 
 var (
@@ -95,8 +96,11 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 		return nil, err
 	}
 
+	wg := sync.WaitGroup{}
+	wg.Add(1)
 	// In a go routine fetch the user, decrease its gen uses by 1 and insert it back
 	go func() {
+		defer wg.Done()
 		user, err := userRepository.GetUserByName(input.UserID)
 		if err != nil {
 			return
@@ -178,6 +182,8 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 	if err != nil {
 		return nil, err
 	}
+
+	wg.Wait()
 
 	return response, nil
 }

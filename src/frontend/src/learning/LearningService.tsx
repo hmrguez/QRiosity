@@ -216,10 +216,10 @@ class LearningService {
 		return data.getRoadmapFeed;
 	}
 
-	async customRoadmapRequested(prompt: string): Promise<any> {
+	async customRoadmapRequested(prompt: string, userId: string): Promise<any> {
 		const {data} = await this.client.mutate({
 			mutation: CUSTOM_ROADMAP_REQUESTED,
-			variables: {prompt},
+			variables: {prompt, userId},
 		});
 		return data.customRoadmapRequested;
 	}
