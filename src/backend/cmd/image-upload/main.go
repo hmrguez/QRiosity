@@ -31,11 +31,6 @@ func init() {
 }
 
 func handleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// Check if the request method is POST
-	if req.HTTPMethod != "POST" {
-		return createResponse(http.StatusMethodNotAllowed, "Method not allowed"), nil
-	}
-
 	// Decode base64 encoded file
 	fileContent, err := base64.StdEncoding.DecodeString(req.Body)
 	if err != nil {
