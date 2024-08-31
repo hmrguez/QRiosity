@@ -17,8 +17,8 @@ import (
 
 const (
 	maxFileSize    = 5 * 1024 * 1024 // 5MB
-	bucketName     = "roadmap-images"
 	fileNameLength = 15
+	bucketName     = "roadmap-images"
 )
 
 var (
