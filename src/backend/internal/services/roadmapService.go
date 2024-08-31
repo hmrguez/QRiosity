@@ -28,7 +28,7 @@ func (s *RoadmapService) GetCustomRoadmap(topic string) (domain.Roadmap, error) 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return roadmap, fmt.Errorf("failed to get roadmap: %s", resp.Status)
+		return roadmap, fmt.Errorf("failed to get roadmap: %s, %v", resp.Status, resp.Body)
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&roadmap)
