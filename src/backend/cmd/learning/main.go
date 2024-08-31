@@ -103,12 +103,12 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 		defer wg.Done()
 		user, err := userRepository.GetUserByName(input.UserID)
 		if err != nil {
-			return
+			log.Printf("Failed to fetch user %s: %v", input.UserID, err)
 		}
 
 		user.GenUsagesRemaining = user.GenUsagesRemaining - 1
 		if _, err := userRepository.UpsertUser(*user); err != nil {
-			return
+			log.Printf("Failed to update user %s: %v", input.UserID, err)
 		}
 	}()
 
