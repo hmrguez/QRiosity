@@ -5,6 +5,7 @@ go 1.21.5
 require (
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-sdk-go v1.55.5
+	github.com/google/uuid v1.6.0
 	go.mongodb.org/mongo-driver v1.16.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )

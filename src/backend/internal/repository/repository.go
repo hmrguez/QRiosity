@@ -20,6 +20,8 @@ type ICourseRepository interface {
 	GetAllCourses(ctx context.Context) ([]*domain.Course, error)
 	UpsertCourse(ctx context.Context, course *domain.Course) error
 	GetCourseByID(ctx context.Context, courseID string) (*domain.Course, error)
+	GetBulkByUrl(ctx context.Context, urls []string) ([]*domain.Course, error)
+	BulkInsert(ctx context.Context, courses []*domain.Course) error
 }
 
 type IRoadmapRepository interface {

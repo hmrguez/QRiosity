@@ -3,12 +3,14 @@ package main
 import (
 	"backend/internal/domain"
 	"backend/internal/repository"
+	"backend/internal/services"
 	"context"
 	"encoding/json"
 	"errors"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/google/uuid"
 	"log"
 	"os"
 )
@@ -18,6 +20,7 @@ var (
 	topicRepository   repository.ITopicRepository
 	courseRepository  repository.ICourseRepository
 	roadmapRepository repository.IRoadmapRepository
+	roadmapService    services.IRoadmapService
 )
 
 func main() {
@@ -32,6 +35,7 @@ func main() {
 	courseRepository = repository.NewDynamoDBCourseRepository(sess, "Qriosity-Courses")
 	roadmapRepository = repository.NewDynamoDBRoadmapRepository(sess, "Qriosity-Roadmaps")
 	userRepository, _ = repository.NewDynamoDBUserRepository(sess, "Qriosity-Users")
+	roadmapService = services.NewRoadmapService()
 
 	lambda.Start(Handler)
 }
@@ -67,10 +71,80 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 			return handleCourseAddedToRoadmap(ctx, event.Arguments)
 		case "userLikedRoadmap":
 			return handleUserLikedRoadmap(ctx, event.Arguments)
+		case "customRoadmapRequested":
+			return handleCustomRoadmapRequested(ctx, event.Arguments)
 		}
 	}
 
 	return nil, errors.New("unhandled operation")
+}
+
+func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage) (json.RawMessage, error) {
+	var input struct {
+		Prompt string `json:"prompt"`
+	}
+
+	if err := json.Unmarshal(arguments, &input); err != nil {
+		return nil, err
+	}
+
+	// Fetch roadmap from the roadmap service
+	roadmap, err := roadmapService.GetCustomRoadmap(input.Prompt)
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract URLs from the courses in the roadmap
+	urls := make([]string, len(roadmap.Courses))
+	for i, course := range roadmap.Courses {
+		urls[i] = course.URL
+	}
+
+	// Check which courses already exist in DynamoDB
+	existingCourses, err := courseRepository.GetBulkByUrl(ctx, urls)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a map of existing course URLs for quick lookup
+	existingCourseMap := make(map[string]bool)
+	for _, course := range existingCourses {
+		existingCourseMap[course.URL] = true
+	}
+
+	// Identify courses that do not exist in DynamoDB
+	var newCourses []*domain.Course
+	for _, course := range roadmap.Courses {
+		if !existingCourseMap[course.URL] {
+			course.ID = uuid.New().String()
+			course.Author = "Qriosity-AI"
+			newCourses = append(newCourses, &course)
+		} else {
+			// Attach ID
+			for _, existingCourse := range existingCourses {
+				if existingCourse.URL == course.URL {
+					course.ID = existingCourse.ID
+					course.Author = existingCourse.Author
+					break
+				}
+			}
+		}
+	}
+
+	// Add non-existing courses to DynamoDB
+	if len(newCourses) > 0 {
+		if err := courseRepository.BulkInsert(ctx, newCourses); err != nil {
+			return nil, err
+		}
+	}
+
+	// Return the updated roadmap
+	response, err := json.Marshal(roadmap)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 type AppSyncEvent struct {
