@@ -3,11 +3,9 @@ package main
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/base64"
 	"fmt"
-	"io"
-	"mime/multipart"
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -18,120 +16,114 @@ import (
 )
 
 const (
-	maxFileSize = 5 * 1024 * 1024 // 5MB
-	bucketName  = "roadmap-images"
+	maxFileSize    = 5 * 1024 * 1024 // 5MB
+	bucketName     = "roadmap-images"
+	fileNameLength = 15
 )
 
-func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// Parse the incoming request to extract the image file
-	contentType := request.Headers["Content-Type"]
-	if contentType == "" {
-		contentType = request.Headers["content-type"]
+var (
+	s3Client *s3.S3
+)
+
+func init() {
+	sess := session.Must(session.NewSession())
+	s3Client = s3.New(sess)
+}
+
+func handleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	// Check if the request method is POST
+	if req.HTTPMethod != "POST" {
+		return createResponse(http.StatusMethodNotAllowed, "Method not allowed"), nil
 	}
 
-	if !strings.HasPrefix(contentType, "multipart/form-data") {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "Invalid content type",
-			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
-		}, nil
-	}
-
-	reader := multipart.NewReader(bytes.NewReader([]byte(request.Body)), contentType)
-	part, err := reader.NextPart()
+	// Decode base64 encoded file
+	fileContent, err := base64.StdEncoding.DecodeString(req.Body)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "Failed to read the image file",
-			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
-		}, nil
-	}
-
-	defer part.Close()
-
-	// Validate file type
-	fileType := strings.ToLower(part.Header.Get("Content-Type"))
-	if fileType != "image/jpeg" && fileType != "image/jpg" && fileType != "image/png" && fileType != "image/webp" {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "Invalid file type",
-			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
-		}, nil
+		return createResponse(http.StatusBadRequest, "Invalid file content"), nil
 	}
 
 	// Check file size
-	buf := new(bytes.Buffer)
-	fileSize, err := io.Copy(buf, part)
+	if len(fileContent) > maxFileSize {
+		return createResponse(http.StatusBadRequest, "File size exceeds 5MB limit"), nil
+	}
+
+	// Detect file type
+	fileType := http.DetectContentType(fileContent)
+	if !isAllowedFileType(fileType) {
+		return createResponse(http.StatusBadRequest, "Invalid file type. Only JPEG, PNG, and WebP are allowed"), nil
+	}
+
+	// Generate random file name
+	fileName := generateRandomFileName(fileType)
+
+	// Upload file to S3
+	fileURL, err := uploadToS3(fileContent, fileName, fileType)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       "Failed to read the file",
-			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
-		}, nil
+		return createResponse(http.StatusInternalServerError, "Failed to upload file"), nil
 	}
 
-	if fileSize > maxFileSize {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusBadRequest,
-			Body:       "File size exceeds the 5MB limit",
-			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
-		}, nil
-	}
-
-	// Generate a random file name
-	fileName, err := generateRandomFileName(part.FileName())
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       "Failed to generate file name",
-			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
-		}, nil
-	}
-
-	// Upload the file to S3
-	sess := session.Must(session.NewSession())
-	uploader := s3.New(sess)
-	_, err = uploader.PutObject(&s3.PutObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(fileName),
-		Body:   bytes.NewReader(buf.Bytes()),
-		ACL:    aws.String("public-read"),
-	})
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       "Failed to upload file to S3",
-			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
-		}, nil
-	}
-
-	// Return success response with the S3 URL as plain text
-	fileURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucketName, fileName)
-
-	return events.APIGatewayProxyResponse{
-		StatusCode: http.StatusOK,
-		Body:       fileURL,
-		Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
-	}, nil
+	return createResponse(http.StatusOK, fileURL), nil
 }
 
-func generateRandomFileName(fileName string) (string, error) {
-	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	b := make([]byte, 15)
-	_, err := rand.Read(b)
+func isAllowedFileType(fileType string) bool {
+	allowedTypes := map[string]bool{
+		"image/jpeg": true,
+		"image/png":  true,
+		"image/webp": true,
+	}
+	return allowedTypes[fileType]
+}
+
+func generateRandomFileName(fileType string) string {
+	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	randomBytes := make([]byte, fileNameLength)
+	_, err := rand.Read(randomBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	for i, b := range randomBytes {
+		randomBytes[i] = letters[b%byte(len(letters))]
+	}
+
+	extension := strings.TrimPrefix(fileType, "image/")
+	if extension == "jpeg" {
+		extension = "jpg"
+	}
+
+	return string(randomBytes) + "." + extension
+}
+
+func uploadToS3(fileContent []byte, fileName, fileType string) (string, error) {
+	_, err := s3Client.PutObject(&s3.PutObjectInput{
+		Bucket:        aws.String(bucketName),
+		Key:           aws.String(fileName),
+		Body:          bytes.NewReader(fileContent),
+		ContentType:   aws.String(fileType),
+		ContentLength: aws.Int64(int64(len(fileContent))),
+	})
+
 	if err != nil {
 		return "", err
 	}
 
-	for i := range b {
-		b[i] = letterBytes[int(b[i])%len(letterBytes)]
+	fileURL := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucketName, fileName)
+	return fileURL, nil
+}
+
+func createResponse(statusCode int, body string) events.APIGatewayProxyResponse {
+	return events.APIGatewayProxyResponse{
+		StatusCode: statusCode,
+		Body:       body,
+		Headers: map[string]string{
+			"Content-Type":                 "text/plain",
+			"Access-Control-Allow-Origin":  "*",
+			"Access-Control-Allow-Methods": "POST",
+			"Access-Control-Allow-Headers": "Content-Type",
+		},
 	}
-
-	ext := strings.ToLower(strings.TrimPrefix(fileName, filepath.Ext(fileName)))
-
-	return fmt.Sprintf("%s.%s", string(b), ext), nil
 }
 
 func main() {
-	lambda.Start(handler)
+	lambda.Start(handleRequest)
 }

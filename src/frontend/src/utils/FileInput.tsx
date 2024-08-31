@@ -4,7 +4,6 @@ import './FileInput.css';
 const FileUpload = forwardRef((_, ref) => {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [filename, setFilename] = useState<string>('');
-	const [uploadStatus, setUploadStatus] = useState<string>('');
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files ? event.target.files[0] : null;
@@ -53,12 +52,10 @@ const FileUpload = forwardRef((_, ref) => {
 
 			const data = await response.text();
 			console.log('File uploaded successfully:', data);
-			setUploadStatus(`File uploaded successfully: ${data}`);
 
 			return data;
 		} catch (error) {
 			console.error('Error uploading file:', error);
-			setUploadStatus('Error uploading file.');
 			return null;
 		}
 	};
