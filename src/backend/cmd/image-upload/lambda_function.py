@@ -22,6 +22,9 @@ def lambda_handler(event, context):
         if not is_image(content_type):
             return {
                 'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*'
+                },
                 'body': json.dumps('File type not supported. Please upload a JPEG, JPG, PNG, or WEBP image.')
             }
 
@@ -29,6 +32,9 @@ def lambda_handler(event, context):
         if file_size > 5 * 1024 * 1024:
             return {
                 'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*'
+                },
                 'body': json.dumps('File size exceeds 5MB limit.')
             }
 
@@ -49,11 +55,17 @@ def lambda_handler(event, context):
         # Return the URL as the response body
         return {
             'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
             'body': json.dumps({'file_url': file_url})
         }
 
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
             'body': json.dumps(f'Error processing file: {str(e)}')
         }
