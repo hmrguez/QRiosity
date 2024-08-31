@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 )
 
@@ -20,11 +21,12 @@ func NewRoadmapService() *RoadmapService {
 
 func (s *RoadmapService) GetCustomRoadmap(topic string) (domain.Roadmap, error) {
 	var roadmap domain.Roadmap
-	url := fmt.Sprintf("%s/get-roadmap?topic=%s", s.baseURL, topic)
+	encodedTopic := url.QueryEscape(topic)
+	apiRequest := fmt.Sprintf("%s/get-roadmap?topic=%s", s.baseURL, encodedTopic)
 
-	fmt.Println("URL: ", url)
+	fmt.Println("URL: ", apiRequest)
 
-	resp, err := http.Get(url)
+	resp, err := http.Get(apiRequest)
 	if err != nil {
 		return roadmap, err
 	}
