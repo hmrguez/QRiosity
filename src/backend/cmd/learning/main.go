@@ -116,7 +116,12 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 	var newCourses []*domain.Course
 	for _, course := range roadmap.Courses {
 		if !existingCourseMap[course.URL] {
-			course.ID = uuid.New().String()
+			randomGuid, err := uuid.NewRandom()
+			if err != nil {
+				continue
+			}
+
+			course.ID = randomGuid.String()
 			course.Author = "Qriosity-AI"
 			newCourses = append(newCourses, &course)
 		} else {
