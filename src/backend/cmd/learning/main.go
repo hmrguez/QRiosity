@@ -112,7 +112,11 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 		existingCourseMap[course.URL] = true
 	}
 
-	// Identify courses that do not exist in DynamoDB
+	// Log map
+	for key, value := range existingCourseMap {
+		log.Printf("Key: %s, Value: %t", key, value)
+	}
+
 	var newCourses []*domain.Course
 	for _, course := range roadmap.Courses {
 		if !existingCourseMap[course.URL] {
@@ -121,9 +125,10 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 				continue
 			}
 
-			course.ID = randomGuid.String()
-			course.Author = "Qriosity-AI"
-			newCourses = append(newCourses, &course)
+			newCourse := course // Create a new instance of course
+			newCourse.ID = randomGuid.String()
+			newCourse.Author = "Qriosity-AI"
+			newCourses = append(newCourses, &newCourse)
 		} else {
 			// Attach ID
 			for _, existingCourse := range existingCourses {
