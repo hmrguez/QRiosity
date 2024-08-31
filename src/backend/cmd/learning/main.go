@@ -136,6 +136,11 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 		}
 	}
 
+	// Print newCourses
+	for _, course := range newCourses {
+		log.Printf("New course with id %s: %v ", course.ID, course)
+	}
+
 	// Add non-existing courses to DynamoDB
 	if len(newCourses) > 0 {
 		if err := courseRepository.BulkInsert(ctx, newCourses); err != nil {
