@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -44,6 +45,7 @@ func handleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRes
 
 	// Detect file type
 	fileType := http.DetectContentType(fileContent)
+	log.Println("File type:", fileType)
 	if !isAllowedFileType(fileType) {
 		return createResponse(http.StatusBadRequest, "Invalid file type. Only JPEG, PNG, and WebP are allowed"), nil
 	}
@@ -63,6 +65,7 @@ func handleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyRes
 func isAllowedFileType(fileType string) bool {
 	allowedTypes := map[string]bool{
 		"image/jpeg": true,
+		"image/jpg":  true,
 		"image/png":  true,
 		"image/webp": true,
 	}
