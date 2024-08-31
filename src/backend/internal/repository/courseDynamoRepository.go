@@ -84,30 +84,33 @@ func (r *DynamoDBCourseRepository) GetCourseByID(ctx context.Context, courseID s
 }
 
 func (r *DynamoDBCourseRepository) GetBulkByUrl(ctx context.Context, urls []string) ([]*domain.Course, error) {
-	keys := make([]map[string]*dynamodb.AttributeValue, len(urls))
-	for i, url := range urls {
-		keys[i] = map[string]*dynamodb.AttributeValue{
-			"url": {S: aws.String(url)},
-		}
-	}
-
-	batchGetInput := &dynamodb.BatchGetItemInput{
-		RequestItems: map[string]*dynamodb.KeysAndAttributes{
-			r.tableName: {
-				Keys: keys,
-			},
-		},
-	}
-
-	result, err := r.db.BatchGetItemWithContext(ctx, batchGetInput)
-	if err != nil {
-		return nil, fmt.Errorf("failed to batch get items: %w", err)
-	}
-
 	courses := make([]*domain.Course, 0)
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Responses[r.tableName], &courses)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal courses: %w", err)
+
+	for _, url := range urls {
+		queryInput := &dynamodb.QueryInput{
+			TableName:              aws.String(r.tableName),
+			IndexName:              aws.String("YourSecondaryIndexName"), // Replace with your secondary index name
+			KeyConditionExpression: aws.String("#u = :url"),
+			ExpressionAttributeNames: map[string]*string{
+				"#u": aws.String("url"),
+			},
+			ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+				":url": {S: aws.String(url)},
+			},
+		}
+
+		result, err := r.db.QueryWithContext(ctx, queryInput)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query items: %w", err)
+		}
+
+		var batchCourses []*domain.Course
+		err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &batchCourses)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal courses: %w", err)
+		}
+
+		courses = append(courses, batchCourses...)
 	}
 
 	return courses, nil
