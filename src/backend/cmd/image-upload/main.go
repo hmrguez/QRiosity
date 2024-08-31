@@ -104,6 +104,9 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
 		Body:       fileURL,
+		Headers: map[string]string{
+			"Access-Control-Allow-Origin": "*",
+		},
 	}, nil
 }
 
