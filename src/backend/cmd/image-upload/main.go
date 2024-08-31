@@ -20,7 +20,7 @@ import (
 
 const (
 	maxFileSize = 5 * 1024 * 1024 // 5MB
-	bucketName  = "your-s3-bucket-name"
+	bucketName  = "roadmap-images"
 )
 
 func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
