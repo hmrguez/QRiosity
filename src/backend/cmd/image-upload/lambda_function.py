@@ -1,10 +1,8 @@
 import json
 import boto3
-import os
 import base64
 import random
 import string
-from urllib.parse import unquote_plus
 
 s3 = boto3.client('s3')
 
@@ -23,7 +21,9 @@ def lambda_handler(event, context):
             return {
                 'statusCode': 400,
                 'headers': {
-                    'Access-Control-Allow-Origin': '*'
+                    'Access-Control-Allow-Origin': '*',  # Allow CORS
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type'
                 },
                 'body': json.dumps('File type not supported. Please upload a JPEG, JPG, PNG, or WEBP image.')
             }
@@ -33,7 +33,9 @@ def lambda_handler(event, context):
             return {
                 'statusCode': 400,
                 'headers': {
-                    'Access-Control-Allow-Origin': '*'
+                    'Access-Control-Allow-Origin': '*',  # Allow CORS
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type'
                 },
                 'body': json.dumps('File size exceeds 5MB limit.')
             }
@@ -43,7 +45,7 @@ def lambda_handler(event, context):
         random_filename = ''.join(random.choices(string.ascii_letters, k=15)) + '.' + file_extension
 
         # Define the S3 bucket name and file key
-        bucket_name = 'roadmap-images'
+        bucket_name = 'your-s3-bucket-name'
         file_key = random_filename
 
         # Upload the file to S3
@@ -56,7 +58,9 @@ def lambda_handler(event, context):
         return {
             'statusCode': 200,
             'headers': {
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',  # Allow CORS
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
             },
             'body': json.dumps({'file_url': file_url})
         }
@@ -65,7 +69,9 @@ def lambda_handler(event, context):
         return {
             'statusCode': 500,
             'headers': {
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',  # Allow CORS
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
             },
             'body': json.dumps(f'Error processing file: {str(e)}')
         }
