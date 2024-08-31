@@ -81,6 +81,7 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 
 func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage) (json.RawMessage, error) {
 	var input struct {
+		UserID string `json:"userId"`
 		Prompt string `json:"prompt"`
 	}
 
@@ -93,6 +94,19 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 	if err != nil {
 		return nil, err
 	}
+
+	// In a go routine fetch the user, decrease its gen uses by 1 and insert it back
+	go func() {
+		user, err := userRepository.GetUserByName(input.UserID)
+		if err != nil {
+			return
+		}
+
+		user.GenUsagesRemaining--
+		if _, err := userRepository.UpsertUser(*user); err != nil {
+			return
+		}
+	}()
 
 	// Extract URLs from the courses in the roadmap
 	urls := make([]string, len(roadmap.Courses))

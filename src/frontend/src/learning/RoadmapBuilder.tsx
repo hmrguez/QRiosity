@@ -48,6 +48,7 @@ const RoadmapBuilder = () => {
 			setRoadmapTopics(data.topics.join(', '));
 			setRoadmapDifficulty(data.difficulty);
 			setRoadmapDescription(data.description);
+			setUsagesRemaining(usagesRemaining - 1);
 		} catch (error) {
 			console.error(error);
 			toast.current?.show({
