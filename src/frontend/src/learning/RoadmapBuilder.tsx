@@ -8,6 +8,7 @@ import AuthService from "../auth/AuthService.tsx";
 import {Toast} from "primereact/toast";
 import {useNavigate} from "react-router-dom";
 import FileUpload from "../utils/FileInput.tsx";
+import CreatorService from "../creator/CreatorService.tsx";
 
 const RoadmapBuilder = () => {
 	const fileUploadRef = useRef<{ handleSubmit: () => void }>(null);
@@ -29,8 +30,11 @@ const RoadmapBuilder = () => {
 	const apolloClient = useApolloClient();
 	const learningService = new LearningService(apolloClient);
 	const authService = new AuthService(apolloClient);
+	const creatorService = new CreatorService(apolloClient)
 
 	const [prompt, setPrompt] = useState('');
+	const [usagesRemaining, setUsagesRemaining] = useState(0);
+	const [totalUsages, setTotalUsages] = useState(20);
 	const [loadingAutoGenerate, setLoadingAutoGenerate] = useState(false);
 
 	const toast = useRef<Toast>(null);
@@ -118,6 +122,15 @@ const RoadmapBuilder = () => {
 			setCourses(fetchedCourses);
 			setFilteredCourses(fetchedCourses);
 		};
+
+		const fetchGenUsage = async () => {
+			const {role, usages} = await creatorService.getGenUsagesRemaining();
+			setUsagesRemaining(usages);
+			setTotalUsages(role == 1 ? 3 : 6);
+		}
+
+		fetchGenUsage();
+
 		fetchCourses();
 	}, []);
 
@@ -166,6 +179,7 @@ const RoadmapBuilder = () => {
 				<div className="add-course" onClick={openModal}>+ Add new course</div>
 			</div>
 			<div className="roadmap-details">
+				<h3>Generate with AI</h3>
 				<div className="prompt">
 					<input type="text"
 						   id="prompt"
@@ -178,12 +192,25 @@ const RoadmapBuilder = () => {
 							label="Auto Generate"
 							onClick={handleAutoGenerate}
 							loading={loadingAutoGenerate}
-							disabled={loadingAutoGenerate}>
+							disabled={usagesRemaining == 0 || loadingAutoGenerate}>
 					</Button>
+				</div>
+				<div className="progress-container">
+					<div className="progress-bar">
+						<div
+							className="progress-fill"
+							style={{width: `${(usagesRemaining / totalUsages) * 100}%`}}
+						></div>
+					</div>
+					<div className="progress-label">
+						<span>Uses Left</span>
+						<span>{usagesRemaining}</span>
+					</div>
 				</div>
 
 				<br/>
 
+				<h3>Roadmap Details</h3>
 				<div className="input-group">
 					<label htmlFor="roadmap-title">Roadmap Title</label>
 					<input
@@ -242,7 +269,8 @@ const RoadmapBuilder = () => {
 				}}>
 					<div className="course-selector-content">
 						<h2>Select a Course</h2>
-						<input type="text" id="course-search" placeholder="Search courses..." onChange={handleSearch}/>
+						<input type="text" id="course-search" placeholder="Search courses..."
+							   onChange={handleSearch}/>
 						<ul id="course-list" className="selectable-course-list">
 							{filteredCourses.map(course => (
 								<li key={course.id} className="selectable-course-item"

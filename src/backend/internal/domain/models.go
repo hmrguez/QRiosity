@@ -46,6 +46,7 @@ type User struct {
 	DailyChallengeAvailable bool     `json:"dailyChallengeAvailable"`
 	Username                string   `json:"username"`
 	Roadmaps                []string `json:"roadmapsIds"`
+	GenUsagesRemaining      int      `json:"genUsagesRemaining"`
 }
 
 type Course struct {

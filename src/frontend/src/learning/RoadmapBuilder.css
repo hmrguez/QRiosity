@@ -282,3 +282,30 @@
 .auto-generate-btn:hover {
     background-color: #555;
 }
+
+.progress-container {
+    width: 100%;
+    max-width: 300px;
+    margin-top: 15px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.progress-bar {
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #555;
+    transition: width 0.3s ease;
+}

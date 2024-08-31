@@ -6,6 +6,7 @@ type User {
     dailyChallengeAvailable: Boolean!
     username: String!
     roadmapsIds: [String!]
+    genUsagesRemaining: Int!
 }
 
 type Topic {
