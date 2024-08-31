@@ -97,8 +97,8 @@ func uploadToS3(fileContent []byte, fileName, fileType string) (string, error) {
 		Bucket:        aws.String(bucketName),
 		Key:           aws.String(fileName),
 		Body:          bytes.NewReader(fileContent),
-		ContentType:   aws.String(fileType),
 		ContentLength: aws.Int64(int64(len(fileContent))),
+		ContentType:   aws.String(fileType),
 	})
 
 	if err != nil {
