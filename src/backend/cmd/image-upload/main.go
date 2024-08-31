@@ -112,6 +112,6 @@ func generateRandomName() string {
 	return string(b)
 }
 
-func init() {
+func main() {
 	lambda.Start(handler)
 }
