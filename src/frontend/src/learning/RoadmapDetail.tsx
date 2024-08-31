@@ -45,7 +45,7 @@ const RoadmapDetail = () => {
 							<p className="course-description">{course.description}</p>
 							<div className="course-meta">
 								<span className="course-difficulty">{course.difficulty}</span>
-								<span className="course-duration">{course.duration} hours</span>
+								<span className="course-duration">{course.duration}</span>
 							</div>
 						</li>
 					))}

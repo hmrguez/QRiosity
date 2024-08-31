@@ -30,6 +30,7 @@ const RoadmapBuilder = () => {
 	const learningService = new LearningService(apolloClient);
 	const authService = new AuthService(apolloClient);
 
+	const [prompt, setPrompt] = useState('');
 	const [loadingAutoGenerate, setLoadingAutoGenerate] = useState(false);
 
 	const toast = useRef<Toast>(null);
@@ -37,7 +38,6 @@ const RoadmapBuilder = () => {
 	const handleAutoGenerate = async () => {
 		setLoadingAutoGenerate(true);
 		try {
-			const prompt = "Roadmap Topic"; // You can replace this with a dynamic value if needed
 			const data = await learningService.customRoadmapRequested(prompt);
 			setRoadmapTitle(data.title);
 			setAddedCourses(data.courses);
@@ -149,7 +149,7 @@ const RoadmapBuilder = () => {
 								<p className="course-description">{course.description}</p>
 								<div className="course-meta">
 									<span className="course-difficulty">{course.difficulty}</span>
-									<span className="course-duration">{course.duration} hours</span>
+									<span className="course-duration">{course.duration}</span>
 								</div>
 							</div>
 							<div className="course-actions">
@@ -167,7 +167,13 @@ const RoadmapBuilder = () => {
 			</div>
 			<div className="roadmap-details">
 				<div className="prompt">
-					<input type="text" placeholder="Roadmap Topic"/>
+					<input type="text"
+						   id="prompt"
+						   name="prompt"
+						   value={prompt}
+						   onChange={(e) => setPrompt(e.target.value)}
+						   placeholder="Roadmap Topic"
+					/>
 					<Button className="auto-generate-btn"
 							label="Auto Generate"
 							onClick={handleAutoGenerate}
