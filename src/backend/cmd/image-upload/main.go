@@ -33,6 +33,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
 			Body:       "Invalid content type",
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 		}, nil
 	}
 
@@ -42,6 +43,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
 			Body:       "Failed to read the image file",
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 		}, nil
 	}
 
@@ -53,6 +55,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
 			Body:       "Invalid file type",
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 		}, nil
 	}
 
@@ -63,6 +66,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       "Failed to read the file",
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 		}, nil
 	}
 
@@ -70,6 +74,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,
 			Body:       "File size exceeds the 5MB limit",
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 		}, nil
 	}
 
@@ -79,6 +84,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       "Failed to generate file name",
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 		}, nil
 	}
 
@@ -95,6 +101,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       "Failed to upload file to S3",
+			Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 		}, nil
 	}
 
@@ -104,9 +111,7 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusOK,
 		Body:       fileURL,
-		Headers: map[string]string{
-			"Access-Control-Allow-Origin": "*",
-		},
+		Headers:    map[string]string{"Access-Control-Allow-Origin": "*"},
 	}, nil
 }
 
