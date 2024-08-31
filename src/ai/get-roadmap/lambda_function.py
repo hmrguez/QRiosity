@@ -117,7 +117,7 @@ def lambda_handler(event, context):
             }
 
         #         roadmap_json = get_roadmap(topic)
-        roadmap_json = {
+        roadmap = {
             "title": "Web Development Learning Roadmap",
             "description": "This roadmap outlines the essential skills, topics, and courses needed to become a proficient web developer, covering front-end and back-end technologies.",
             "courses": [
@@ -134,7 +134,7 @@ def lambda_handler(event, context):
                         "Node.js",
                         "Bootstrap"
                     ],
-                    "is_free": false,
+                    "is_free": False,
                     "duration": 60,
                     "language": "English"
                 },
@@ -147,7 +147,7 @@ def lambda_handler(event, context):
                     "topics": [
                         "JavaScript"
                     ],
-                    "is_free": false,
+                    "is_free": False,
                     "duration": 10,
                     "language": "English"
                 },
@@ -162,7 +162,7 @@ def lambda_handler(event, context):
                         "JavaScript",
                         "Frontend"
                     ],
-                    "is_free": true,
+                    "is_free": True,
                     "duration": 30,
                     "language": "English"
                 },
@@ -177,7 +177,7 @@ def lambda_handler(event, context):
                         "Express.js",
                         "MongoDB"
                     ],
-                    "is_free": false,
+                    "is_free": False,
                     "duration": 60,
                     "language": "English"
                 },
@@ -193,7 +193,7 @@ def lambda_handler(event, context):
                         "Express.js",
                         "MongoDB"
                     ],
-                    "is_free": true,
+                    "is_free": True,
                     "duration": 90,
                     "language": "English"
                 }
@@ -215,7 +215,7 @@ def lambda_handler(event, context):
 
         return {
             "statusCode": 200,
-            "body": roadmap_json
+            "body": json.dumps(roadmap)
         }
     except Exception as e:
         return {
