@@ -65,14 +65,10 @@ const FileUpload = forwardRef((_, ref) => {
 					}
 
 					const data = await response.json();
-					const body = data.body;
-					console.log(body.message);
-					console.log('Image URL:', body.url);
-					// return body.url;
 
-					// console.log(message);
-					// console.log('Image URL:', url);
-					resolve(body.url);
+					console.log('Image uploaded successfully:', data.url);
+
+					resolve(data.url);
 				} catch (error: any) {
 					console.log('Error uploading image: ' + error.message);
 					reject(error);
