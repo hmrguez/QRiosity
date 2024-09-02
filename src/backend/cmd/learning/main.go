@@ -505,7 +505,7 @@ func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMe
 		}
 	}
 
-	response, err := json.Marshal(roadmaps)
+	response, err := json.Marshal(filteredRoadmaps)
 	if err != nil {
 		return nil, err
 	}
