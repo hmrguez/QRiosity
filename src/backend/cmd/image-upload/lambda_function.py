@@ -17,7 +17,7 @@ def lambda_handler(event, context):
     print("Body: ", event)
 
     image_base64 = event['image']
-    mime_type = event['mime_type']
+    mime_type = event['mimeType']
 
     print("Image: ", image_base64)
 
