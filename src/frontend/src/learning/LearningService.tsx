@@ -167,9 +167,18 @@ class LearningService {
 		perPage: number,
 		lastEvaluatedKey?: any
 	}): Promise<any> {
+		let temp = {
+			page: pagination.page,
+			perPage: pagination.perPage,
+			lastEvaluatedKey: pagination.lastEvaluatedKey
+		};
+
+		console.log(temp)
+
+
 		const {data} = await this.client.query({
 			query: GET_COURSES,
-			variables: {userId, pagination},
+			variables: {userId: userId, pagination: temp},
 		});
 		return data.getCourses;
 	}

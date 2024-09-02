@@ -19,7 +19,7 @@ type Pagination {
 input PaginationInput {
     page: Int!
     perPage: Int!
-    lastEvaluatedKey: String
+    lastEvaluatedKey: AWSJSON
 }
 
 scalar AWSJSON
