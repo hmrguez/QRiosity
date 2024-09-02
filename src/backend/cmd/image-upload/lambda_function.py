@@ -29,7 +29,7 @@ def lambda_handler(event, context):
 
 
         # Get the Content-Type header from the event
-        headers = json.loads(body.headers)
+        headers = json.loads(body['headers'])
 
         print("Headers: ", headers)
 
