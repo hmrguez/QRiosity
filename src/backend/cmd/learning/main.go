@@ -223,6 +223,7 @@ func handleGetAllTopics(ctx context.Context) (json.RawMessage, error) {
 
 func handleGetCourses(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
 	var input struct {
+		UserID     string `json:"userId"`
 		Pagination struct {
 			Page             int                                 `json:"page"`
 			PerPage          int                                 `json:"perPage"`
