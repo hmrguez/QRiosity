@@ -2,6 +2,7 @@ package repository
 
 import (
 	"backend/internal/domain"
+	"backend/internal/utils"
 	"context"
 	"errors"
 	"fmt"
@@ -23,23 +24,32 @@ func NewDynamoDBCourseRepository(sess *session.Session, tableName string) *Dynam
 	}
 }
 
-func (r *DynamoDBCourseRepository) GetAllCourses(ctx context.Context) ([]*domain.Course, error) {
+func (r *DynamoDBCourseRepository) GetAllCourses(ctx context.Context, pagination utils.Pagination) ([]*domain.Course, *utils.Pagination, error) {
 	input := &dynamodb.ScanInput{
 		TableName: aws.String(r.tableName),
+		Limit:     aws.Int64(int64(pagination.PerPage)),
+	}
+
+	// Set the ExclusiveStartKey if this is not the first page
+	if pagination.LastEvaluatedKey != nil {
+		input.ExclusiveStartKey = pagination.LastEvaluatedKey
 	}
 
 	result, err := r.db.ScanWithContext(ctx, input)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	var courses []*domain.Course
 	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &courses)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return courses, nil
+	// Update the pagination LastEvaluatedKey
+	pagination.LastEvaluatedKey = result.LastEvaluatedKey
+
+	return courses, &pagination, nil
 }
 
 func (r *DynamoDBCourseRepository) UpsertCourse(ctx context.Context, course *domain.Course) error {

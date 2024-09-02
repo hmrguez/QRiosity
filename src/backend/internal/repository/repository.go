@@ -2,6 +2,7 @@ package repository
 
 import (
 	"backend/internal/domain"
+	"backend/internal/utils"
 	"context"
 )
 
@@ -17,7 +18,7 @@ type ITopicRepository interface {
 }
 
 type ICourseRepository interface {
-	GetAllCourses(ctx context.Context) ([]*domain.Course, error)
+	GetAllCourses(ctx context.Context, pagination utils.Pagination) ([]*domain.Course, *utils.Pagination, error)
 	UpsertCourse(ctx context.Context, course *domain.Course) error
 	GetCourseByID(ctx context.Context, courseID string) (*domain.Course, error)
 	GetBulkByUrl(ctx context.Context, urls []string) ([]*domain.Course, error)

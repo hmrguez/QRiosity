@@ -4,12 +4,14 @@ import (
 	"backend/internal/domain"
 	"backend/internal/repository"
 	"backend/internal/services"
+	"backend/internal/utils"
 	"context"
 	"encoding/json"
 	"errors"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/google/uuid"
 	"log"
 	"os"
@@ -52,7 +54,7 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 		case "getAllTopics":
 			return handleGetAllTopics(ctx)
 		case "getCourses":
-			return handleGetCourses(ctx)
+			return handleGetCourses(ctx, event.Arguments)
 		case "getRoadmaps":
 			return handleGetRoadmaps(ctx)
 		case "getRoadmapsByUser":
@@ -219,13 +221,33 @@ func handleGetAllTopics(ctx context.Context) (json.RawMessage, error) {
 	return response, nil
 }
 
-func handleGetCourses(ctx context.Context) (json.RawMessage, error) {
-	courses, err := courseRepository.GetAllCourses(ctx)
+func handleGetCourses(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	var input struct {
+		Pagination struct {
+			Page             int                                 `json:"page"`
+			PerPage          int                                 `json:"perPage"`
+			LastEvaluatedKey map[string]*dynamodb.AttributeValue `json:"lastEvaluatedKey,omitempty"`
+		} `json:"pagination"`
+	}
+
+	if err := json.Unmarshal(args, &input); err != nil {
+		return nil, err
+	}
+
+	courses, pagination, err := courseRepository.GetAllCourses(ctx, input.Pagination)
 	if err != nil {
 		return nil, err
 	}
 
-	response, err := json.Marshal(courses)
+	output := struct {
+		Courses    []*domain.Course  `json:"courses"`
+		Pagination *utils.Pagination `json:"pagination"`
+	}{
+		Courses:    courses,
+		Pagination: pagination,
+	}
+
+	response, err := json.Marshal(output)
 	if err != nil {
 		return nil, err
 	}

@@ -132,6 +132,7 @@ const GET_ROADMAP_FEED = gql`
             likes
             difficulty
             liked
+            imageUrl
         }
     }
 `;

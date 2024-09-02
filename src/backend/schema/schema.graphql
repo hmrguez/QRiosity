@@ -9,6 +9,21 @@ type User {
     genUsagesRemaining: Int!
 }
 
+
+type Pagination {
+    page: Int!
+    perPage: Int!
+    lastEvaluatedKey: AWSJSON
+}
+
+input PaginationInput {
+    page: Int!
+    perPage: Int!
+    lastEvaluatedKey: AWSJSON
+}
+
+scalar AWSJSON
+
 type Topic {
     name: String!
 }
@@ -44,6 +59,7 @@ type Roadmap {
     difficulty: String!
     liked: Boolean!
     description: String!
+    imageUrl: String
 }
 
 type AuthPayload {
@@ -70,6 +86,11 @@ type ChallengeResponse {
     insight: String!
 }
 
+type GetCoursesOutput {
+    Courses: [Course!]
+    Pagination: Pagination
+}
+
 type Query {
     # Auth
     login(username: String!, password: String!): AuthPayload!
@@ -84,7 +105,7 @@ type Query {
     getRoadmapById(id: ID!): Roadmap!
     getCourseById(id: ID!): Course!
     getAllTopics: [Topic!]!
-    getCourses: [Course!]!
+    getCourses(pagination: PaginationInput): GetCoursesOutput
     getRoadmaps: [Roadmap!]!
     getCourseFeed(userId: String): [Course!]!
     getRoadmapFeed(userId: String): [Roadmap!]!
@@ -163,4 +184,5 @@ input RoadmapInput {
     likes: Int!
     difficulty: String!
     description: String!
+    imageUrl: String
 }
