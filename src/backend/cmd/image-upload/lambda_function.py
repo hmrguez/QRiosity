@@ -31,8 +31,12 @@ def lambda_handler(event, context):
     if extension is None:
         raise ValueError(f"Unsupported MIME type: {mime_type}")
 
+    print("Extension: ", extension)
+
     # Generate a unique filename with the correct extension
     filename = f"{uuid.uuid4()}{extension}"
+
+    print("Filename: ", filename)
 
     # Specify your S3 bucket name
     bucket_name = 'roadmap-images'
