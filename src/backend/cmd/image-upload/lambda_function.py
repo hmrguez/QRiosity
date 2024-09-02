@@ -10,16 +10,16 @@ def lambda_handler(event, context):
     # Get the base64-encoded image and MIME type from the event
     print(event)
 
-    print("Event: ", event)
+#     print("Event: ", event)
 
     event = json.loads(event['body'])
 
-    print("Body: ", event)
+#     print("Body: ", event)
 
     image_base64 = event['image']
     mime_type = event['mimeType']
 
-    print("Image: ", image_base64)
+#     print("Image: ", image_base64)
 
     print("Type: ", mime_type)
 
