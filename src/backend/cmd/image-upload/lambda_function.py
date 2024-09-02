@@ -22,6 +22,8 @@ def lambda_handler(event, context):
 #                 'body': json.dumps({'error': 'File data must be base64 encoded.'})
 #             }
 
+        print("Event: ", event)
+
         # Determine the content type of the image from headers
         content_type = event['body'].get('Content-Type')
         
