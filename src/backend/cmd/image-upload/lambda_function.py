@@ -50,30 +50,23 @@ def lambda_handler(event, context):
 
         print("Url: ", s3_url)
 
+        body = json.dumps({
+            'message': f'Successfully uploaded {filename} to {bucket_name}',
+            'url': s3_url
+        })
+
         return {
             'statusCode': 200,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Methods': '*'
-            },
-            'body': {
-                'message': f'Successfully uploaded {filename} to {bucket_name}',
-                'url': s3_url
-            }
+            'body': body
         }
     except Exception as e:
+
+        body = json.dumps({
+            'message': f'Error uploading image: {str(e)}',
+            'url': None
+        })
+
         return {
             'statusCode': 500,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Methods': '*'
-            },
-            'body': {
-                'message': f'Error uploading image: {str(e)}',
-                'url': None
-            }
+            'body': body
         }
