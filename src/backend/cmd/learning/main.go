@@ -237,12 +237,21 @@ func handleGetCourses(ctx context.Context, args json.RawMessage) (json.RawMessag
 	}
 	log.Printf("Input: %+v", input)
 
-	parsedPagination := utils.Pagination{
-		Page:    input.Pagination.Page,
-		PerPage: input.Pagination.PerPage,
-		LastEvaluatedKey: map[string]*dynamodb.AttributeValue{
-			"id": {S: aws.String(input.Pagination.LastEvaluatedKey)},
-		},
+	var parsedPagination utils.Pagination
+
+	if input.Pagination.LastEvaluatedKey == "" {
+		parsedPagination = utils.Pagination{
+			Page:    input.Pagination.Page,
+			PerPage: input.Pagination.PerPage,
+		}
+	} else {
+		parsedPagination = utils.Pagination{
+			Page:    input.Pagination.Page,
+			PerPage: input.Pagination.PerPage,
+			LastEvaluatedKey: map[string]*dynamodb.AttributeValue{
+				"id": {S: aws.String(input.Pagination.LastEvaluatedKey)},
+			},
+		}
 	}
 
 	courses, pagination, err := courseRepository.GetAllCourses(ctx, parsedPagination)
