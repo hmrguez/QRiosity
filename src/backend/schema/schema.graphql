@@ -105,7 +105,7 @@ type Query {
     getRoadmapById(id: ID!): Roadmap!
     getCourseById(id: ID!): Course!
     getAllTopics: [Topic!]!
-    getCourses(pagination: PaginationInput): GetCoursesOutput
+    getCourses(userId: String!, pagination: PaginationInput): GetCoursesOutput
     getRoadmaps: [Roadmap!]!
     getCourseFeed(userId: String): [Course!]!
     getRoadmapFeed(userId: String): [Roadmap!]!
