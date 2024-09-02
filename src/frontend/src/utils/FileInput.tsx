@@ -1,6 +1,5 @@
 import React, {forwardRef, useImperativeHandle, useState} from 'react';
 import './FileInput.css';
-import axios from 'axios';
 
 const FileUpload = forwardRef((_, ref) => {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -50,15 +49,30 @@ const FileUpload = forwardRef((_, ref) => {
 				const base64data = (reader.result as string).split(',')[1];
 
 				try {
-					const response = await axios.post('https://kqssn9e4a3.execute-api.us-east-2.amazonaws.com/roadmap-image', {
-						image: base64data,
-						mimeType: selectedFile.type
+					const response = await fetch('https://kqssn9e4a3.execute-api.us-east-2.amazonaws.com/roadmap-image', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							image: base64data,
+							mimeType: selectedFile.type
+						}),
 					});
 
-					const {url, message} = response.data.body;
-					console.log(message);
-					console.log('Image URL:', url);
-					resolve(url);
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+
+					const data = await response.json();
+					const body = data.body;
+					console.log(body.message);
+					console.log('Image URL:', body.url);
+					// return body.url;
+
+					// console.log(message);
+					// console.log('Image URL:', url);
+					resolve(body.url);
 				} catch (error: any) {
 					console.log('Error uploading image: ' + error.message);
 					reject(error);

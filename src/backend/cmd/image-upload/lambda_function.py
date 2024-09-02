@@ -48,6 +48,8 @@ def lambda_handler(event, context):
         # Generate the S3 URL
         s3_url = f"https://{bucket_name}.s3.amazonaws.com/{filename}"
 
+        print("Url: ", s3_url)
+
         return {
             'statusCode': 200,
             'body': {
