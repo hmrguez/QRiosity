@@ -173,9 +173,6 @@ class LearningService {
 			lastEvaluatedKey: pagination.lastEvaluatedKey
 		};
 
-		console.log(temp)
-
-
 		const {data} = await this.client.query({
 			query: GET_COURSES,
 			variables: {userId: userId, pagination: temp},

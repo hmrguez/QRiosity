@@ -1,18 +1,10 @@
-:root {
-    --secondary-color: #666;
-    --background-color: #f5f5f5;
-    --card-background: #ffffff;
-    --accent-color: #444;
-    --hover-color: #222;
-}
-
-
 .course-form-container {
     width: 60%;
     margin: 0 0 0 var(--navbar-margin-left);
     background-color: var(--card-background);
     border-radius: 12px;
     transition: all 0.3s ease;
+    padding-top: 20px;
 }
 
 .form-title {

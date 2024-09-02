@@ -1,6 +1,7 @@
 .container {
     /*max-width: 800px;*/
-    margin-top: 50px;
+    /*margin-top: 50px;*/
+    padding-top: 20px;
     font-size: .9rem;
     color: #FFFFFF;
 }

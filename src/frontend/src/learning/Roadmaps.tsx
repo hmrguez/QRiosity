@@ -24,7 +24,7 @@ const Roadmaps = () => {
 
 	return (
 		// Use the new roadmap-list component
-		<div className="roadmaps mt-5">
+		<div className="roadmaps">
 			<h1>Roadmaps</h1>
 			<RoadmapList roadmaps={roadmaps} myLearning={false}/>
 		</div>

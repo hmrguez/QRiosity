@@ -4,7 +4,7 @@
     justify-content: space-between;
     width: 80%;
     margin-left: var(--navbar-margin-left);
-    margin-top: 15px;
+    padding-top: 20px;
     margin-right: 20px;
 }
 

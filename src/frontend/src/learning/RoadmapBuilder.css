@@ -1,7 +1,7 @@
 .roadmap-container {
     margin-left: var(--navbar-margin-left);
     margin-right: 20px;
-    margin-top: 15px;
+    padding-top: 20px;
     display: flex;
     gap: 30px;
 }

@@ -3,18 +3,8 @@ import {useEffect, useState} from "react";
 import {useApolloClient} from "@apollo/client";
 import LearningService from "./LearningService.tsx";
 import AuthService from "../auth/AuthService.tsx";
+import {Course} from "./Course.tsx";
 
-export interface Course {
-	id: string;
-	title: string;
-	description: string;
-	topics: string[];
-	difficulty: string;
-	duration: string;
-	language: string;
-	isFree: boolean;
-	url: string;
-}
 
 const Courses = () => {
 	const client = useApolloClient();
@@ -22,12 +12,11 @@ const Courses = () => {
 	const authService = new AuthService(client);
 
 	const [courses, setCourses] = useState<Course[]>([]);
-	const [pagination, setPagination] = useState({page: 0, perPage: 3, lastEvaluatedKey: null as string | null});
+	const [pagination, setPagination] = useState({page: 0, perPage: 12, lastEvaluatedKey: null as string | null});
 
 	const fetchCourses = () => {
 		const cognitoUsername = authService.getCognitoUsername() as string;
 		learningService.getCourses(cognitoUsername, pagination).then((result) => {
-			console.log(result);
 			setCourses(result.courses);
 			setPagination(result.pagination);
 		}).catch((error) => {
@@ -83,9 +72,6 @@ const Courses = () => {
 
 			<div className="paginator">
 				<button onClick={handlePreviousPage}>&laquo;</button>
-				<button className="active">1</button>
-				<button>2</button>
-				<button>3</button>
 				<button onClick={handleNextPage}>&raquo;</button>
 			</div>
 		</div>

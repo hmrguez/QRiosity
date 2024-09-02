@@ -27,7 +27,7 @@ const MyLearning = () => {
 	}, []);
 
 	return (
-		<div className="my-learning mt-5">
+		<div className="my-learning">
 			<h1>My Roadmaps</h1>
 			<RoadmapList roadmaps={roadmaps} myLearning={true}/>
 		</div>

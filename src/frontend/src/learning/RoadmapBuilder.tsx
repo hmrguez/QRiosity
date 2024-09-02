@@ -1,6 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
 import './RoadmapBuilder.css';
-import {Course} from "./Courses.tsx";
 import {useApolloClient} from "@apollo/client";
 import LearningService from "./LearningService.tsx";
 import {Button} from "primereact/button";
@@ -9,6 +8,7 @@ import {Toast} from "primereact/toast";
 import {useNavigate} from "react-router-dom";
 import FileUpload from "../utils/FileInput.tsx";
 import CreatorService from "../creator/CreatorService.tsx";
+import {Course} from "./Course.tsx";
 
 const RoadmapBuilder = () => {
 	const fileUploadRef = useRef<{ handleSubmit: () => void }>(null);

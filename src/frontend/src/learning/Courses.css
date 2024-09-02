@@ -15,8 +15,9 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
     margin-left: var(--navbar-margin-left);
-    margin-top: 20px;
+    /*margin-top: 20px;*/
     /*width: 100%;*/
+    padding-top: 20px;
     margin-right: 20px;
 }
 
@@ -26,6 +27,7 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 20px;
     transition: transform 0.3s ease;
+    cursor: pointer;
 }
 
 .course-card:hover {
