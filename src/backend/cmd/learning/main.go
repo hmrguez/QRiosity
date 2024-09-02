@@ -6,6 +6,7 @@ import (
 	"backend/internal/services"
 	"backend/internal/utils"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -225,9 +226,9 @@ func handleGetCourses(ctx context.Context, args json.RawMessage) (json.RawMessag
 	var input struct {
 		UserID     string `json:"userId"`
 		Pagination struct {
-			Page             int                                 `json:"page"`
-			PerPage          int                                 `json:"perPage"`
-			LastEvaluatedKey map[string]*dynamodb.AttributeValue `json:"lastEvaluatedKey,omitempty"`
+			Page             int    `json:"page"`
+			PerPage          int    `json:"perPage"`
+			LastEvaluatedKey string `json:"lastEvaluatedKey,omitempty"`
 		} `json:"pagination"`
 	}
 
@@ -238,7 +239,32 @@ func handleGetCourses(ctx context.Context, args json.RawMessage) (json.RawMessag
 
 	log.Printf("Input: %+v", input)
 
-	courses, pagination, err := courseRepository.GetAllCourses(ctx, input.Pagination)
+	// Assuming LastEvaluatedKey is a base64 encoded string or a simple key
+	var lastEvaluatedKey map[string]*dynamodb.AttributeValue
+	if input.Pagination.LastEvaluatedKey != "" {
+		// Decode the LastEvaluatedKey string back into the appropriate map structure
+		decodedKey, err := base64.StdEncoding.DecodeString(input.Pagination.LastEvaluatedKey)
+		if err != nil {
+			log.Printf("Error decoding LastEvaluatedKey: %v", err)
+			return nil, err
+		}
+		if err := json.Unmarshal(decodedKey, &lastEvaluatedKey); err != nil {
+			log.Printf("Error unmarshalling LastEvaluatedKey: %v", err)
+			return nil, err
+		}
+	} else {
+		lastEvaluatedKey = nil
+	}
+
+	// Create a new pagination object
+	parsedPagination := utils.Pagination{
+		Page:             input.Pagination.Page,
+		PerPage:          input.Pagination.PerPage,
+		LastEvaluatedKey: lastEvaluatedKey,
+	}
+
+	// Pass the decoded LastEvaluatedKey to your repository function
+	courses, pagination, err := courseRepository.GetAllCourses(ctx, parsedPagination)
 	if err != nil {
 		log.Printf("Error fetching courses: %v", err)
 		return nil, err
@@ -246,12 +272,35 @@ func handleGetCourses(ctx context.Context, args json.RawMessage) (json.RawMessag
 	log.Printf("Fetched courses: %+v", courses)
 	log.Printf("Pagination: %+v", pagination)
 
+	// If there's a LastEvaluatedKey in the pagination, re-encode it as a string
+	var encodedLastEvaluatedKey string
+	if pagination.LastEvaluatedKey != nil {
+		marshaledKey, err := json.Marshal(pagination.LastEvaluatedKey)
+		if err != nil {
+			log.Printf("Error marshalling LastEvaluatedKey: %v", err)
+			return nil, err
+		}
+		encodedLastEvaluatedKey = base64.StdEncoding.EncodeToString(marshaledKey)
+	}
+
 	output := struct {
-		Courses    []*domain.Course  `json:"courses"`
-		Pagination *utils.Pagination `json:"pagination"`
+		Courses    []*domain.Course `json:"courses"`
+		Pagination struct {
+			Page             int    `json:"page"`
+			PerPage          int    `json:"perPage"`
+			LastEvaluatedKey string `json:"lastEvaluatedKey,omitempty"`
+		} `json:"pagination"`
 	}{
-		Courses:    courses,
-		Pagination: pagination,
+		Courses: courses,
+		Pagination: struct {
+			Page             int    `json:"page"`
+			PerPage          int    `json:"perPage"`
+			LastEvaluatedKey string `json:"lastEvaluatedKey,omitempty"`
+		}{
+			Page:             pagination.Page,
+			PerPage:          pagination.PerPage,
+			LastEvaluatedKey: encodedLastEvaluatedKey,
+		},
 	}
 
 	response, err := json.Marshal(output)
