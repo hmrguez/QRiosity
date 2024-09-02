@@ -7,8 +7,20 @@ s3 = boto3.client('s3')
 
 def lambda_handler(event, context):
     # Get the base64-encoded image and MIME type from the event
+    print(event)
+
+    print("Event: ", event)
+
+    event = json.loads(event['body'])
+
+    print("Body: ", event)
+
     image_base64 = event['image']
-    mime_type = event['mimeType']
+    mime_type = event['mime_type']
+
+    print("Image: ", image_base64)
+
+    print("Type: ", mime_type)
 
     # Decode the image
     image_data = base64.b64decode(image_base64)

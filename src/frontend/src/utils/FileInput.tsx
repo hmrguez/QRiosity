@@ -1,5 +1,6 @@
 import React, {forwardRef, useImperativeHandle, useState} from 'react';
 import './FileInput.css';
+import axios from 'axios';
 
 const FileUpload = forwardRef((_, ref) => {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -29,51 +30,88 @@ const FileUpload = forwardRef((_, ref) => {
 		}
 	};
 
-	const handleSubmit = async (event?: React.FormEvent): Promise<string | null> => {
-
-		if (event) event.preventDefault();
-
-
-		if (!selectedFile) {
-			return null;
-		}
-
-		const reader = new FileReader();
-		reader.readAsDataURL(selectedFile);
-
+	const handleSubmit = () => {
 		return new Promise((resolve, reject) => {
+			if (!selectedFile) {
+				reject(new Error('No file selected'));
+				return;
+			}
+
+			// Check if the file type is supported
+			const supportedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+			if (!supportedTypes.includes(selectedFile.type)) {
+				reject(new Error('Unsupported file type'));
+				return;
+			}
+
+			const reader = new FileReader();
+			reader.readAsDataURL(selectedFile);
 			reader.onloadend = async () => {
-				const base64Data = (reader.result as string).split(',')[1]; // get base64 data without the data URL prefix
-				const contentType = selectedFile.type;
+				const base64data = (reader.result as string).split(',')[1];
 
 				try {
-					const response = await fetch('https://kqssn9e4a3.execute-api.us-east-2.amazonaws.com/roadmap-image', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify({
-							body: base64Data,
-							isBase64Encoded: true,
-							headers: {'Content-Type': contentType},
-						}),
+					const response = await axios.post('https://kqssn9e4a3.execute-api.us-east-2.amazonaws.com/roadmap-image', {
+						image: base64data,
+						mimeType: selectedFile.type
 					});
 
-					const result = await response.text();
-					if (response.ok) {
-						console.log('File uploaded successfully:', result);
-						resolve(result);
-					} else {
-						console.log('Error uploading file:', result);
-						resolve(null);
-					}
-				} catch (error) {
-					console.error('Error uploading file:', error);
+					const {url, message} = response.data.body;
+					console.log(message);
+					console.log('Image URL:', url);
+					resolve(url);
+				} catch (error: any) {
+					console.log('Error uploading image: ' + error.message);
 					reject(error);
 				}
 			};
 		});
 	};
+
+	// const handleSubmit = async (event?: React.FormEvent): Promise<string | null> => {
+	//
+	// 	if (event) event.preventDefault();
+	//
+	//
+	// 	if (!selectedFile) {
+	// 		return null;
+	// 	}
+	//
+	// 	const reader = new FileReader();
+	// 	reader.readAsDataURL(selectedFile);
+	//
+	// 	return new Promise((resolve, reject) => {
+	// 		reader.onloadend = async () => {
+	// 			const base64Data = (reader.result as string).split(',')[1]; // get base64 data without the data URL prefix
+	// 			const contentType = selectedFile.type;
+	//
+	// 			try {
+	// 				const response = await fetch('https://kqssn9e4a3.execute-api.us-east-2.amazonaws.com/roadmap-image', {
+	// 					method: 'POST',
+	// 					headers: {
+	// 						'Content-Type': 'application/json',
+	// 					},
+	// 					body: JSON.stringify({
+	// 						body: base64Data,
+	// 						isBase64Encoded: true,
+	// 						headers: {'Content-Type': contentType},
+	// 					}),
+	// 				});
+	//
+	// 				const result = await response.text();
+	// 				if (response.ok) {
+	// 					console.log('File uploaded successfully:', result);
+	// 					resolve(result);
+	// 				} else {
+	// 					console.log('Error uploading file:', result);
+	// 					resolve(null);
+	// 				}
+	// 			} catch (error) {
+	// 				console.error('Error uploading file:', error);
+	// 				reject(error);
+	// 			}
+	// 		};
+	// 	});
+	// };
 
 	// const handleSubmit = async (event?: React.FormEvent): Promise<string | null> => {
 	// 	if (event) event.preventDefault();
