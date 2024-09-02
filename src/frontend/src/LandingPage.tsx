@@ -90,7 +90,7 @@ const LandingPage = () => {
 					<div className="hero-content">
 						<h1>Empower Your Learning Journey with Qriosity</h1>
 						<p>Unlock personalized learning experiences with AI-driven insights and custom paths.</p>
-						<Link to={loggedIn ? "/home" : "/register"} className="cta-button">
+						<Link to={loggedIn ? "/home/my-learning" : "/register"} className="cta-button">
 							{loggedIn ? "Go to Dashboard" : "Start Your Journey"}
 						</Link>					</div>
 					<div className="hero-image">

@@ -4,6 +4,7 @@ import LearningService from "./LearningService";
 import AuthService from "../auth/AuthService";
 import "./MyLearning.css";
 import RoadmapList from "./RoadmapList.tsx";
+import NoRecordsFound from "../utils/NoRecordsFound.tsx";
 
 const MyLearning = () => {
 	const client = useApolloClient();
@@ -28,8 +29,12 @@ const MyLearning = () => {
 
 	return (
 		<div className="my-learning">
-			<h1>My Roadmaps</h1>
-			<RoadmapList roadmaps={roadmaps} myLearning={true}/>
+			<h1>My Studies</h1>
+			{roadmaps.length === 0
+				? <NoRecordsFound/>
+				: <RoadmapList roadmaps={roadmaps} myLearning={true}/>
+			}
+
 		</div>
 	);
 };
