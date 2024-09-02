@@ -10,11 +10,12 @@ def lambda_handler(event, context):
     try:
         # Extract the body from the event, which contains the base64-encoded image data
         body = event['body']
+        body = json.loads(body)
 
         print("Event: ", event)
 
         # If the body is base64 encoded, decode it
-        if event.get('isBase64Encoded', False):
+        if body['isBase64Encoded'] == False
             image_data = base64.b64decode(body)
 #         else:
 #             return {
@@ -25,8 +26,19 @@ def lambda_handler(event, context):
         print("Event: ", event)
         print("Body: ", body)
 
+
+
         # Get the Content-Type header from the event
-        content_type = event['body']['headers']['Content-Type']
+        headers = json.loads(body.headers)
+
+        print("Headers: ", headers)
+
+        content_type = headers['Content-Type']
+
+        print("Content-Type: ", content_type)
+
+
+#         content_type = event['body']['headers']['Content-Type']
 
         print("Content-Type: ", content_type)
 
