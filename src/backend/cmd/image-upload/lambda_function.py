@@ -52,6 +52,10 @@ def lambda_handler(event, context):
 
         return {
             'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             'body': {
                 'message': f'Successfully uploaded {filename} to {bucket_name}',
                 'url': s3_url
@@ -60,6 +64,10 @@ def lambda_handler(event, context):
     except Exception as e:
         return {
             'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
             'body': {
                 'message': f'Error uploading image: {str(e)}',
                 'url': None
