@@ -23,9 +23,17 @@ def lambda_handler(event, context):
 #             }
 
         print("Event: ", event)
+        print("Body: ", body)
+
+        # Get the Content-Type header from the event
+        content_type = event['body']['headers']['Content-Type']
+
+        print("Content-Type: ", content_type)
+
+
 
         # Determine the content type of the image from headers
-        content_type = event['body'].get('Content-Type')
+#         content_type = event['body'].get('Content-Type')
         
         # Validate the content type
         if content_type not in ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']:
