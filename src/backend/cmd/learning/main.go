@@ -232,13 +232,18 @@ func handleGetCourses(ctx context.Context, args json.RawMessage) (json.RawMessag
 	}
 
 	if err := json.Unmarshal(args, &input); err != nil {
+		log.Printf("Error unmarshalling input: %v", err)
 		return nil, err
 	}
+	log.Printf("Input: %+v", input)
 
 	courses, pagination, err := courseRepository.GetAllCourses(ctx, input.Pagination)
 	if err != nil {
+		log.Printf("Error fetching courses: %v", err)
 		return nil, err
 	}
+	log.Printf("Fetched courses: %+v", courses)
+	log.Printf("Pagination: %+v", pagination)
 
 	output := struct {
 		Courses    []*domain.Course  `json:"courses"`
@@ -250,8 +255,10 @@ func handleGetCourses(ctx context.Context, args json.RawMessage) (json.RawMessag
 
 	response, err := json.Marshal(output)
 	if err != nil {
+		log.Printf("Error marshalling output: %v", err)
 		return nil, err
 	}
+	log.Printf("Response: %s", response)
 
 	return response, nil
 }

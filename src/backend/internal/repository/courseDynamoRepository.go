@@ -46,6 +46,9 @@ func (r *DynamoDBCourseRepository) GetAllCourses(ctx context.Context, pagination
 		return nil, nil, err
 	}
 
+	// Log size
+	fmt.Println("Size of courses: ", len(courses))
+
 	// Update the pagination LastEvaluatedKey
 	pagination.LastEvaluatedKey = result.LastEvaluatedKey
 
