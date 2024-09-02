@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Display Grid</title>
+    <title>Roadmaps Display Grid</title>
     <style>
         :root {
             --navbar-margin-left: 275px;
-            --primary-color: #333;
-            --secondary-color: #666;
-            --background-color: #f5f5f5;
+            --primary-color: #f5f5f5;
+            --secondary-color: #999;
+            --background-color: #333;
             --border-radius: 8px;
+            --card-background: #222;
+            --frame-color: rgba(192, 192, 192, 0.3);
         }
 
         body {
@@ -21,49 +23,91 @@
             color: var(--primary-color);
         }
 
-        .course-grid {
+        .roadmaps-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 30px;
             margin-left: var(--navbar-margin-left);
         }
 
-        .course-card {
-            background-color: #fff;
+        .roadmap-card {
+            background-color: var(--card-background);
             border-radius: var(--border-radius);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            overflow: hidden;
             transition: transform 0.3s ease;
+            position: relative;
         }
 
-        .course-card:hover {
+        /*.roadmap-card::before {*/
+        /*    content: '';*/
+        /*    position: absolute;*/
+        /*    top: -2px;*/
+        /*    left: -2px;*/
+        /*    right: -2px;*/
+        /*    bottom: -2px;*/
+        /*    background: linear-gradient(45deg, var(--frame-color), transparent);*/
+        /*    border-radius: calc(var(--border-radius) + 2px);*/
+        /*    z-index: -1;*/
+        /*}*/
+
+        .roadmap-card:hover {
             transform: translateY(-5px);
         }
 
-        .course-title {
+        .roadmap-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .roadmap-content {
+            padding: 20px;
+        }
+
+        .roadmap-title {
             font-size: 1.2em;
             margin-bottom: 10px;
+            color: var(--primary-color);
         }
 
-        .course-description {
+        .roadmap-author {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
             font-size: 0.9em;
             color: var(--secondary-color);
-            margin-bottom: 15px;
         }
 
-        .course-meta {
+        .verified-tag {
+            background-color: #1DA1F2;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+
+        .roadmap-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
 
-        .course-difficulty, .course-duration, .course-language {
+        .roadmap-difficulty {
             font-size: 0.8em;
             color: var(--secondary-color);
         }
 
-        .course-topics {
+        .custom-tag {
+            background-color: #9C27B0;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .roadmap-topics {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
@@ -71,78 +115,66 @@
         }
 
         .topic-chip {
-            background-color: #e0e0e0;
+            background-color: #444;
             color: var(--primary-color);
             padding: 5px 10px;
             border-radius: 20px;
             font-size: 0.8em;
         }
 
-        .free-tag {
-            background-color: #4CAF50;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            align-self: flex-start;
-        }
-
-        .paginator {
+        .roadmap-actions {
             display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            margin-left: var(--navbar-margin-left);
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .paginator button {
-            background-color: #fff;
+        .like-button {
+            background-color: transparent;
             border: 1px solid var(--secondary-color);
-            color: #333;
-            padding: 8px 16px;
-            margin: 0 5px;
-            cursor: pointer;
+            color: var(--secondary-color);
+            padding: 5px 10px;
             border-radius: var(--border-radius);
-            transition: background-color 0.3s ease;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .paginator button:hover {
+        .like-button:hover {
             background-color: var(--secondary-color);
-            color: #fff;
+            color: var(--card-background);
         }
 
-        .paginator button.active {
-            background-color: #333;
-            color: #fff;
+        .like-counter {
+            font-size: 0.9em;
+            color: var(--secondary-color);
         }
     </style>
 </head>
 <body>
-<div class="course-grid">
-    <!-- Example course card -->
-    <div class="course-card">
-        <h2 class="course-title">Introduction to Web Development</h2>
-        <p class="course-description">Learn the basics of HTML, CSS, and JavaScript to build your first website.</p>
-        <div class="course-topics">
-            <span class="topic-chip">HTML</span>
-            <span class="topic-chip">CSS</span>
-            <span class="topic-chip">JavaScript</span>
+<div class="roadmaps-grid">
+    <!-- Example roadmap card -->
+    <div class="roadmap-card">
+        <img alt="Roadmap Image" class="roadmap-image" src="/api/placeholder/300/150">
+        <div class="roadmap-content">
+            <h2 class="roadmap-title">Mastering Full-Stack Development</h2>
+            <div class="roadmap-author">
+                By John Doe <span class="verified-tag">✓</span>
+            </div>
+            <div class="roadmap-meta">
+                <span class="roadmap-difficulty">Advanced</span>
+                <span class="custom-tag">Custom</span>
+            </div>
+            <div class="roadmap-topics">
+                <span class="topic-chip">Frontend</span>
+                <span class="topic-chip">Backend</span>
+                <span class="topic-chip">DevOps</span>
+            </div>
+            <div class="roadmap-actions">
+                <button class="like-button">♥ Like</button>
+                <span class="like-counter">1.2k Likes</span>
+            </div>
         </div>
-        <div class="course-meta">
-            <span class="course-difficulty">Beginner</span>
-            <span class="course-duration">6 weeks</span>
-            <span class="course-language">English</span>
-        </div>
-        <span class="free-tag">Free</span>
     </div>
-    <!-- More course cards would be added here -->
-</div>
-
-<div class="paginator">
-    <button>&laquo;</button>
-    <button class="active">1</button>
-    <button>2</button>
-    <button>3</button>
-    <button>&raquo;</button>
+    <!-- More roadmap cards would be added here -->
 </div>
 </body>
 </html>

@@ -1,6 +1,6 @@
 .roadmaps {
     margin-left: var(--navbar-margin-left);
     margin-right: 20px;
-    width: 100%;
     padding: 20px 0 0;
+    margin-bottom: 20px;
 }
