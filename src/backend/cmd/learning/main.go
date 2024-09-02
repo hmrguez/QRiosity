@@ -478,10 +478,28 @@ func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMe
 		return nil, err
 	}
 
+	// Create a set of the user's topics
+	userTopics := make(map[string]struct{})
+	for _, topic := range user.Topics {
+		userTopics[topic] = struct{}{}
+	}
+
+	// Mark roadmaps liked by the user
 	for _, roadmap := range roadmaps {
 		for _, roadmapID := range user.Roadmaps {
 			if roadmap.ID == roadmapID {
 				roadmap.Liked = true
+				break
+			}
+		}
+	}
+
+	// Filter roadmaps to include only those with at least one overlapping topic with the user's topics
+	var filteredRoadmaps []domain.Roadmap
+	for _, roadmap := range roadmaps {
+		for _, topic := range roadmap.Topics {
+			if _, exists := userTopics[topic]; exists {
+				filteredRoadmaps = append(filteredRoadmaps, *roadmap)
 				break
 			}
 		}
