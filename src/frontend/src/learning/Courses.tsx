@@ -41,12 +41,12 @@ const Courses = () => {
 
 	const handleNextPage = () => {
 		setPagination(prev => ({...prev, page: prev.page + 1}));
-		fetchCourses()
+		fetchCourses();
 	};
 
 	const handlePreviousPage = () => {
 		setPagination(prev => ({...prev, page: Math.max(prev.page - 1, 0)}));
-		fetchCourses()
+		fetchCourses();
 	};
 
 	const handleCardClick = (url: string) => {
@@ -80,9 +80,13 @@ const Courses = () => {
 					</div>
 				))}
 			</div>
-			<div className="pagination-controls">
-				<button onClick={handlePreviousPage} disabled={pagination.page === 0}>Previous</button>
-				<button onClick={handleNextPage}>Next</button>
+
+			<div className="paginator">
+				<button onClick={handlePreviousPage}>&laquo;</button>
+				<button className="active">1</button>
+				<button>2</button>
+				<button>3</button>
+				<button onClick={handleNextPage}>&raquo;</button>
 			</div>
 		</div>
 	);
