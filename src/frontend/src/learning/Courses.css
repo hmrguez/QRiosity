@@ -93,3 +93,10 @@
     font-weight: bold;
     color: #4CAF50;
 }
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-left: var(--navbar-margin-left);
+}

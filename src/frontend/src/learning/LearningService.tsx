@@ -11,17 +11,24 @@ const GET_NAVBAR_DATA = gql`
 `;
 
 const GET_COURSES = gql`
-    query GetCourses {
-        getCourses {
-            id
-            title
-            url
-            description
-            difficulty
-            topics
-            isFree
-            duration
-            language
+    query GetCourses($userId: String!, $pagination: PaginationInput!) {
+        getCourses(userId: $userId, pagination: $pagination) {
+            courses {
+                id
+                title
+                url
+                description
+                difficulty
+                topics
+                isFree
+                duration
+                language
+            }
+            pagination {
+                page
+                perPage
+                lastEvaluatedKey
+            }
         }
     }
 `;
@@ -155,9 +162,14 @@ class LearningService {
 		return data.getUserByName;
 	}
 
-	async getCourses(): Promise<any[]> {
+	async getCourses(userId: string, pagination: {
+		page: number,
+		perPage: number,
+		lastEvaluatedKey?: any
+	}): Promise<any> {
 		const {data} = await this.client.query({
 			query: GET_COURSES,
+			variables: {userId, pagination},
 		});
 		return data.getCourses;
 	}

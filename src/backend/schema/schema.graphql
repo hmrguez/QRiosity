@@ -19,7 +19,7 @@ type Pagination {
 input PaginationInput {
     page: Int!
     perPage: Int!
-    lastEvaluatedKey: AWSJSON
+    lastEvaluatedKey: String
 }
 
 scalar AWSJSON
@@ -87,8 +87,8 @@ type ChallengeResponse {
 }
 
 type GetCoursesOutput {
-    Courses: [Course!]
-    Pagination: Pagination
+    courses: [Course!]
+    pagination: Pagination
 }
 
 type Query {

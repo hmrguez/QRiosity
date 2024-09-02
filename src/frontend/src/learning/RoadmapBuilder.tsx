@@ -120,9 +120,13 @@ const RoadmapBuilder = () => {
 
 	useEffect(() => {
 		const fetchCourses = async () => {
-			const fetchedCourses = await learningService.getCourses();
-			setCourses(fetchedCourses);
-			setFilteredCourses(fetchedCourses);
+
+			const cognitoUsername = authService.getCognitoUsername();
+			const pagination = {page: 0, perPage: 10};
+
+			const fetchedCourses = await learningService.getCourses(cognitoUsername as string, pagination);
+			setCourses(fetchedCourses.courses);
+			setFilteredCourses(fetchedCourses.courses);
 		};
 
 		const fetchGenUsage = async () => {
