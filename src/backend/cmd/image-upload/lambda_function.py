@@ -15,7 +15,7 @@ def lambda_handler(event, context):
         print("Event: ", event)
 
         # If the body is base64 encoded, decode it
-        if body['isBase64Encoded'] == False
+        if body['isBase64Encoded'] == False:
             image_data = base64.b64decode(body)
 #         else:
 #             return {
