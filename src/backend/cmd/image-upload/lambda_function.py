@@ -16,11 +16,11 @@ def lambda_handler(event, context):
         # If the body is base64 encoded, decode it
         if event.get('isBase64Encoded', False):
             image_data = base64.b64decode(body)
-        else:
-            return {
-                'statusCode': 400,
-                'body': json.dumps({'error': 'File data must be base64 encoded.'})
-            }
+#         else:
+#             return {
+#                 'statusCode': 400,
+#                 'body': json.dumps({'error': 'File data must be base64 encoded.'})
+#             }
 
         # Determine the content type of the image from headers
         content_type = event['headers'].get('Content-Type')
