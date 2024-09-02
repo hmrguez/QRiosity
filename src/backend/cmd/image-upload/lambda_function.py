@@ -21,7 +21,6 @@ def lambda_handler(event, context):
 
 #     print("Image: ", image_base64)
 
-    print("Type: ", mime_type)
 
     # Decode the image
     image_data = base64.b64decode(image_base64)
@@ -31,12 +30,10 @@ def lambda_handler(event, context):
     if extension is None:
         raise ValueError(f"Unsupported MIME type: {mime_type}")
 
-    print("Extension: ", extension)
 
     # Generate a unique filename with the correct extension
     filename = f"{uuid.uuid4()}{extension}"
 
-    print("Filename: ", filename)
 
     # Specify your S3 bucket name
     bucket_name = 'roadmap-images'
@@ -47,8 +44,6 @@ def lambda_handler(event, context):
 
         # Generate the S3 URL
         s3_url = f"https://{bucket_name}.s3.amazonaws.com/{filename}"
-
-        print("Url: ", s3_url)
 
         body = json.dumps({
             'message': f'Successfully uploaded {filename} to {bucket_name}',

@@ -3,7 +3,7 @@ import {useApolloClient} from "@apollo/client";
 import LearningService from "./LearningService";
 import AuthService from "../auth/AuthService";
 import "./MyLearning.css";
-import ParentComponent from "../utils/ParentComponent.tsx";
+import RoadmapList from "./RoadmapList.tsx";
 
 const MyLearning = () => {
 	const client = useApolloClient();
@@ -29,11 +29,7 @@ const MyLearning = () => {
 	return (
 		<div className="my-learning mt-5">
 			<h1>My Roadmaps</h1>
-
-			<ParentComponent/>
-			{/*<FileInput />*/}
-
-			{/*<RoadmapList roadmaps={roadmaps} myLearning={true}/>*/}
+			<RoadmapList roadmaps={roadmaps} myLearning={true}/>
 		</div>
 	);
 };
