@@ -2,6 +2,7 @@ import boto3
 import base64
 import uuid
 import mimetypes
+import json
 
 s3 = boto3.client('s3')
 
