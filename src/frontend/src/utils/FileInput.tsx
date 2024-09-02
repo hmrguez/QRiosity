@@ -41,9 +41,15 @@ const FileUpload = forwardRef((_, ref) => {
 		formData.append('file', selectedFile);
 
 		try {
-			const response = await fetch('https://kqssn9e4a3.execute-api.us-east-2.amazonaws.com/image-upload', {
+
+			console.log(selectedFile.type)
+
+			const response = await fetch('https://kqssn9e4a3.execute-api.us-east-2.amazonaws.com/roadmap-image', {
 				method: 'POST',
 				body: formData,
+				headers: {
+					'Content-Type': selectedFile.type,
+				},
 			});
 
 			if (!response.ok) {
