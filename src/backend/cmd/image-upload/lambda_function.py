@@ -54,7 +54,9 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Methods': '*'
             },
             'body': {
                 'message': f'Successfully uploaded {filename} to {bucket_name}',
@@ -67,6 +69,8 @@ def lambda_handler(event, context):
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Methods': '*'
             },
             'body': {
                 'message': f'Error uploading image: {str(e)}',
