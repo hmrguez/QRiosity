@@ -89,7 +89,29 @@ func (r *DynamoDBTopicRepository) GetTopicsByNames(ctx context.Context, names []
 			}
 
 			if result.Item == nil {
-				errChan <- fmt.Errorf("topic not found: %s", name)
+				// Create a new topic if not found
+				newTopic := &domain.Topic{
+					Name:       name,
+					RoadmapIds: []string{},
+				}
+				av, err := dynamodbattribute.MarshalMap(newTopic)
+				if err != nil {
+					errChan <- err
+					return
+				}
+
+				putInput := &dynamodb.PutItemInput{
+					Item:      av,
+					TableName: aws.String("Qriosity-Topics"),
+				}
+
+				_, err = r.db.PutItemWithContext(ctx, putInput)
+				if err != nil {
+					errChan <- err
+					return
+				}
+
+				topicChan <- newTopic
 				return
 			}
 
