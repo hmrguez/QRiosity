@@ -186,28 +186,42 @@ func (r *DynamoDBRoadmapRepository) GetRoadmapsByUser(ctx context.Context, userI
 }
 
 func (r *DynamoDBRoadmapRepository) GetByTopic(ctx context.Context, topic string) ([]domain.Roadmap, error) {
-	// Define the query input parameters
-	input := &dynamodb.ScanInput{
-		TableName:        aws.String("Qriosity-Roadmaps"),
-		FilterExpression: aws.String("contains(topics, :topic_value)"),
-		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":topic_value": {
-				S: aws.String(topic),
+	// Use topic repo to fetch by name
+	topics, err := r.topicRepo.GetTopicsByNames(ctx, []string{topic})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(topics) == 0 {
+		return nil, fmt.Errorf("topic %s not found", topic)
+	}
+
+	// Fetch all roadmaps by topic
+	keys := make([]map[string]*dynamodb.AttributeValue, 0, len(topics[0].RoadmapIds))
+	for _, roadmapID := range topics[0].RoadmapIds {
+		keys = append(keys, map[string]*dynamodb.AttributeValue{
+			"id": {S: aws.String(roadmapID)},
+		})
+	}
+
+	batchGetInput := &dynamodb.BatchGetItemInput{
+		RequestItems: map[string]*dynamodb.KeysAndAttributes{
+			r.tableName: {
+				Keys: keys,
 			},
 		},
 	}
 
-	// Perform the query
-	result, err := r.db.Scan(input)
+	batchGetResult, err := r.db.BatchGetItemWithContext(ctx, batchGetInput)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query roadmaps: %w", err)
+		return nil, err
 	}
 
-	// Unmarshal the result into a slice of Roadmap structs
+	// Unmarshal roadmaps
 	var roadmaps []domain.Roadmap
-	err = dynamodbattribute.UnmarshalListOfMaps(result.Items, &roadmaps)
+	err = dynamodbattribute.UnmarshalListOfMaps(batchGetResult.Responses[r.tableName], &roadmaps)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal query result: %w", err)
+		return nil, err
 	}
 
 	return roadmaps, nil
