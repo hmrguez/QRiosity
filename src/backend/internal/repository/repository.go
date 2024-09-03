@@ -30,4 +30,5 @@ type IRoadmapRepository interface {
 	UpsertRoadmap(ctx context.Context, roadmap *domain.Roadmap) error
 	GetRoadmap(ctx context.Context, roadmapID string) (*domain.Roadmap, error)
 	GetRoadmapsByUser(ctx context.Context, userID string, userRepo IUserRepository) ([]*domain.Roadmap, error)
+	GetByTopic(ctx context.Context, topic string) ([]domain.Roadmap, error)
 }

@@ -546,12 +546,6 @@ func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMe
 		return nil, err
 	}
 
-	// Fetch all roadmaps
-	roadmaps, err := roadmapRepository.GetAllRoadmaps(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	// Fetch the user by ID
 	user, err := userRepository.GetUserByName(input.UserID)
 	if err != nil {
@@ -564,22 +558,29 @@ func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMe
 		userTopics[topic] = struct{}{}
 	}
 
-	// Mark roadmaps liked by the user
-	for _, roadmap := range roadmaps {
-		for _, roadmapID := range user.Roadmaps {
-			if roadmap.ID == roadmapID {
-				roadmap.Liked = true
-				break
-			}
+	// Fetch roadmaps by each topic and ensure no duplicates
+	roadmapMap := make(map[string]domain.Roadmap)
+	for topic := range userTopics {
+		roadmaps, err := roadmapRepository.GetByTopic(ctx, topic)
+		if err != nil {
+			return nil, err
+		}
+		for _, roadmap := range roadmaps {
+			roadmapMap[roadmap.ID] = roadmap
 		}
 	}
 
-	// Filter roadmaps to include only those with at least one overlapping topic with the user's topics
+	// Convert map to slice
 	var filteredRoadmaps []domain.Roadmap
-	for _, roadmap := range roadmaps {
-		for _, topic := range roadmap.Topics {
-			if _, exists := userTopics[topic]; exists {
-				filteredRoadmaps = append(filteredRoadmaps, *roadmap)
+	for _, roadmap := range roadmapMap {
+		filteredRoadmaps = append(filteredRoadmaps, roadmap)
+	}
+
+	// Mark roadmaps liked by the user
+	for i, roadmap := range filteredRoadmaps {
+		for _, roadmapID := range user.Roadmaps {
+			if roadmap.ID == roadmapID {
+				filteredRoadmaps[i].Liked = true
 				break
 			}
 		}
