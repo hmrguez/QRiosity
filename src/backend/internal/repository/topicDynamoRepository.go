@@ -135,12 +135,16 @@ func (r *DynamoDBTopicRepository) BulkWrite(ctx context.Context, topics []*domai
 		})
 	}
 
+	fmt.Printf("writeRequests: %v\n", writeRequests)
+
 	// Create the batch write input
 	batchWriteInput := &dynamodb.BatchWriteItemInput{
 		RequestItems: map[string][]*dynamodb.WriteRequest{
 			r.tableName: writeRequests,
 		},
 	}
+
+	fmt.Printf("batchWriteInput: %v\n", batchWriteInput)
 
 	// Execute the batch write operation
 	_, err := r.db.BatchWriteItemWithContext(ctx, batchWriteInput)
