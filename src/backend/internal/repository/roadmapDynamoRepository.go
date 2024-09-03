@@ -13,12 +13,14 @@ import (
 
 type DynamoDBRoadmapRepository struct {
 	db        *dynamodb.DynamoDB
+	topicRepo ITopicRepository
 	tableName string
 }
 
-func NewDynamoDBRoadmapRepository(sess *session.Session, tableName string) *DynamoDBRoadmapRepository {
+func NewDynamoDBRoadmapRepository(sess *session.Session, tableName string, topicRepo ITopicRepository) *DynamoDBRoadmapRepository {
 	return &DynamoDBRoadmapRepository{
 		db:        dynamodb.New(sess),
+		topicRepo: topicRepo,
 		tableName: tableName,
 	}
 }
@@ -43,6 +45,23 @@ func (r *DynamoDBRoadmapRepository) GetAllRoadmaps(ctx context.Context) ([]*doma
 }
 
 func (r *DynamoDBRoadmapRepository) UpsertRoadmap(ctx context.Context, roadmap *domain.Roadmap) error {
+	// Fetch all topics
+	topics, err := r.topicRepo.GetTopicsByNames(ctx, roadmap.Topics)
+	if err != nil {
+		return err
+	}
+
+	// Add this roadmap to the roadmapIds of each topic
+	for _, topic := range topics {
+		topic.RoadmapIds = append(topic.RoadmapIds, roadmap.ID)
+	}
+
+	// Update the topics in a separate goroutine
+	errChan := make(chan error)
+	go func() {
+		errChan <- r.topicRepo.BulkWrite(ctx, topics)
+	}()
+
 	item, err := dynamodbattribute.MarshalMap(roadmap)
 	if err != nil {
 		return err
@@ -54,6 +73,12 @@ func (r *DynamoDBRoadmapRepository) UpsertRoadmap(ctx context.Context, roadmap *
 	}
 
 	_, err = r.db.PutItemWithContext(ctx, input)
+
+	// Wait for the goroutine to finish and check for errors
+	if err := <-errChan; err != nil {
+		return err
+	}
+
 	return err
 }
 

@@ -35,7 +35,8 @@ type Query struct {
 }
 
 type Topic struct {
-	Name string `json:"name"`
+	Name       string   `json:"name"`
+	RoadmapIds []string `json:"roadmapIds"`
 }
 
 type User struct {

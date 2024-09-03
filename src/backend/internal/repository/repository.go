@@ -15,6 +15,8 @@ type IUserRepository interface {
 type ITopicRepository interface {
 	Insert(ctx context.Context, names []*domain.Topic) error
 	GetAllTopics(ctx context.Context) ([]*domain.Topic, error)
+	GetTopicsByNames(ctx context.Context, names []string) ([]*domain.Topic, error)
+	BulkWrite(ctx context.Context, topics []*domain.Topic) error
 }
 
 type ICourseRepository interface {
