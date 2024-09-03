@@ -566,7 +566,7 @@ func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMe
 			return nil, err
 		}
 		for _, roadmap := range roadmaps {
-			roadmapMap[roadmap.ID] = roadmap
+			roadmapMap[roadmap.ID] = *roadmap
 		}
 	}
 
