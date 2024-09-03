@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"sync"
 )
 
 type DynamoDBTopicRepository struct {
@@ -62,37 +63,58 @@ func (r *DynamoDBTopicRepository) GetAllTopics(ctx context.Context) ([]*domain.T
 }
 
 func (r *DynamoDBTopicRepository) GetTopicsByNames(ctx context.Context, names []string) ([]*domain.Topic, error) {
-	// Check if names slice is empty
 	if len(names) == 0 {
 		return nil, fmt.Errorf("names slice is empty")
 	}
 
-	// Do a batch operation and fetch all roadmap.Topics
-	keys := make([]map[string]*dynamodb.AttributeValue, 0, len(names))
-	for _, topic := range names {
-		keys = append(keys, map[string]*dynamodb.AttributeValue{
-			"name": {S: aws.String(topic)},
-		})
+	var wg sync.WaitGroup
+	topicChan := make(chan *domain.Topic, len(names))
+	errChan := make(chan error, len(names))
+
+	for _, name := range names {
+		wg.Add(1)
+		go func(name string) {
+			defer wg.Done()
+			input := &dynamodb.GetItemInput{
+				TableName: aws.String("Qriosity-Topics"),
+				Key: map[string]*dynamodb.AttributeValue{
+					"name": {S: aws.String(name)},
+				},
+			}
+
+			result, err := r.db.GetItemWithContext(ctx, input)
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			if result.Item == nil {
+				errChan <- fmt.Errorf("topic not found: %s", name)
+				return
+			}
+
+			var topic domain.Topic
+			err = dynamodbattribute.UnmarshalMap(result.Item, &topic)
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			topicChan <- &topic
+		}(name)
 	}
 
-	batchGetInput := &dynamodb.BatchGetItemInput{
-		RequestItems: map[string]*dynamodb.KeysAndAttributes{
-			"Qriosity-Topics": {
-				Keys: keys,
-			},
-		},
-	}
+	wg.Wait()
+	close(topicChan)
+	close(errChan)
 
-	batchGetResult, err := r.db.BatchGetItemWithContext(ctx, batchGetInput)
-	if err != nil {
-		return nil, err
-	}
-
-	// Unmarshal topics
 	var topics []*domain.Topic
-	err = dynamodbattribute.UnmarshalListOfMaps(batchGetResult.Responses["Qriosity-Topics"], &topics)
-	if err != nil {
-		return nil, err
+	for topic := range topicChan {
+		topics = append(topics, topic)
+	}
+
+	if len(errChan) > 0 {
+		return nil, <-errChan
 	}
 
 	return topics, nil

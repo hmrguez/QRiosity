@@ -45,6 +45,9 @@ func (r *DynamoDBRoadmapRepository) GetAllRoadmaps(ctx context.Context) ([]*doma
 }
 
 func (r *DynamoDBRoadmapRepository) UpsertRoadmap(ctx context.Context, roadmap *domain.Roadmap) error {
+	// Log topics
+	fmt.Println("Topics: ", roadmap.Topics)
+
 	// Fetch all topics
 	topics, err := r.topicRepo.GetTopicsByNames(ctx, roadmap.Topics)
 	if err != nil {
@@ -177,48 +180,6 @@ func (r *DynamoDBRoadmapRepository) GetRoadmapsByUser(ctx context.Context, userI
 
 	// Unmarshal roadmaps
 	var roadmaps []*domain.Roadmap
-	err = dynamodbattribute.UnmarshalListOfMaps(batchGetResult.Responses[r.tableName], &roadmaps)
-	if err != nil {
-		return nil, err
-	}
-
-	return roadmaps, nil
-}
-
-func (r *DynamoDBRoadmapRepository) GetByTopic(ctx context.Context, topic string) ([]domain.Roadmap, error) {
-	// Use topic repo to fetch by name
-	topics, err := r.topicRepo.GetTopicsByNames(ctx, []string{topic})
-	if err != nil {
-		return nil, err
-	}
-
-	if len(topics) == 0 {
-		return nil, fmt.Errorf("topic %s not found", topic)
-	}
-
-	// Fetch all roadmaps by topic
-	keys := make([]map[string]*dynamodb.AttributeValue, 0, len(topics[0].RoadmapIds))
-	for _, roadmapID := range topics[0].RoadmapIds {
-		keys = append(keys, map[string]*dynamodb.AttributeValue{
-			"id": {S: aws.String(roadmapID)},
-		})
-	}
-
-	batchGetInput := &dynamodb.BatchGetItemInput{
-		RequestItems: map[string]*dynamodb.KeysAndAttributes{
-			r.tableName: {
-				Keys: keys,
-			},
-		},
-	}
-
-	batchGetResult, err := r.db.BatchGetItemWithContext(ctx, batchGetInput)
-	if err != nil {
-		return nil, err
-	}
-
-	// Unmarshal roadmaps
-	var roadmaps []domain.Roadmap
 	err = dynamodbattribute.UnmarshalListOfMaps(batchGetResult.Responses[r.tableName], &roadmaps)
 	if err != nil {
 		return nil, err
