@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/internal/domain"
 	"context"
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -61,7 +62,12 @@ func (r *DynamoDBTopicRepository) GetAllTopics(ctx context.Context) ([]*domain.T
 }
 
 func (r *DynamoDBTopicRepository) GetTopicsByNames(ctx context.Context, names []string) ([]*domain.Topic, error) {
-	// DO a batch operation and fetch all roadmap.Topics
+	// Check if names slice is empty
+	if len(names) == 0 {
+		return nil, fmt.Errorf("names slice is empty")
+	}
+
+	// Do a batch operation and fetch all roadmap.Topics
 	keys := make([]map[string]*dynamodb.AttributeValue, 0, len(names))
 	for _, topic := range names {
 		keys = append(keys, map[string]*dynamodb.AttributeValue{

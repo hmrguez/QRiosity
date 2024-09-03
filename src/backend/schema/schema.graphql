@@ -26,6 +26,7 @@ scalar AWSJSON
 
 type Topic {
     name: String!
+    roadmapIds: [String!]
 }
 
 type BareResponse {
