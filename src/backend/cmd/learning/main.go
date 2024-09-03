@@ -37,7 +37,7 @@ func main() {
 
 	topicRepository = repository.NewDynamoDBTopicRepository(sess, "Qriosity-Topics")
 	courseRepository = repository.NewDynamoDBCourseRepository(sess, "Qriosity-Courses")
-	roadmapRepository = repository.NewDynamoDBRoadmapRepository(sess, "Qriosity-Roadmaps")
+	roadmapRepository = repository.NewDynamoDBRoadmapRepository(sess, "Qriosity-Roadmaps", topicRepository)
 	userRepository, _ = repository.NewDynamoDBUserRepository(sess, "Qriosity-Users")
 	roadmapService = services.NewRoadmapService()
 
