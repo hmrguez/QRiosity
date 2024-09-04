@@ -116,14 +116,14 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 				<Button
 					label="Exit"
 					icon="pi pi-times"
-					className="p-button-secondary exit-button"
+					className="p-button-secondary daily-exit-button"
 					onClick={handleExit}
 				/>
 				<Button
 					disabled={!!result}
 					label={buttonLabel}
 					icon={buttonIcon}
-					className={buttonClass + " submit-button"}
+					className={buttonClass + " daily-submit-button"}
 					onClick={handleSubmit}
 					loading={resultLoading}
 				/>
