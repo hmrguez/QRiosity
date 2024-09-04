@@ -1,5 +1,5 @@
 // Define the Roadmap interface
-import {Course} from "./Courses.tsx";
+import {Course} from "./Course.tsx";
 
 export interface Roadmap {
 	id: string;
