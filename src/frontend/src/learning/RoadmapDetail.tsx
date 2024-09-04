@@ -52,7 +52,7 @@ const RoadmapDetail = () => {
 				</ul>
 			</div>
 			<div className="roadmap-details">
-				<h2 className="roadmap-title">{roadmap.title}</h2>
+				<h2 className="detail-roadmap-title">{roadmap.title}</h2>
 				<p className="roadmap-author">by {roadmap.author}</p>
 				<div className="roadmap-stats">
 					<div className="stat-item">
@@ -73,7 +73,8 @@ const RoadmapDetail = () => {
 						<span key={topic} className="topic-chip">{topic}</span>
 					))}
 				</div>
-				<p className="roadmap-custom">{roadmap.isCustom ? 'Custom Roadmap' : 'Standard Roadmap'}</p>
+				{roadmap.isCustom && (<p className="roadmap-custom">Custom</p>)}
+				<i className="detail-roadmap-description">{roadmap.description}</i>
 			</div>
 		</div>
 	);

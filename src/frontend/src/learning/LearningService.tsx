@@ -65,6 +65,7 @@ const GET_ROADMAP_BY_ID = gql`
             isCustom
             likes
             difficulty
+            description
         }
     }
 `;

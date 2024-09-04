@@ -14,4 +14,5 @@ export interface Roadmap {
 	difficulty: string;
 	imageUrl: string;
 	liked: boolean;
+	description: string;
 }
