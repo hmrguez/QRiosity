@@ -358,18 +358,53 @@ func handleUserLikedRoadmap(ctx context.Context, args json.RawMessage) (json.Raw
 		return nil, err
 	}
 
-	// Fetch the user by ID
-	user, err := userRepository.GetUserByName(input.UserID)
-	if err != nil {
-		return nil, err
-	}
+	var wg sync.WaitGroup
+	errChan := make(chan error, 2)
 
-	// Append the roadmap ID to the user's liked roadmaps
-	user.Roadmaps = append(user.Roadmaps, input.RoadmapID)
+	var user *domain.User
+	var roadmap *domain.Roadmap
 
-	// Update user
-	if _, err := userRepository.UpsertUser(*user); err != nil {
-		return nil, err
+	wg.Add(2)
+
+	// Handle user operations in a goroutine
+	go func() {
+		defer wg.Done()
+		var err error
+		user, err = userRepository.GetUserByName(input.UserID)
+		if err != nil {
+			errChan <- err
+			return
+		}
+		user.Roadmaps = append(user.Roadmaps, input.RoadmapID)
+		if _, err := userRepository.UpsertUser(*user); err != nil {
+			errChan <- err
+		}
+	}()
+
+	// Handle roadmap operations in a goroutine
+	go func() {
+		defer wg.Done()
+		var err error
+		roadmap, err = roadmapRepository.GetRoadmap(ctx, input.RoadmapID)
+		if err != nil {
+			errChan <- err
+			return
+		}
+		roadmap.Likes++
+		if err := roadmapRepository.UpsertRoadmap(ctx, roadmap); err != nil {
+			errChan <- err
+		}
+	}()
+
+	// Wait for both goroutines to complete
+	wg.Wait()
+	close(errChan)
+
+	// Check for errors
+	for err := range errChan {
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return json.RawMessage(`{"success": true}`), nil
