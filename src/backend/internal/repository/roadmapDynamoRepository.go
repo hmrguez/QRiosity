@@ -109,6 +109,12 @@ func (r *DynamoDBRoadmapRepository) GetRoadmap(ctx context.Context, roadmapID st
 		return nil, err
 	}
 
+	// If no courses then return the roadmap
+	if len(roadmap.CourseIDs) == 0 {
+		roadmap.Courses = []domain.Course{}
+		return &roadmap, nil
+	}
+
 	// Collect all course IDs
 	courseIDs := make(map[string]struct{})
 	for _, courseID := range roadmap.CourseIDs {
