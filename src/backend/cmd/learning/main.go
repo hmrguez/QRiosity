@@ -574,42 +574,52 @@ func handleGetRoadmapsByUser(ctx context.Context, args json.RawMessage) (json.Ra
 }
 
 func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
+	log.Println("handleGetRoadmapFeed: start")
+
 	var input struct {
 		UserID string `json:"userId"`
 	}
 	if err := json.Unmarshal(args, &input); err != nil {
+		log.Printf("handleGetRoadmapFeed: error unmarshalling input: %v", err)
 		return nil, err
 	}
+	log.Printf("handleGetRoadmapFeed: input: %+v", input)
 
 	// Fetch the user by ID
 	user, err := userRepository.GetUserByName(input.UserID)
 	if err != nil {
+		log.Printf("handleGetRoadmapFeed: error fetching user: %v", err)
 		return nil, err
 	}
+	log.Printf("handleGetRoadmapFeed: fetched user: %+v", user)
 
 	// Create a set of the user's topics
 	userTopics := make(map[string]struct{})
 	for _, topic := range user.Topics {
 		userTopics[topic] = struct{}{}
 	}
+	log.Printf("handleGetRoadmapFeed: user topics: %+v", userTopics)
 
 	// Fetch roadmaps by each topic and ensure no duplicates
 	roadmapMap := make(map[string]domain.Roadmap)
 	for topic := range userTopics {
 		roadmaps, err := roadmapRepository.GetByTopic(ctx, topic)
 		if err != nil {
+			log.Printf("handleGetRoadmapFeed: error fetching roadmaps for topic %s: %v", topic, err)
 			return nil, err
 		}
 		for _, roadmap := range roadmaps {
 			roadmapMap[roadmap.ID] = *roadmap
 		}
 	}
+	log.Printf("handleGetRoadmapFeed: fetched roadmaps: %+v", roadmapMap)
 
 	// Convert map to slice
 	var filteredRoadmaps []domain.Roadmap
 	for _, roadmap := range roadmapMap {
 		filteredRoadmaps = append(filteredRoadmaps, roadmap)
 	}
+	log.Printf("handleGetRoadmapFeed: filtered roadmaps: %+v", filteredRoadmaps)
 
 	// Mark roadmaps liked by the user
 	for i, roadmap := range filteredRoadmaps {
@@ -620,11 +630,15 @@ func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMe
 			}
 		}
 	}
+	log.Printf("handleGetRoadmapFeed: marked liked roadmaps: %+v", filteredRoadmaps)
 
 	response, err := json.Marshal(filteredRoadmaps)
 	if err != nil {
+		log.Printf("handleGetRoadmapFeed: error marshalling response: %v", err)
 		return nil, err
 	}
+	log.Printf("handleGetRoadmapFeed: response: %s", response)
 
+	log.Println("handleGetRoadmapFeed: end")
 	return response, nil
 }
