@@ -594,16 +594,17 @@ func handleGetRoadmapFeed(ctx context.Context, args json.RawMessage) (json.RawMe
 	log.Printf("handleGetRoadmapFeed: fetched user: %+v", user)
 
 	// Create a set of the user's topics
-	userTopics := make(map[string]struct{})
-	for _, topic := range user.Topics {
-		userTopics[topic] = struct{}{}
-	}
+	userTopics := user.Topics
 	log.Printf("handleGetRoadmapFeed: user topics: %+v", userTopics)
 
 	// Fetch roadmaps by each topic and ensure no duplicates
 	roadmapMap := make(map[string]domain.Roadmap)
-	for topic := range userTopics {
+	for _, topic := range userTopics {
 		roadmaps, err := roadmapRepository.GetByTopic(ctx, topic)
+
+		// Log
+		log.Printf("handleGetRoadmapFeed: fetched roadmaps for topic %s: %+v", topic, roadmaps)
+
 		if err != nil {
 			log.Printf("handleGetRoadmapFeed: error fetching roadmaps for topic %s: %v", topic, err)
 			return nil, err
