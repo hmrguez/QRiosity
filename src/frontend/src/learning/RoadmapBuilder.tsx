@@ -89,6 +89,7 @@ const RoadmapBuilder = () => {
 			id: crypto.randomUUID(),
 			title: roadmapTitle,
 			author: authService.getUsername(),
+			authorId: authService.getCognitoUsername(),
 			courseIDs: addedCourses.map(course => course.id),
 			topics: roadmapTopics.split(',').map(topic => topic.trim()),
 			isCustom: true,

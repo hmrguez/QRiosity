@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/internal/constants"
 	"backend/internal/domain"
 	"backend/internal/repository"
 	"backend/internal/services"
@@ -496,7 +497,22 @@ func handleUpsertRoadmap(ctx context.Context, args json.RawMessage) (json.RawMes
 		return nil, err
 	}
 
-	log.Println("Upserting unmarshalled roadmap ", roadmap)
+	user, err := userRepository.GetUserByName(roadmap.AuthorId)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Role == 1 && len(user.RoadmapsCreated) >= constants.ApprenticeCreatedRoadmaps {
+		return nil, errors.New("user has reached the limit of created roadmaps")
+	} else if user.Role == 0 {
+		return nil, errors.New("user is not authorized to create roadmaps")
+	}
+
+	user.RoadmapsCreated = append(user.RoadmapsCreated, roadmap.ID)
+
+	if _, err := userRepository.UpsertUser(*user); err != nil {
+		return nil, err
+	}
 
 	if err := roadmapRepository.UpsertRoadmap(ctx, &roadmap); err != nil {
 		return nil, err

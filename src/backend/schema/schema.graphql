@@ -8,7 +8,7 @@ type User {
     roadmapsIds: [String!]
     genUsagesRemaining: Int!
     dailyChallengesRemaining: Int!
-    roadmapsCreated: Int!
+    roadmapsCreated: [String!]
 }
 
 
@@ -63,6 +63,7 @@ type Roadmap {
     liked: Boolean!
     description: String!
     imageUrl: String
+    authorId: String!
 }
 
 type AuthPayload {
@@ -188,4 +189,5 @@ input RoadmapInput {
     difficulty: String!
     description: String!
     imageUrl: String
+    authorId: String!
 }

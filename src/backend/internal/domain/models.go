@@ -70,6 +70,7 @@ type Roadmap struct {
 	ID          string   `json:"id"`
 	Title       string   `json:"title"`
 	Author      string   `json:"author"`
+	AuthorId    string   `json:"authorId"`
 	Courses     []Course `json:"courses"`
 	CourseIDs   []string `json:"courseIDs"`
 	Topics      []string `json:"topics"`
