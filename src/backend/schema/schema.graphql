@@ -9,7 +9,11 @@ type User {
     genUsagesRemaining: Int!
     dailyChallengesRemaining: Int!
     roadmapsCreated: [String!]
+    lastDailyChallenge: DateTime
+    dailyChallengeStreak: Int!
 }
+
+scalar DateTime
 
 
 type Pagination {

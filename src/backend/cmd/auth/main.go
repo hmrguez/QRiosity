@@ -249,7 +249,7 @@ func handleGetUserByName(ctx context.Context, args json.RawMessage) (json.RawMes
 		return nil, err
 	}
 
-	fmt.Printf("User %v", user)
+	fmt.Printf("User %+v\n", user)
 
 	response, err := json.Marshal(user)
 	if err != nil {

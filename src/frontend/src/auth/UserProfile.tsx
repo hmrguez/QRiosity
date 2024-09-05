@@ -15,7 +15,7 @@ const UserProfile: React.FC = () => {
 	const [isChanged, setIsChanged] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [isEditable, setIsEditable] = useState<boolean>(false);
-	const [streak, setStreak] = useState<number>(10);
+	const [streak, setStreak] = useState<number>(0);
 
 
 	const apolloClient = useApolloClient();
@@ -31,6 +31,8 @@ const UserProfile: React.FC = () => {
 			const profile = await authService.getProfile(name);
 			setUserName(profile.username);
 			setTopics(profile.topics);
+			setStreak(profile.dailyChallengeStreak);
+
 
 			switch (profile.role) {
 				case 0:

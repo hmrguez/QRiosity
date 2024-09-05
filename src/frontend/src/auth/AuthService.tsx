@@ -30,6 +30,8 @@ const GET_USER_BY_NAME_QUERY = gql`
             username
             topics
             role
+            dailyChallengeStreak
+            #            dailyChallengeStreak
         }
     }
 `;
@@ -90,7 +92,12 @@ class AuthService {
 		return response.data.resendConfirmationEmail;
     }
 
-	async getProfile(name: string) {
+	async getProfile(name: string): Promise<{
+		username: string,
+		topics: string[],
+		role: number,
+		dailyChallengeStreak: number
+	}> {
 		const {data} = await this.client.query({
 			query: GET_USER_BY_NAME_QUERY,
 			variables: {name},
