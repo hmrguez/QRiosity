@@ -124,6 +124,8 @@ func handleDailyChallengeMutation(ctx context.Context, args json.RawMessage) (js
 		return nil, err
 	}
 
+	response.Left = user.DailyChallengesRemaining
+
 	resp, err := json.Marshal(response)
 	if err != nil {
 		return nil, err

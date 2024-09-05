@@ -14,6 +14,7 @@ type ChallengeResponse struct {
 	Answer   string `json:"answer"`
 	Rating   int    `json:"rating"`
 	Insight  string `json:"insight"`
+	Left     int    `json:"left"`
 }
 
 type Mutation struct {

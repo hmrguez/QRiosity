@@ -88,6 +88,7 @@ type ChallengeResponse {
     answer: String!
     rating: Int!
     insight: String!
+    left: Int!
 }
 
 type GetCoursesOutput {

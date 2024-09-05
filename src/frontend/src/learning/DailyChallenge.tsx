@@ -1,4 +1,3 @@
-// src/frontend/src/components/DailyChallenge.tsx
 import React, {useEffect, useState} from 'react';
 import {gql, useApolloClient, useMutation, useQuery} from '@apollo/client';
 import {Button} from 'primereact/button';
@@ -12,6 +11,7 @@ interface DailyChallengeResult {
 	answer: string;
 	rating: number;
 	insight: string;
+	left: number;
 }
 
 const SUBMIT_DAILY_CHALLENGE = gql`
@@ -22,6 +22,7 @@ const SUBMIT_DAILY_CHALLENGE = gql`
             answer
             rating
             insight
+            left
         }
     }
 `;
@@ -51,6 +52,7 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 	const {loading, error, data} = useQuery(GET_DAILY_CHALLENGE);
 	const [submitDailyChallenge] = useMutation(SUBMIT_DAILY_CHALLENGE);
 	const [result, setResult] = useState<DailyChallengeResult | null>(null);
+	const [left, setLeft] = useState<number>(0);
 
 	const [buttonClass, setButtonClass] = useState('p-button-contrast');
 	const [resultLoading, setResultLoading] = useState(false);
@@ -60,6 +62,7 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 	useEffect(() => {
 		if (result) {
 			setResultLoading(false);
+			setLeft(result.left);
 			if (result.rating >= 6) {
 				setButtonClass('p-button-success');
 				setButtonIcon('pi pi-thumbs-up');
@@ -100,6 +103,14 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 		}
 	};
 
+	const handleNext = () => {
+		setResult(null);
+		setAnswer('');
+		setButtonClass('p-button-contrast');
+		setButtonIcon('pi pi-check');
+		setButtonLabel('Submit');
+	};
+
 	return (
 		<div className="challenge-content">
 			<h2 className="question-title">{dailyChallenge.question}</h2>
@@ -127,6 +138,14 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 					onClick={handleSubmit}
 					loading={resultLoading}
 				/>
+				{result && left > 0 && (
+					<Button
+						label="Next"
+						icon="pi pi-arrow-right"
+						className="p-button-info daily-next-button"
+						onClick={handleNext}
+					/>
+				)}
 			</div>
 			{result && (
 				<div className="insight-content">
