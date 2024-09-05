@@ -92,12 +92,7 @@ class AuthService {
 		return response.data.resendConfirmationEmail;
     }
 
-	async getProfile(name: string): Promise<{
-		username: string,
-		topics: string[],
-		role: number,
-		dailyChallengeStreak: number
-	}> {
+	async getProfile(name: string) {
 		const {data} = await this.client.query({
 			query: GET_USER_BY_NAME_QUERY,
 			variables: {name},

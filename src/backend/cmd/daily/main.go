@@ -121,11 +121,10 @@ func handleDailyChallengeMutation(ctx context.Context, args json.RawMessage) (js
 		user.DailyChallengeAvailable = false
 	}
 
-	if user.LastDailyChallenge.Day() == time.Now().Day()-1 {
+	if response.Rating > 5 && user.LastDailyChallenge.Day() == time.Now().Day()-1 {
 		user.DailyChallengeStreak += 1
+		user.LastDailyChallenge = time.Now()
 	}
-
-	user.LastDailyChallenge = time.Now()
 
 	_, err = userRepository.UpsertUser(*user)
 	if err != nil {
