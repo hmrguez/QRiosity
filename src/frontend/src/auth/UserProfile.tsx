@@ -4,6 +4,7 @@ import {useApolloClient} from "@apollo/client";
 import AuthService from "./AuthService.tsx";
 import {Button} from "primereact/button";
 import "./UserProfile.css"
+import {FaFire} from "react-icons/fa";
 
 const UserProfile: React.FC = () => {
 	const {name} = useParams<{ name: string }>();
@@ -14,6 +15,8 @@ const UserProfile: React.FC = () => {
 	const [isChanged, setIsChanged] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [isEditable, setIsEditable] = useState<boolean>(false);
+	const [streak, setStreak] = useState<number>(10);
+
 
 	const apolloClient = useApolloClient();
 	const authService = new AuthService(apolloClient)
@@ -65,6 +68,36 @@ const UserProfile: React.FC = () => {
 			newTopics.splice(index, 1);
 		}
 		setTopics(newTopics);
+	};
+
+	const renderStreakDisplay = () => {
+		const cappedStreak = Math.min(streak, 365);
+		const progress = (cappedStreak / 365) * 100;
+
+		return (
+			<div className="streak-container" title={`${cappedStreak} day streak`}>
+				<div className="streak-circle">
+					<svg viewBox="0 0 36 36" className="circular-chart">
+						<path
+							className="circle-bg"
+							d="M18 2.0845
+                a 15.9155 15.9155 0 0 1 0 31.831
+                a 15.9155 15.9155 0 0 1 0 -31.831"
+						/>
+						<path
+							className="circle"
+							strokeDasharray={`${progress}, 100`}
+							d="M18 2.0845
+                a 15.9155 15.9155 0 0 1 0 31.831
+                a 15.9155 15.9155 0 0 1 0 -31.831"
+						/>
+					</svg>
+					<div className="streak-count">{cappedStreak}</div>
+				</div>
+				<div className="streak-label">Day Streak</div>
+				{streak > 30 && <FaFire className="streak-fire"/>}
+			</div>
+		);
 	};
 
 	const renderTopics = () => {
@@ -133,6 +166,7 @@ const UserProfile: React.FC = () => {
 						)}
 						<h2>{role}</h2>
 					</div>
+					{renderStreakDisplay()}
 				</div>
 				<div className="topics-container">
 					<h3 className="topics-title">Learning Topics</h3>

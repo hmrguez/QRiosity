@@ -12,6 +12,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"time"
 )
 
 func main() {
@@ -119,6 +120,13 @@ func handleDailyChallengeMutation(ctx context.Context, args json.RawMessage) (js
 	if user.DailyChallengesRemaining == 0 {
 		user.DailyChallengeAvailable = false
 	}
+
+	if user.LastDailyChallenge.Day() == time.Now().Day()-1 {
+		user.DailyChallengeStreak += 1
+	}
+
+	user.LastDailyChallenge = time.Now()
+
 	_, err = userRepository.UpsertUser(*user)
 	if err != nil {
 		return nil, err

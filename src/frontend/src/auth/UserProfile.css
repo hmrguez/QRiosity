@@ -1,16 +1,14 @@
 .super-container {
-    margin-left: var(--navbar-margin-left);
     width: 100%;
+    padding-top: 50px;
 }
 
 .profile-container {
-    margin: 50px auto;
     background-color: white;
     border-radius: 20px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     padding: 40px;
-    width: 80%;
-    max-width: 600px;
+    margin: auto 20px auto var(--navbar-margin-left);
 }
 
 .profile-header {
@@ -48,6 +46,70 @@ h2 {
     font-weight: normal;
 }
 
+.streak-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 100px;
+}
+
+.streak-circle {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.circular-chart {
+    display: block;
+    margin: 10px auto;
+    max-width: 80%;
+    max-height: 250px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3.8;
+}
+
+.circle {
+    fill: none;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    animation: progress 1s ease-out forwards;
+    stroke: #4CAF50;
+}
+
+@keyframes progress {
+    0% {
+        stroke-dasharray: 0 100;
+    }
+}
+
+.streak-count {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.streak-label {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.streak-fire {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 24px;
+    color: #FF4500;
+}
 .topics-container {
     margin-top: 20px;
 }

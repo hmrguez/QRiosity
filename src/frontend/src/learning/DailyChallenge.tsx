@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {gql, useApolloClient, useMutation, useQuery} from '@apollo/client';
+import {useApolloClient} from '@apollo/client';
 import {Button} from 'primereact/button';
 import {InputTextarea} from "primereact/inputtextarea";
 import './DailyChallenge.css';
-import AuthService from "../auth/AuthService.tsx";
+import DailyChallengeService from './DailyChallengeService.tsx';
 
 interface DailyChallengeResult {
 	userId: string;
@@ -14,19 +14,6 @@ interface DailyChallengeResult {
 	left: number;
 }
 
-const SUBMIT_DAILY_CHALLENGE = gql`
-    mutation SubmitDailyChallenge($username: String!, $question: String!, $answer: String!) {
-        dailyChallenge(username: $username, question: $question, answer: $answer) {
-            userId
-            question
-            answer
-            rating
-            insight
-            left
-        }
-    }
-`;
-
 interface DailyChallengeProps {
 	answer: string;
 	setAnswer: (answer: string) => void;
@@ -36,28 +23,33 @@ interface DailyChallengeProps {
 
 const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHide, onCorrectSubmit}) => {
 	const client = useApolloClient();
-	const authService = new AuthService(client);
-	const username = authService.getCognitoUsername();
+	const dailyChallengeService = new DailyChallengeService(client);
 
-    const GET_DAILY_CHALLENGE = gql`
-        query {
-            dailyChallenge(userId: "${username}") {
-                question
-                categories
-                type
-            }
-        }
-	`;
-
-	const {loading, error, data} = useQuery(GET_DAILY_CHALLENGE);
-	const [submitDailyChallenge] = useMutation(SUBMIT_DAILY_CHALLENGE);
+	const [dailyChallenge, setDailyChallenge] = useState<any>(null);
 	const [result, setResult] = useState<DailyChallengeResult | null>(null);
 	const [left, setLeft] = useState<number>(0);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	const [buttonClass, setButtonClass] = useState('p-button-contrast');
 	const [resultLoading, setResultLoading] = useState(false);
 	const [buttonIcon, setButtonIcon] = useState('pi pi-check');
 	const [buttonLabel, setButtonLabel] = useState('Submit');
+
+	useEffect(() => {
+		const fetchDailyChallenge = async () => {
+			setIsLoading(true);
+			try {
+				const challenge = await dailyChallengeService.getDailyChallenge();
+				setDailyChallenge(challenge);
+			} catch (error) {
+				console.error('Error fetching daily challenge:', error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchDailyChallenge();
+	}, []);
 
 	useEffect(() => {
 		if (result) {
@@ -75,10 +67,7 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 		}
 	}, [result]);
 
-	if (loading) return <div>Loading...</div>;
-	if (error) return <div>Error: {error.message}</div>;
-
-	const {dailyChallenge} = data;
+	if (isLoading) return <div>Loading...</div>;
 
 	const handleExit = () => {
 		setAnswer('');
@@ -89,26 +78,29 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 		setResultLoading(true);
 
 		try {
-			const {data} = await submitDailyChallenge({
-				variables: {
-					username: authService.getCognitoUsername(),
-					question: dailyChallenge.question,
-					answer: answer
-				}
-			});
+			const challengeResult = await dailyChallengeService.submitDailyChallenge(dailyChallenge.question, answer);
 			onCorrectSubmit();
-			setResult(data.dailyChallenge);
+			setResult(challengeResult);
 		} catch (error) {
 			console.error('Error submitting challenge:', error);
 		}
 	};
 
-	const handleNext = () => {
-		setResult(null);
-		setAnswer('');
-		setButtonClass('p-button-contrast');
-		setButtonIcon('pi pi-check');
-		setButtonLabel('Submit');
+	const handleNext = async () => {
+		setIsLoading(true);
+		try {
+			const newChallenge = await dailyChallengeService.getDailyChallenge();
+			setDailyChallenge(newChallenge);
+			setResult(null);
+			setAnswer('');
+			setButtonClass('p-button-contrast');
+			setButtonIcon('pi pi-check');
+			setButtonLabel('Submit');
+		} catch (error) {
+			console.error('Error fetching new challenge:', error);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -142,7 +134,7 @@ const DailyChallenge: React.FC<DailyChallengeProps> = ({answer, setAnswer, onHid
 					<Button
 						label="Next"
 						icon="pi pi-arrow-right"
-						className="p-button-info daily-next-button"
+						className="p-button-contrast daily-submit-button"
 						onClick={handleNext}
 					/>
 				)}
