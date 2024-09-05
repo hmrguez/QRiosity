@@ -1,7 +1,5 @@
 package domain
 
-import "time"
-
 type Content interface {
 	IsContent()
 }
@@ -43,18 +41,18 @@ type Topic struct {
 }
 
 type User struct {
-	Name                     string    `json:"name"`
-	Role                     int       `json:"role"`
-	Email                    string    `json:"email"`
-	Topics                   []string  `json:"topics,omitempty"`
-	DailyChallengeAvailable  bool      `json:"dailyChallengeAvailable"`
-	Username                 string    `json:"username"`
-	Roadmaps                 []string  `json:"roadmapsIds"`
-	GenUsagesRemaining       int       `json:"genUsagesRemaining"`
-	DailyChallengesRemaining int       `json:"dailyChallengesRemaining"`
-	RoadmapsCreated          []string  `json:"roadmapsCreated"`
-	LastDailyChallenge       time.Time `json:"lastDailyChallenge"`
-	DailyChallengeStreak     int       `json:"dailyChallengeStreak"`
+	Name                     string   `json:"name"`
+	Role                     int      `json:"role"`
+	Email                    string   `json:"email"`
+	Topics                   []string `json:"topics,omitempty"`
+	DailyChallengeAvailable  bool     `json:"dailyChallengeAvailable"`
+	Username                 string   `json:"username"`
+	Roadmaps                 []string `json:"roadmapsIds"`
+	GenUsagesRemaining       int      `json:"genUsagesRemaining"`
+	DailyChallengesRemaining int      `json:"dailyChallengesRemaining"`
+	RoadmapsCreated          []string `json:"roadmapsCreated"`
+	LastDailyChallenge       string   `json:"lastDailyChallenge"`
+	DailyChallengeStreak     int      `json:"dailyChallengeStreak"`
 }
 
 type Course struct {
