@@ -70,14 +70,10 @@ type MutationArguments struct {
 
 func handleDailyChallengeQuery(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
 
-	log.Printf("Raw args: %s", args)
-
 	var queryArgs QueryArguments
 	if err := json.Unmarshal(args, &queryArgs); err != nil {
 		return nil, err
 	}
-
-	log.Printf("Parsed args: %v", queryArgs)
 
 	user, err := userRepository.GetUserByName(queryArgs.UserID)
 	if err != nil {
@@ -89,7 +85,6 @@ func handleDailyChallengeQuery(ctx context.Context, args json.RawMessage) (json.
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("Response %v", problem)
 
 	if problem.Categories == nil {
 		problem.Categories = make([]string, 0)
@@ -99,8 +94,6 @@ func handleDailyChallengeQuery(ctx context.Context, args json.RawMessage) (json.
 	if err != nil {
 		return nil, err
 	}
-
-	log.Printf("Response json %s", response)
 
 	return response, nil
 }
@@ -121,7 +114,11 @@ func handleDailyChallengeMutation(ctx context.Context, args json.RawMessage) (js
 		return nil, err
 	}
 
-	user.DailyChallengeAvailable = false
+	user.DailyChallengesRemaining -= 1
+
+	if user.DailyChallengesRemaining == 0 {
+		user.DailyChallengeAvailable = false
+	}
 	_, err = userRepository.UpsertUser(*user)
 	if err != nil {
 		return nil, err

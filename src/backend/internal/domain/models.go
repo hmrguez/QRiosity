@@ -40,14 +40,16 @@ type Topic struct {
 }
 
 type User struct {
-	Name                    string   `json:"name"`
-	Role                    int      `json:"role"`
-	Email                   string   `json:"email"`
-	Topics                  []string `json:"topics,omitempty"`
-	DailyChallengeAvailable bool     `json:"dailyChallengeAvailable"`
-	Username                string   `json:"username"`
-	Roadmaps                []string `json:"roadmapsIds"`
-	GenUsagesRemaining      int      `json:"genUsagesRemaining"`
+	Name                     string   `json:"name"`
+	Role                     int      `json:"role"`
+	Email                    string   `json:"email"`
+	Topics                   []string `json:"topics,omitempty"`
+	DailyChallengeAvailable  bool     `json:"dailyChallengeAvailable"`
+	Username                 string   `json:"username"`
+	Roadmaps                 []string `json:"roadmapsIds"`
+	GenUsagesRemaining       int      `json:"genUsagesRemaining"`
+	DailyChallengesRemaining int      `json:"dailyChallengesRemaining"`
+	RoadmapsCreated          []string `json:"roadmapsCreated"`
 }
 
 type Course struct {

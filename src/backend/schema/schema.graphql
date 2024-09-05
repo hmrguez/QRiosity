@@ -7,6 +7,8 @@ type User {
     username: String!
     roadmapsIds: [String!]
     genUsagesRemaining: Int!
+    dailyChallengesRemaining: Int!
+    roadmapsCreated: Int!
 }
 
 

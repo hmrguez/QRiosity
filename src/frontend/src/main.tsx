@@ -22,6 +22,7 @@ import RoadmapDetail from "./learning/RoadmapDetail.tsx";
 import RoadmapBuilder from "./learning/RoadmapBuilder.tsx";
 import CourseCreator from "./learning/CourseCreator.tsx";
 import Profile from "./auth/UserProfile.tsx";
+import Pricing from "./misc/Pricing.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
 	{
 		path: "/confirm-email",
 		element: <ConfirmEmail/>
+	},
+	{
+		path: "/pricing",
+		element: <Pricing/>
 	}
 ]);
 
