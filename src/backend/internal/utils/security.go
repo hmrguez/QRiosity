@@ -3,11 +3,13 @@ package utils
 import (
 	"context"
 	"crypto/rsa"
+	"encoding/base64"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"io/ioutil"
+	"math/big"
 	"net/http"
 )
 
@@ -16,45 +18,76 @@ var (
 	rsaPublicKeys map[string]*rsa.PublicKey
 )
 
-// Step 1: Load JWKS keys from Cognito
-func loadRSAPublicKeys() error {
+// Define the JWKS response structure
+type Jwks struct {
+	Keys []JwkKey `json:"keys"`
+}
+
+type JwkKey struct {
+	Kid string `json:"kid"`
+	Kty string `json:"kty"`
+	Alg string `json:"alg"`
+	Use string `json:"use"`
+	N   string `json:"n"`
+	E   string `json:"e"`
+}
+
+// Function to load the JWKS and extract the RSA keys
+func loadRSAPublicKeys(jwksURL string) error {
 	resp, err := http.Get(jwksURL)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
 
-	var jwks struct {
-		Keys []struct {
-			Kid string `json:"kid"`
-			Kty string `json:"kty"`
-			Alg string `json:"alg"`
-			Use string `json:"use"`
-			N   string `json:"n"`
-			E   string `json:"e"`
-		} `json:"keys"`
-	}
-
-	if err := json.Unmarshal(body, &jwks); err != nil {
+	var jwks Jwks
+	if err := json.NewDecoder(resp.Body).Decode(&jwks); err != nil {
 		return err
 	}
 
 	rsaPublicKeys = make(map[string]*rsa.PublicKey)
 	for _, key := range jwks.Keys {
-		if key.Kty == "RSA" {
-			rsaKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(key.N))
-			if err != nil {
-				return err
-			}
-			rsaPublicKeys[key.Kid] = rsaKey
+		// Decode the modulus (n) and exponent (e)
+		nDecoded, err := base64.RawURLEncoding.DecodeString(key.N)
+		if err != nil {
+			return err
+		}
+
+		eDecoded, err := base64.RawURLEncoding.DecodeString(key.E)
+		if err != nil {
+			return err
+		}
+
+		// Convert exponent from bytes to int
+		var eInt int
+		if len(eDecoded) == 3 {
+			eInt = int(binary.BigEndian.Uint32(append([]byte{0x00}, eDecoded...)))
+		} else if len(eDecoded) == 2 {
+			eInt = int(binary.BigEndian.Uint16(eDecoded))
+		} else {
+			eInt = int(eDecoded[0])
+		}
+
+		// Create the RSA public key
+		rsaPublicKeys[key.Kid] = &rsa.PublicKey{
+			N: new(big.Int).SetBytes(nDecoded),
+			E: eInt,
 		}
 	}
 
 	return nil
+}
+
+// Function to retrieve an RSA public key by KID
+func getRSAPublicKey(kid string) (*rsa.PublicKey, error) {
+	if rsaPublicKeys == nil {
+		return nil, errors.New("RSA keys not loaded")
+	}
+	key, found := rsaPublicKeys[kid]
+	if !found {
+		return nil, errors.New("key not found for the given kid")
+	}
+	return key, nil
 }
 
 // Step 2: Validate JWT token using Cognito's public keys
