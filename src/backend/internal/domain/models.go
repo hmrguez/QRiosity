@@ -55,6 +55,7 @@ type User struct {
 	RoadmapsCreated          []string  `json:"roadmapsCreated"`
 	LastDailyChallenge       time.Time `json:"lastDailyChallenge"`
 	DailyChallengeStreak     int       `json:"dailyChallengeStreak"`
+	RoadmapsViewed           int       `json:"roadmapsViewed"`
 }
 
 type Course struct {

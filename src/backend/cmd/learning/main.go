@@ -530,15 +530,55 @@ func handleUpsertRoadmap(ctx context.Context, args json.RawMessage) (json.RawMes
 
 func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
 	var input struct {
-		ID string `json:"id"`
+		ID     string `json:"id"`
+		UserId string `json:"userId"`
 	}
 	if err := json.Unmarshal(args, &input); err != nil {
 		return nil, err
 	}
 
-	roadmap, err := roadmapRepository.GetRoadmap(ctx, input.ID)
+	user, err := userRepository.GetUserByName(input.UserId)
 	if err != nil {
 		return nil, err
+	}
+
+	if user.RoadmapsViewed == 0 {
+		return nil, errors.New("user has no views remaining")
+	}
+
+	var wg sync.WaitGroup
+	errChan := make(chan error, 2)
+
+	var roadmap *domain.Roadmap
+
+	wg.Add(2)
+
+	// Fetch roadmap in a goroutine
+	go func() {
+		defer wg.Done()
+		var err error
+		roadmap, err = roadmapRepository.GetRoadmap(ctx, input.ID)
+		if err != nil {
+			errChan <- err
+		}
+	}()
+
+	// Fetch user and reduce roadmapsViewed in a goroutine
+	go func() {
+		defer wg.Done()
+		user.RoadmapsViewed--
+		if _, err := userRepository.UpsertUser(*user); err != nil {
+			errChan <- err
+		}
+	}()
+
+	wg.Wait()
+	close(errChan)
+
+	for err := range errChan {
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	response, err := json.Marshal(roadmap)

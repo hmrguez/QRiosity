@@ -11,6 +11,7 @@ type User {
     roadmapsCreated: [String!]
     lastDailyChallenge: String
     dailyChallengeStreak: Int!
+    roadmapsViewed: Int!
 }
 
 
@@ -109,7 +110,7 @@ type Query {
     dailyChallenge(userId: String!): Problem
 
     # Learning
-    getRoadmapById(id: ID!): Roadmap!
+    getRoadmapById(id: ID!, userId: String!): Roadmap!
     getCourseById(id: ID!): Course!
     getAllTopics: [Topic!]!
     getCourses(userId: String!, pagination: PaginationInput): GetCoursesOutput
