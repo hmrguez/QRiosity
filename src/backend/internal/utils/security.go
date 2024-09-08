@@ -92,6 +92,14 @@ func getRSAPublicKey(kid string) (*rsa.PublicKey, error) {
 
 // Step 2: Validate JWT token using Cognito's public keys
 func validateToken(tokenString string) (string, error) {
+
+	if rsaPublicKeys == nil {
+		err := loadRSAPublicKeys(jwksURL)
+		if err != nil {
+			return "", err
+		}
+	}
+
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
