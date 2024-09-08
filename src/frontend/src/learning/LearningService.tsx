@@ -48,8 +48,8 @@ const GET_ROADMAPS = gql`
 `;
 
 const GET_ROADMAP_BY_ID = gql`
-    query GetRoadmapById($id: ID!) {
-        getRoadmapById(id: $id) {
+    query GetRoadmapById($id: ID!, $userId: String!) {
+        getRoadmapById(id: $id, userId: $userId) {
             id
             title
             author
@@ -189,9 +189,12 @@ class LearningService {
 	}
 
 	async getRoadmapById(id: string): Promise<any> {
+		const authService = new AuthService(this.client);
+		const userId = authService.getCognitoUsername()
+
 		const {data} = await this.client.query({
 			query: GET_ROADMAP_BY_ID,
-			variables: {id},
+			variables: {id, userId},
 		});
 		return data.getRoadmapById;
 	}
