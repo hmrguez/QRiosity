@@ -46,53 +46,49 @@ func main() {
 	lambda.Start(Handler)
 }
 
-func Handler(ctx context.Context, event map[string]interface{}) (json.RawMessage, error) {
+func Handler(ctx context.Context, event utils.AppSyncEvent) (json.RawMessage, error) {
 
-	// Print event and then print headers
-	fmt.Printf("Event: %v\n", event)
-	fmt.Printf("Headers: %v\n", event["headers"])
+	// Check auth
+	if err := utils.CheckAuthorization(ctx, event); err != nil {
+		fmt.Printf("Error checking auth: %s", err.Error())
+		return nil, err
+	}
 
-	//// Check auth
-	//if err := utils.CheckAuthorization(ctx, event); err != nil {
-	//	fmt.Printf("Error checking auth: %s", err.Error())
-	//	return nil, err
-	//}
-	//
-	//switch event.TypeName {
-	//case "Query":
-	//	switch event.FieldName {
-	//	case "getRoadmapById":
-	//		return handleGetRoadmapById(ctx, event.Arguments)
-	//	case "getCourseById":
-	//		return handleGetCourseById(ctx, event.Arguments)
-	//	case "getAllTopics":
-	//		return handleGetAllTopics(ctx)
-	//	case "getCourses":
-	//		return handleGetCourses(ctx, event.Arguments)
-	//	case "getRoadmaps":
-	//		return handleGetRoadmaps(ctx)
-	//	case "getRoadmapsByUser":
-	//		return handleGetRoadmapsByUser(ctx, event.Arguments)
-	//	case "getRoadmapFeed":
-	//		return handleGetRoadmapFeed(ctx, event.Arguments)
-	//	}
-	//case "Mutation":
-	//	switch event.FieldName {
-	//	case "addTopics":
-	//		return handleAddTopics(ctx, event.Arguments)
-	//	case "upsertCourse":
-	//		return handleUpsertCourse(ctx, event.Arguments)
-	//	case "upsertRoadmap":
-	//		return handleUpsertRoadmap(ctx, event.Arguments)
-	//	case "courseAddedToRoadmap":
-	//		return handleCourseAddedToRoadmap(ctx, event.Arguments)
-	//	case "userLikedRoadmap":
-	//		return handleUserLikedRoadmap(ctx, event.Arguments)
-	//	case "customRoadmapRequested":
-	//		return handleCustomRoadmapRequested(ctx, event.Arguments)
-	//	}
-	//}
-	//
+	switch event.TypeName {
+	case "Query":
+		switch event.FieldName {
+		case "getRoadmapById":
+			return handleGetRoadmapById(ctx, event.Arguments)
+		case "getCourseById":
+			return handleGetCourseById(ctx, event.Arguments)
+		case "getAllTopics":
+			return handleGetAllTopics(ctx)
+		case "getCourses":
+			return handleGetCourses(ctx, event.Arguments)
+		case "getRoadmaps":
+			return handleGetRoadmaps(ctx)
+		case "getRoadmapsByUser":
+			return handleGetRoadmapsByUser(ctx, event.Arguments)
+		case "getRoadmapFeed":
+			return handleGetRoadmapFeed(ctx, event.Arguments)
+		}
+	case "Mutation":
+		switch event.FieldName {
+		case "addTopics":
+			return handleAddTopics(ctx, event.Arguments)
+		case "upsertCourse":
+			return handleUpsertCourse(ctx, event.Arguments)
+		case "upsertRoadmap":
+			return handleUpsertRoadmap(ctx, event.Arguments)
+		case "courseAddedToRoadmap":
+			return handleCourseAddedToRoadmap(ctx, event.Arguments)
+		case "userLikedRoadmap":
+			return handleUserLikedRoadmap(ctx, event.Arguments)
+		case "customRoadmapRequested":
+			return handleCustomRoadmapRequested(ctx, event.Arguments)
+		}
+	}
+
 	return nil, errors.New("unhandled operation")
 }
 

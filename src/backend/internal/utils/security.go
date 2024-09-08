@@ -98,7 +98,7 @@ func validateToken(tokenString string) (string, error) {
 
 func CheckAuthorization(ctx context.Context, event AppSyncEvent) error {
 	// Extract the token from headers
-	tokenString, exists := event.Headers["Authorization"]
+	tokenString, exists := event.Headers["authorization"]
 	if !exists {
 		return errors.New("authorization header missing")
 	}
