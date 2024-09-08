@@ -46,7 +46,7 @@ const UPDATE_USER_MUTATION = gql`
 
 
 class AuthService {
-	client;
+	client: ApolloClient<any>;
 
 	constructor(client: ApolloClient<any>) {
 		this.client = client;
@@ -111,6 +111,10 @@ class AuthService {
 
 	isLoggedIn() {
 		return !!localStorage.getItem('token');
+	}
+
+	getToken() {
+		return localStorage.getItem('token');
 	}
 
 	getCognitoUsername() {

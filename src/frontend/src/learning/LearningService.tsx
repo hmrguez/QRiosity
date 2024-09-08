@@ -208,6 +208,7 @@ class LearningService {
 		const {data} = await this.client.mutate({
 			mutation: UPSERT_COURSE,
 			variables: {input},
+
 		});
 		return data.upsertCourse;
 	}

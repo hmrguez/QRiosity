@@ -10,6 +10,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -49,6 +50,7 @@ func Handler(ctx context.Context, event utils.AppSyncEvent) (json.RawMessage, er
 
 	// Check auth
 	if err := utils.CheckAuthorization(ctx, event); err != nil {
+		fmt.Printf("Error checking auth: %s", err.Error())
 		return nil, err
 	}
 
