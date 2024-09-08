@@ -45,7 +45,13 @@ func main() {
 	lambda.Start(Handler)
 }
 
-func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
+func Handler(ctx context.Context, event utils.AppSyncEvent) (json.RawMessage, error) {
+
+	// Check auth
+	if err := utils.CheckAuthorization(ctx, event); err != nil {
+		return nil, err
+	}
+
 	switch event.TypeName {
 	case "Query":
 		switch event.FieldName {
@@ -192,12 +198,6 @@ func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage
 	wg.Wait()
 
 	return response, nil
-}
-
-type AppSyncEvent struct {
-	TypeName  string          `json:"parentTypeName"`
-	FieldName string          `json:"fieldName"`
-	Arguments json.RawMessage `json:"arguments"`
 }
 
 type AddTopicsArguments struct {

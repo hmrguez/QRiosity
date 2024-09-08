@@ -4,6 +4,7 @@ import (
 	"backend/internal/domain"
 	"backend/internal/repository"
 	"backend/internal/services"
+	"backend/internal/utils"
 	"context"
 	"encoding/json"
 	"errors"
@@ -38,18 +39,19 @@ func main() {
 	lambda.Start(Handler)
 }
 
-func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
+func Handler(ctx context.Context, event utils.AppSyncEvent) (json.RawMessage, error) {
+
 	switch event.TypeName {
 	case "Query":
 		switch event.FieldName {
 		case "login":
 			return handleLogin(ctx, event.Arguments)
 		case "getUsers":
-			return handleGetUsers(ctx)
+			return utils.SecureResolver(ctx, event, handleGetUsers)
 		case "resendConfirmationEmail":
 			return handleResendConfirmationEmail(ctx, event.Arguments)
 		case "getUserByName":
-			return handleGetUserByName(ctx, event.Arguments)
+			return utils.SecureResolver(ctx, event, handleGetUserByName)
 		}
 	case "Mutation":
 		switch event.FieldName {
@@ -60,7 +62,7 @@ func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
 		case "sendFeedback":
 			return handleSendFeedback(ctx, event.Arguments)
 		case "updateUser":
-			return handleUpdateUser(ctx, event.Arguments)
+			return utils.SecureResolver(ctx, event, handleUpdateUser)
 		}
 	}
 
@@ -71,12 +73,6 @@ var (
 	userRepository repository.IUserRepository
 	authService    services.CognitoAuthService
 )
-
-type AppSyncEvent struct {
-	TypeName  string          `json:"parentTypeName"`
-	FieldName string          `json:"fieldName"`
-	Arguments json.RawMessage `json:"arguments"`
-}
 
 type LoginArguments struct {
 	Username string `json:"username"`
@@ -155,7 +151,7 @@ func handleRegister(ctx context.Context, args json.RawMessage) (json.RawMessage,
 	return response, nil
 }
 
-func handleGetUsers(ctx context.Context) (json.RawMessage, error) {
+func handleGetUsers(ctx context.Context, message json.RawMessage) (json.RawMessage, error) {
 	users := userRepository.GetUsers()
 
 	response, err := json.Marshal(users)

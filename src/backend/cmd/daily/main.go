@@ -3,6 +3,7 @@ package main
 import (
 	"backend/internal/repository"
 	"backend/internal/services"
+	"backend/internal/utils"
 	"context"
 	"encoding/json"
 	"errors"
@@ -33,7 +34,12 @@ func main() {
 	lambda.Start(Handler)
 }
 
-func Handler(ctx context.Context, event AppSyncEvent) (json.RawMessage, error) {
+func Handler(ctx context.Context, event utils.AppSyncEvent) (json.RawMessage, error) {
+
+	if err := utils.CheckAuthorization(ctx, event); err != nil {
+		return nil, err
+	}
+
 	switch event.TypeName {
 	case "Query":
 		if event.FieldName == "dailyChallenge" {
@@ -52,12 +58,6 @@ var (
 	userRepository        repository.IUserRepository
 	dailyChallengeService services.IDailyChallengeService
 )
-
-type AppSyncEvent struct {
-	TypeName  string          `json:"parentTypeName"`
-	FieldName string          `json:"fieldName"`
-	Arguments json.RawMessage `json:"arguments"`
-}
 
 type QueryArguments struct {
 	UserID string `json:"userId"`

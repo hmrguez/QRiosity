@@ -1,7 +1,9 @@
 package main
 
 import (
+	"backend/internal/utils"
 	"bytes"
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
@@ -32,6 +34,12 @@ func init() {
 }
 
 func handleRequest(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	// Check authorization token only
+	if err := utils.CheckAuthorizationTokenOnly(context.Background(), req.Headers["Authorization"]); err != nil {
+		return createResponse(http.StatusUnauthorized, "Unauthorized"), nil
+	}
+
 	// Decode base64 encoded file
 	fileContent, err := base64.StdEncoding.DecodeString(req.Body)
 	if err != nil {
