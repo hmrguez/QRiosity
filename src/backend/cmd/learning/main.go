@@ -378,6 +378,23 @@ func handleUserLikedRoadmap(ctx context.Context, args json.RawMessage) (json.Raw
 			errChan <- err
 			return
 		}
+
+		// Check if the user has already liked the roadmap
+		for _, roadmapID := range user.Roadmaps {
+			if roadmapID == input.RoadmapID {
+				return
+			}
+		}
+
+		// Check the user's role and the number of liked roadmaps
+		if user.Role == 0 && len(user.Roadmaps) >= constants.StudentLikedRoadmaps {
+			errChan <- errors.New("student has reached the limit of liked roadmaps")
+			return
+		} else if user.Role == 1 && len(user.Roadmaps) >= constants.ApprenticeLikedRoadmaps {
+			errChan <- errors.New("apprentice has reached the limit of liked roadmaps")
+			return
+		}
+
 		user.Roadmaps = append(user.Roadmaps, input.RoadmapID)
 		if _, err := userRepository.UpsertUser(*user); err != nil {
 			errChan <- err
