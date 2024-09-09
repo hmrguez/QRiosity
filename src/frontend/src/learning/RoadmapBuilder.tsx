@@ -9,6 +9,7 @@ import {useNavigate} from "react-router-dom";
 import FileUpload from "../utils/FileInput.tsx";
 import CreatorService from "../creator/CreatorService.tsx";
 import {Course} from "./Course.tsx";
+import CourseSelector from "./CourseSelector.tsx";
 
 const RoadmapBuilder = () => {
 	const fileUploadRef = useRef<{ handleSubmit: () => void }>(null);
@@ -19,8 +20,6 @@ const RoadmapBuilder = () => {
 	const [roadmapDifficulty, setRoadmapDifficulty] = useState('beginner');
 	const [roadmapTopics, setRoadmapTopics] = useState('');
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [courses, setCourses] = useState<Course[]>([]);
-	const [filteredCourses, setFilteredCourses] = useState(courses);
 	const [addedCourses, setAddedCourses] = useState<Course[]>([]);
 	const [loading, setLoading] = useState(false);
 
@@ -72,15 +71,6 @@ const RoadmapBuilder = () => {
 		setAddedCourses(addedCourses.filter(course => course.id !== courseId));
 	};
 
-	const handleSearch = (e: any) => {
-		const searchTerm = e.target.value.toLowerCase();
-		const filtered = courses.filter(course =>
-			course.title.toLowerCase().includes(searchTerm) ||
-			course.description.toLowerCase().includes(searchTerm)
-		);
-		setFilteredCourses(filtered);
-	};
-
 	const router = useNavigate();
 
 	const saveRoadmap = async () => {
@@ -120,16 +110,6 @@ const RoadmapBuilder = () => {
 	};
 
 	useEffect(() => {
-		const fetchCourses = async () => {
-
-			const cognitoUsername = authService.getCognitoUsername();
-			const pagination = {page: 0, perPage: 10};
-
-			const fetchedCourses = await learningService.getCourses(cognitoUsername as string, pagination);
-			setCourses(fetchedCourses.courses);
-			setFilteredCourses(fetchedCourses.courses);
-		};
-
 		const fetchGenUsage = async () => {
 			const {role, usages} = await creatorService.getBuilderStats();
 			setUsagesRemaining(usages);
@@ -137,8 +117,6 @@ const RoadmapBuilder = () => {
 		}
 
 		fetchGenUsage();
-
-		fetchCourses();
 	}, []);
 
 	const moveCourseUp = (index: number) => {
@@ -270,31 +248,11 @@ const RoadmapBuilder = () => {
 				</Button>
 			</div>
 
-			{isModalOpen && (
-				<div id="course-selector" className="course-selector" onClick={(e) => {
-					if (e.target === e.currentTarget) closeModal();
-				}}>
-					<div className="course-selector-content">
-						<h2>Select a Course</h2>
-						<input type="text" id="course-search" placeholder="Search courses..."
-							   onChange={handleSearch}/>
-						<ul id="course-list" className="selectable-course-list">
-							{filteredCourses.map(course => (
-								<li key={course.id} className="selectable-course-item"
-									onClick={() => addCourseToRoadmap(course)}>
-									<h3>{course.title}</h3>
-									<p>{course.description}</p>
-									<div className="course-meta">
-										<span>{course.difficulty}</span>
-										<span>{course.duration} hours</span>
-									</div>
-								</li>
-							))}
-						</ul>
-						<button id="close-selector" className="close-button" onClick={closeModal}>Close</button>
-					</div>
-				</div>
-			)}
+			<CourseSelector
+				isOpen={isModalOpen}
+				onClose={closeModal}
+				onCourseSelect={addCourseToRoadmap}
+			/>
 		</div>
 	);
 };

@@ -55,6 +55,7 @@
 .course-difficulty, .course-duration, .course-language {
     font-size: 0.8em;
     color: var(--secondary-color);
+    margin-right: 10px;
 }
 
 .course-duration::before {
