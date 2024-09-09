@@ -54,11 +54,21 @@ func (r *DynamoDBRoadmapRepository) UpsertRoadmap(ctx context.Context, roadmap *
 		return err
 	}
 
-	// Add this roadmap to the roadmapIds of each topic
+	// Add this roadmap to the roadmapIds of each topic if not already present
 	for _, topic := range topics {
-		topic.RoadmapIds = append(topic.RoadmapIds, roadmap.ID)
+		// Check if the roadmap ID is already in the RoadmapIds list
+		exists := false
+		for _, id := range topic.RoadmapIds {
+			if id == roadmap.ID {
+				exists = true
+				break
+			}
+		}
+		// Append the roadmap ID if it doesn't exist
+		if !exists {
+			topic.RoadmapIds = append(topic.RoadmapIds, roadmap.ID)
+		}
 	}
-
 	// Update the topics in a separate goroutine
 	errChan := make(chan error)
 	go func() {
