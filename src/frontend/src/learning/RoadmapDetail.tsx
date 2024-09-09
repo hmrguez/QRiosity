@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import LearningService from './LearningService';
 import './RoadmapDetail.css';
@@ -6,8 +6,8 @@ import {useApolloClient} from "@apollo/client";
 
 import {Roadmap} from "./Roadmap.tsx";
 import OutOfViews from "../utils/OutOfViews.tsx";
-import {BlockUI} from "primereact/blockui";
 import Loading from "../utils/Loading.tsx";
+import {Toast} from "primereact/toast";
 
 enum RoadmapStatus {
 	Loading,
@@ -22,25 +22,29 @@ const RoadmapDetail = () => {
 	const apolloClient = useApolloClient();
 	const learningService = new LearningService(apolloClient);
 
+	const toast = useRef<Toast>(null);
+
 	useEffect(() => {
 		const fetchRoadmap = async () => {
 
 			if (!id) {
-				return;
+				window.location.href = '/404';
+				return
 			}
 
-			const roadmapData = await learningService.getRoadmapById(id);
-
-			if (roadmapData === "user has no views remaining") {
-				setStatus(RoadmapStatus.NoViewsRemaining)
-			} else if (roadmapData === "roadmap not found") {
-				// Navigate to not found page
-			} else if (roadmapData instanceof String) {
-				// Show toast
+			try {
+				const roadmapData = await learningService.getRoadmapById(id);
+				setRoadmap(roadmapData as Roadmap);
+				setStatus(RoadmapStatus.Fetched)
+			} catch (e: any) {
+				if (e.message == "user has no views remaining") {
+					setStatus(RoadmapStatus.NoViewsRemaining)
+				} else if (e.message == "roadmap not found") {
+					window.location.href = '/404';
+				} else {
+					toast.current?.show({severity: 'error', summary: 'Error', detail: e.message, life: 3000});
+				}
 			}
-
-			setRoadmap(roadmapData as Roadmap);
-			setStatus(RoadmapStatus.Fetched)
 		};
 
 		fetchRoadmap();
@@ -50,17 +54,18 @@ const RoadmapDetail = () => {
 		window.open(courseUrl, '_blank');
 	};
 
-	if (!roadmap) {
+	if (!roadmap && status === RoadmapStatus.Loading) {
 		return (<Loading/>)
 	}
 
 	return (
 		<div>
-			<BlockUI blocked={status !== RoadmapStatus.Fetched}>
+			<Toast/>
+			{status === RoadmapStatus.Fetched && (
 				<div className="roadmap-container">
 					<div className="roadmap-courses">
 						<ul className="course-list">
-							{roadmap.courses.map(course => (
+							{roadmap?.courses.map(course => (
 								<li key={course.id} className="course-item"
 									onClick={() => handleCourseClick(course.url)}>
 									<h3 className="course-title">{course.title}</h3>
@@ -74,32 +79,32 @@ const RoadmapDetail = () => {
 						</ul>
 					</div>
 					<div className="roadmap-details">
-						<h2 className="detail-roadmap-title">{roadmap.title}</h2>
-						<p className="roadmap-author">by {roadmap.author}</p>
+						<h2 className="detail-roadmap-title">{roadmap?.title}</h2>
+						<p className="roadmap-author">by {roadmap?.author}</p>
 						<div className="roadmap-stats">
 							<div className="stat-item">
-								<div className="stat-value">{roadmap.courses.length}</div>
+								<div className="stat-value">{roadmap?.courses.length}</div>
 								<div className="stat-label">Courses</div>
 							</div>
 							<div className="stat-item">
-								<div className="stat-value">{roadmap.difficulty}</div>
+								<div className="stat-value">{roadmap?.difficulty}</div>
 								<div className="stat-label">Difficulty</div>
 							</div>
 							<div className="stat-item">
-								<div className="stat-value">{roadmap.likes}</div>
+								<div className="stat-value">{roadmap?.likes}</div>
 								<div className="stat-label">Likes</div>
 							</div>
 						</div>
 						<div className="roadmap-topics">
-							{roadmap.topics.map(topic => (
+							{roadmap?.topics.map(topic => (
 								<span key={topic} className="topic-chip">{topic}</span>
 							))}
 						</div>
-						{roadmap.isCustom && (<p className="roadmap-custom">Custom</p>)}
-						<i className="detail-roadmap-description">{roadmap.description}</i>
+						{roadmap?.isCustom && (<p className="roadmap-custom">Custom</p>)}
+						<i className="detail-roadmap-description">{roadmap?.description}</i>
 					</div>
 				</div>
-			</BlockUI>
+			)}
 			{status === RoadmapStatus.NoViewsRemaining && (<OutOfViews/>)}
 		</div>
 	);

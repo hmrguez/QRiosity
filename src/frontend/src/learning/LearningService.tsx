@@ -11,6 +11,7 @@ const GET_NAVBAR_DATA = gql`
     }
 `;
 
+
 const GET_COURSES = gql`
     query GetCourses($userId: String!, $pagination: PaginationInput!) {
         getCourses(userId: $userId, pagination: $pagination) {
@@ -189,7 +190,7 @@ class LearningService {
 		return data.getRoadmaps;
 	}
 
-	async getRoadmapById(id: string): Promise<Roadmap | string> {
+	async getRoadmapById(id: string): Promise<Roadmap> {
 		const authService = new AuthService(this.client);
 		const userId = authService.getCognitoUsername()
 
@@ -198,9 +199,6 @@ class LearningService {
 			variables: {id, userId},
 		});
 
-		if (data.errors) {
-			return data.errors[0]
-		}
 		return data.getRoadmapById as Roadmap;
 	}
 

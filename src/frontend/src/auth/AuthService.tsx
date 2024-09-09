@@ -110,7 +110,15 @@ class AuthService {
 
 
 	isLoggedIn() {
-		return !!localStorage.getItem('token');
+		const token = localStorage.getItem('token');
+		if (!token) {
+			return false;
+		}
+
+		const decoded: { exp: number } = jwtDecode(token);
+		const currentTime = Math.floor(Date.now() / 1000);
+
+		return currentTime < decoded.exp;
 	}
 
 	getToken() {
