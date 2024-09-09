@@ -5,6 +5,7 @@ const GET_USER_BY_NAME = gql`
     query GetUserByName($name: String!) {
         getUserByName(name: $name) {
             genUsagesRemaining
+            creationsRemaining
             role
         }
     }
@@ -19,7 +20,7 @@ class CreatorService {
 		this.authService = new AuthService(client);
 	}
 
-	async getGenUsagesRemaining(): Promise<{ usages: number, role: number }> {
+	async getBuilderStats(): Promise<{ usages: number, role: number }> {
 		const username = this.authService.getCognitoUsername();
 		const {data} = await this.client.query({
 			query: GET_USER_BY_NAME,
@@ -27,7 +28,7 @@ class CreatorService {
 		});
 		return {
 			usages: data.getUserByName.genUsagesRemaining,
-			role: data.getUserByName.role
+			role: data.getUserByName.role,
 		};
 	}
 }

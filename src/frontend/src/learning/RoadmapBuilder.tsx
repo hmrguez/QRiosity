@@ -131,7 +131,7 @@ const RoadmapBuilder = () => {
 		};
 
 		const fetchGenUsage = async () => {
-			const {role, usages} = await creatorService.getGenUsagesRemaining();
+			const {role, usages} = await creatorService.getBuilderStats();
 			setUsagesRemaining(usages);
 			setTotalUsages(role == 1 ? 3 : 6);
 		}
