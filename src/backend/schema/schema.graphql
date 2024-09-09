@@ -57,6 +57,7 @@ type Roadmap {
     id: ID!
     title: String!
     author: String!
+    authorId: String!
     courses: [Course!]!
     courseIDs: [String!]!
     topics: [String!]!
@@ -67,7 +68,7 @@ type Roadmap {
     liked: Boolean!
     description: String!
     imageUrl: String
-    authorId: String!
+    verified: Boolean
 }
 
 type AuthPayload {

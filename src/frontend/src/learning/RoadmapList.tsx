@@ -53,11 +53,10 @@ const RoadmapList: React.FC<RoadmapListProps> = ({roadmaps, myLearning}) => {
 						<h2 className="roadmap-title ">{roadmap.title}</h2>
 						<div className="roadmap-author ">
 							By {roadmap.author}
-							{/*{roadmap.isVerified && <span className="verified-tag">✓</span>}*/}
+							{roadmap.verified && <span className="verified-tag">✓</span>}
 						</div>
 						<div className="roadmap-meta ">
 							<span className="roadmap-difficulty">{roadmap.difficulty}</span>
-							{roadmap.isCustom && <span className="custom-tag">Custom</span>}
 						</div>
 						<div className="roadmap-topics ">
 							{roadmap.topics.slice(0, 5).map((topic, idx) => (

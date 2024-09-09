@@ -106,6 +106,7 @@ const GET_ROADMAPS_BY_USER = gql`
             isCustom
             likes
             difficulty
+            imageUrl
         }
     }
 `;

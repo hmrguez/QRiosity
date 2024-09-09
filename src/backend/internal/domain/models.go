@@ -88,4 +88,5 @@ type Roadmap struct {
 	Liked       bool     `json:"liked,omitempty"`
 	ImageURL    string   `json:"imageUrl"`
 	Description string   `json:"description"`
+	Verified    bool     `json:"verified"`
 }

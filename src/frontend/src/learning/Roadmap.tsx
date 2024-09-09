@@ -5,6 +5,7 @@ export interface Roadmap {
 	id: string;
 	title: string;
 	author: string;
+	authorId: string;
 	courses: Course[];
 	courseIDs: string[];
 	topics: string[];
@@ -15,4 +16,5 @@ export interface Roadmap {
 	imageUrl: string;
 	liked: boolean;
 	description: string;
+	verified: boolean;
 }

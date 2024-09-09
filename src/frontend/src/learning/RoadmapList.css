@@ -61,7 +61,7 @@
 }
 
 .verified-tag {
-    background-color: #1DA1F2;
+    background: none;
     color: white;
     padding: 2px 5px;
     border-radius: 3px;

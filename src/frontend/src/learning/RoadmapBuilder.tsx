@@ -32,6 +32,7 @@ const RoadmapBuilder = () => {
 	const creatorService = new CreatorService(apolloClient)
 
 	const [prompt, setPrompt] = useState('');
+	const [role, setRole] = useState(0);
 	const [usagesRemaining, setUsagesRemaining] = useState(0);
 	const [totalUsages, setTotalUsages] = useState(20);
 	const [loadingAutoGenerate, setLoadingAutoGenerate] = useState(false);
@@ -87,7 +88,8 @@ const RoadmapBuilder = () => {
 			likes: 0,
 			difficulty: roadmapDifficulty,
 			imageUrl: '',
-			description: roadmapDescription
+			description: roadmapDescription,
+			verified: role === 2
 		};
 
 
@@ -113,6 +115,7 @@ const RoadmapBuilder = () => {
 		const fetchGenUsage = async () => {
 			const {role, usages} = await creatorService.getBuilderStats();
 			setUsagesRemaining(usages);
+			setRole(role);
 			setTotalUsages(role == 1 ? 3 : 6);
 		}
 
