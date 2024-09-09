@@ -532,6 +532,7 @@ func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMe
 	var input struct {
 		ID     string `json:"id"`
 		UserId string `json:"userId"`
+		From   string `json:"from"`
 	}
 	if err := json.Unmarshal(args, &input); err != nil {
 		return nil, err
@@ -542,7 +543,7 @@ func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMe
 		return nil, err
 	}
 
-	if user.RoadmapsViewed == 0 {
+	if input.From != "my-learning" && user.RoadmapsViewed == 0 {
 		return nil, errors.New("user has no views remaining")
 	}
 
@@ -563,14 +564,18 @@ func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMe
 		}
 	}()
 
-	// Fetch user and reduce roadmapsViewed in a goroutine
-	go func() {
-		defer wg.Done()
-		user.RoadmapsViewed--
-		if _, err := userRepository.UpsertUser(*user); err != nil {
-			errChan <- err
-		}
-	}()
+	// Fetch user and reduce roadmapsViewed in a goroutine if From is not "my-learning"
+	if input.From != "my-learning" {
+		go func() {
+			defer wg.Done()
+			user.RoadmapsViewed--
+			if _, err := userRepository.UpsertUser(*user); err != nil {
+				errChan <- err
+			}
+		}()
+	} else {
+		wg.Done()
+	}
 
 	wg.Wait()
 	close(errChan)
