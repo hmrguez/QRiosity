@@ -532,7 +532,6 @@ func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMe
 	var input struct {
 		ID     string `json:"id"`
 		UserId string `json:"userId"`
-		From   string `json:"from"`
 	}
 	if err := json.Unmarshal(args, &input); err != nil {
 		return nil, err
@@ -543,7 +542,15 @@ func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMe
 		return nil, err
 	}
 
-	if input.From != "my-learning" && user.RoadmapsViewed == 0 {
+	roadmapLiked := false
+	for _, roadmapID := range user.Roadmaps {
+		if roadmapID == input.ID {
+			roadmapLiked = true
+			break
+		}
+	}
+
+	if !roadmapLiked && user.RoadmapsViewed == 0 {
 		return nil, errors.New("user has no views remaining")
 	}
 
@@ -564,8 +571,8 @@ func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMe
 		}
 	}()
 
-	// Fetch user and reduce roadmapsViewed in a goroutine if From is not "my-learning"
-	if input.From != "my-learning" {
+	// Fetch user and reduce roadmapsViewed in a goroutine if roadmap is not liked
+	if !roadmapLiked {
 		go func() {
 			defer wg.Done()
 			user.RoadmapsViewed--
@@ -593,7 +600,6 @@ func handleGetRoadmapById(ctx context.Context, args json.RawMessage) (json.RawMe
 
 	return response, nil
 }
-
 func handleGetCourseById(ctx context.Context, args json.RawMessage) (json.RawMessage, error) {
 	var input struct {
 		ID string `json:"id"`
