@@ -12,6 +12,7 @@ type User {
     lastDailyChallenge: String
     dailyChallengeStreak: Int!
     roadmapsViewed: Int!
+    creationsRemaining: Int!
 }
 
 

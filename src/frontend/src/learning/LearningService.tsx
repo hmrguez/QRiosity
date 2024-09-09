@@ -1,5 +1,6 @@
 import {ApolloClient, gql} from '@apollo/client';
 import AuthService from '../auth/AuthService';
+import {Roadmap} from "./Roadmap.tsx";
 
 const GET_NAVBAR_DATA = gql`
     query GetNavbarData($name: String!) {
@@ -188,7 +189,7 @@ class LearningService {
 		return data.getRoadmaps;
 	}
 
-	async getRoadmapById(id: string): Promise<any> {
+	async getRoadmapById(id: string): Promise<Roadmap | string> {
 		const authService = new AuthService(this.client);
 		const userId = authService.getCognitoUsername()
 
@@ -196,7 +197,11 @@ class LearningService {
 			query: GET_ROADMAP_BY_ID,
 			variables: {id, userId},
 		});
-		return data.getRoadmapById;
+
+		if (data.errors) {
+			return data.errors[0]
+		}
+		return data.getRoadmapById as Roadmap;
 	}
 
 	async upsertRoadmap(input: any): Promise<any> {

@@ -6,31 +6,31 @@ const pricingPlans = [
 	{
 		title: "Student",
 		price: "Free",
-		features: ["Access to basic roadmaps", "1 daily challenge", "2 roadmaps liked at a time"],
+		features: ["Access to 5 roadmaps/month", "1 daily challenge", "1 roadmap progress tracking at a time"],
 		buttonText: "Select Plan"
 	},
 	{
 		title: "Apprentice",
 		price: "$3.99",
 		period: "/month",
-		features: ["Access to all roadmaps", "5 daily challenges", "Up to 5 liked roadmaps at any time", "Create 2 roadmaps / month", "3 autogen roadmap tickets / month"],
+		features: ["Access to 25 roadmaps/month", "5 daily challenges", "5 roadmaps progress tracking at a time", "Create 2 roadmaps / month", "3 autogen roadmap tickets / month"],
 		buttonText: "Select Plan"
 	},
 	{
 		title: "Creator",
-		price: "TODO",
+		price: "$8.99",
 		period: "/month",
-		features: ["Everything on Apprentice", "Unlimited liked roadmaps", "10 autogen roadmap tickets / month", "Exclusive verified badge", "Premium roadmap creation", "Enhanced analytics"],
+		features: ["Everything on Apprentice", "Unlimited liked roadmaps", "10 autogen roadmap tickets / month", "Exclusive verified badge", "Enhanced analytics"],
 		buttonText: "Select Plan",
 		popular: true,
-		beta: true // Add beta property
+		beta: true
 	},
-	{
-		title: "Enterprise",
-		price: "Custom Pricing",
-		features: ["Access for teams", "Dedicated support", "Custom daily challenges"],
-		buttonText: "Contact Us"
-	}
+	// {
+	// 	title: "Enterprise",
+	// 	price: "Custom Pricing",
+	// 	features: ["Access for teams", "Dedicated support", "Custom daily challenges"],
+	// 	buttonText: "Contact Us"
+	// }
 ];
 
 const Pricing = () => {

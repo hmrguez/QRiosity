@@ -56,6 +56,7 @@ type User struct {
 	LastDailyChallenge       time.Time `json:"lastDailyChallenge"`
 	DailyChallengeStreak     int       `json:"dailyChallengeStreak"`
 	RoadmapsViewed           int       `json:"roadmapsViewed"`
+	CreationsRemaining       int       `json:"creationsRemaining"`
 }
 
 type Course struct {
