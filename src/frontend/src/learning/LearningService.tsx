@@ -50,8 +50,8 @@ const GET_ROADMAPS = gql`
 `;
 
 const GET_ROADMAP_BY_ID = gql`
-    query GetRoadmapById($id: ID!, $userId: String!) {
-        getRoadmapById(id: $id, userId: $userId) {
+    query GetRoadmapById($id: ID!, $userId: String!, $from: String) {
+        getRoadmapById(id: $id, userId: $userId, from: $from) {
             id
             title
             author
@@ -239,6 +239,7 @@ class LearningService {
 		const {data} = await this.client.query({
 			query: GET_ROADMAP_FEED,
 			variables: {userId},
+			fetchPolicy: 'no-cache',
 		});
 		return data.getRoadmapFeed;
 	}

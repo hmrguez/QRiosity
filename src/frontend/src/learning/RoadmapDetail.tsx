@@ -60,7 +60,7 @@ const RoadmapDetail = () => {
 
 	return (
 		<div>
-			<Toast/>
+			<Toast ref={toast}/>
 			{status === RoadmapStatus.Fetched && (
 				<div className="roadmap-container">
 					<div className="roadmap-courses">

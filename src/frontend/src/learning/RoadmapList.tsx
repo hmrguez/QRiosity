@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import "./RoadmapList.css";
 import {useNavigate} from "react-router-dom";
 import {Roadmap} from "./Roadmap.tsx";
@@ -6,6 +6,7 @@ import {Button} from "primereact/button";
 import {useApolloClient} from "@apollo/client";
 import LearningService from "./LearningService.tsx";
 import AuthService from "../auth/AuthService.tsx";
+import {Toast} from "primereact/toast";
 
 interface RoadmapListProps {
 	roadmaps: Roadmap[];
@@ -40,8 +41,11 @@ const RoadmapList: React.FC<RoadmapListProps> = ({roadmaps, myLearning}) => {
 		navigate(`/home/roadmap/${id}`);
 	};
 
+	const toast = useRef<Toast>(null);
+
 	return (
 		<div className="roadmaps-grid">
+			<Toast ref={toast}/>
 			{roadmaps.map((roadmap) => (
 				<div key={roadmap.id} className="roadmap-card" onClick={() => onRoadmapClick(roadmap.id)}>
 					<img src={roadmap.imageUrl} alt="Roadmap Image" className="roadmap-image"/>
