@@ -11,4 +11,7 @@ const (
 
 	ApprenticeAutogenUsages = 3
 	CreatorAutogenUsages    = 10
+
+	StudentProgressTracking    = 1
+	ApprenticeProgressTracking = 5
 )

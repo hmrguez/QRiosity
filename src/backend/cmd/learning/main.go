@@ -86,10 +86,81 @@ func Handler(ctx context.Context, event utils.AppSyncEvent) (json.RawMessage, er
 			return handleUserLikedRoadmap(ctx, event.Arguments)
 		case "customRoadmapRequested":
 			return handleCustomRoadmapRequested(ctx, event.Arguments)
+		case "userProgressedRoadmap":
+			return handleUserProgressedRoadmap(ctx, event.Arguments)
+		case "userUntrackingRoadmap":
+			return handleUserUntrackingRoadmap(ctx, event.Arguments)
 		}
 	}
 
 	return nil, errors.New("unhandled operation")
+}
+
+func handleUserUntrackingRoadmap(ctx context.Context, arguments json.RawMessage) (json.RawMessage, error) {
+	var input struct {
+		UserID    string `json:"userId"`
+		RoadmapID string `json:"roadmapId"`
+	}
+
+	if err := json.Unmarshal(arguments, &input); err != nil {
+		log.Printf("Error unmarshalling input: %v", err)
+		return nil, err
+	}
+
+	user, err := userRepository.GetUserByName(input.UserID)
+	if err != nil {
+		log.Printf("Error fetching user: %v", err)
+		return nil, err
+	}
+
+	if _, ok := user.RoadmapsProgress[input.RoadmapID]; ok {
+		delete(user.RoadmapsProgress, input.RoadmapID)
+	}
+
+	if _, err := userRepository.UpsertUser(*user); err != nil {
+		log.Printf("Error updating user: %v", err)
+	}
+
+	return json.RawMessage(`{"success": true}`), nil
+}
+
+func handleUserProgressedRoadmap(ctx context.Context, arguments json.RawMessage) (json.RawMessage, error) {
+	var input struct {
+		UserID    string `json:"userId"`
+		RoadmapID string `json:"roadmapId"`
+	}
+
+	if err := json.Unmarshal(arguments, &input); err != nil {
+		return nil, err
+	}
+
+	user, err := userRepository.GetUserByName(input.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.RoadmapsProgress == nil {
+		user.RoadmapsProgress = make(map[string]int)
+	}
+
+	progress, ok := user.RoadmapsProgress[input.RoadmapID]
+	if !ok {
+		if user.Role == 0 && len(user.RoadmapsProgress) > constants.StudentProgressTracking {
+			return nil, errors.New("user has reached the limit of trackable roadmaps")
+		} else if user.Role == 1 && len(user.RoadmapsProgress) > constants.ApprenticeProgressTracking {
+			return nil, errors.New("user has reached the limit of trackable roadmaps")
+		} else {
+			user.RoadmapsProgress[input.RoadmapID] = 1
+		}
+	} else {
+		user.RoadmapsProgress[input.RoadmapID] = progress + 1
+	}
+
+	if _, err := userRepository.UpsertUser(*user); err != nil {
+		return nil, err
+	}
+
+	return json.RawMessage(`{"success": true}`), nil
 }
 
 func handleCustomRoadmapRequested(ctx context.Context, arguments json.RawMessage) (json.RawMessage, error) {

@@ -57,6 +57,9 @@ type User struct {
 	DailyChallengeStreak     int       `json:"dailyChallengeStreak"`
 	RoadmapsViewed           int       `json:"roadmapsViewed"`
 	CreationsRemaining       int       `json:"creationsRemaining"`
+
+	// string separated by comma in the format (roadmap_id, progress)
+	RoadmapsProgress map[string]int `json:"roadmapProgress"`
 }
 
 type Course struct {
