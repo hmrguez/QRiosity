@@ -13,7 +13,12 @@ type User {
     dailyChallengeStreak: Int!
     roadmapsViewed: Int!
     creationsRemaining: Int!
-    completedCourses: [String!]
+    roadmapProgress: [RoadmapProgress!]
+}
+
+type RoadmapProgress {
+    roadmapId: String!
+    progress: Int!
 }
 
 
@@ -148,7 +153,8 @@ type Mutation {
     courseAddedToRoadmap(courseId: ID!, roadmapId: ID!): BareResponse!
     userLikedRoadmap(userId: ID!, roadmapId: ID!): BareResponse!
     customRoadmapRequested(prompt: String, userId: String): Roadmap!
-    userRoadmapProgresses(userId: ID!, roadmapId: ID!): BareResponse!
+    userProgressedRoadmap(userId: ID!, roadmapId: ID!): BareResponse!
+    userUntrackingRoadmap(userId: ID!, roadmapId: ID!): BareResponse!
 }
 
 input QuizInput {
